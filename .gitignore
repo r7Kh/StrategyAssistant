@@ -1,0 +1,33 @@
+
+# Gradle
+.gradle/
+**/build/
+
+# Android Studio
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration
+local.properties
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Signing keys and credentials
+*.jks
+*.keystore
+key.properties
+
+# Operating system files
+.DS_Store
+Thumbs.db
+# Kotlin compiler temporary files
+.kotlin/
+
+# IDE temporary files
+.idea/
