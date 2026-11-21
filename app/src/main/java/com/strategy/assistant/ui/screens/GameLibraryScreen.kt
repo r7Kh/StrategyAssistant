@@ -1,0 +1,310 @@
+
+package com.strategy.assistant.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.width
+
+private val LibraryBlack = Color(0xFF090710)
+private val LibraryGold = Color(0xFFD9B76E)
+private val LibraryPurple = Color(0xFFAA67FF)
+private val LibraryText = Color(0xFFF5F0FA)
+private val LibraryMuted = Color(0xFFAAA0B9)
+
+@Composable
+fun GameLibraryScreen(
+    padding: PaddingValues,
+    onAddGame: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LibraryBlack)
+            .padding(padding)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 19.dp)
+    ) {
+        Spacer(modifier = Modifier.height(22.dp))
+
+        Text(
+            text = "YOUR COLLECTION",
+            color = LibraryGold,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 2.sp
+        )
+
+        Spacer(modifier = Modifier.height(7.dp))
+
+        Text(
+            text = "Game Library",
+            color = LibraryText,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(7.dp))
+
+        Text(
+            text = "Your personal collection of supported games.",
+            color = LibraryMuted,
+            fontSize = 11.sp
+        )
+
+        Spacer(modifier = Modifier.height(27.dp))
+
+        // LIBRARY SUMMARY
+        RowSummary()
+
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Text(
+            text = "MY GAMES",
+            color = LibraryGold,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.8.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Your Collection",
+            color = LibraryText,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(17.dp))
+
+        // EMPTY LIBRARY STATE
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF21152F),
+                            Color(0xFF15101F),
+                            Color(0xFF100D18)
+                        )
+                    )
+                )
+                .border(
+                    1.dp,
+                    Color(0xFF65418A).copy(alpha = 0.65f),
+                    RoundedCornerShape(20.dp)
+                )
+                .padding(horizontal = 22.dp, vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(88.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF2A1A3D))
+                    .border(
+                        1.dp,
+                        LibraryPurple.copy(alpha = 0.55f),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "▣",
+                    color = LibraryPurple,
+                    fontSize = 39.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(19.dp))
+
+            Text(
+                text = "Your Library Is Waiting",
+                color = LibraryText,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(9.dp))
+
+            Text(
+                text = "No games have been added yet.",
+                color = LibraryMuted,
+                fontSize = 11.sp
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = "Choose your first game when you're ready.",
+                color = LibraryMuted,
+                fontSize = 10.sp
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(13.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                Color(0xFF8139C8),
+                                Color(0xFF51218A)
+                            )
+                        )
+                    )
+                    .border(
+                        1.dp,
+                        LibraryPurple,
+                        RoundedCornerShape(13.dp)
+                    )
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "GAME SELECTION COMING SOON",
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        // MULTI-GAME SUPPORT
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(15.dp))
+                .background(Color(0xFF14101D))
+                .border(
+                    1.dp,
+                    Color(0xFF30243D),
+                    RoundedCornerShape(15.dp)
+                )
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "MULTI-GAME PLATFORM",
+                color = LibraryGold,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.5.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "One command center. Multiple possibilities.",
+                color = LibraryText,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Your game modules will appear here after you choose which games to support.",
+                color = LibraryMuted,
+                fontSize = 10.sp,
+                lineHeight = 16.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "STRATEGY ASSISTANT",
+            color = Color(0xFF665C73),
+            fontSize = 8.sp,
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+private fun RowSummary() {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color(0xFF15111F))
+            .border(
+                1.dp,
+                Color(0xFF30243D),
+                RoundedCornerShape(15.dp)
+            )
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "00",
+                color = LibraryGold,
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "GAMES",
+                color = LibraryMuted,
+                fontSize = 8.sp,
+                letterSpacing = 1.sp
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .width(1.dp)
+                .height(39.dp)
+                .background(Color(0xFF3A2B49))
+        )
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "READY",
+                color = LibraryPurple,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "PLATFORM",
+                color = LibraryMuted,
+                fontSize = 8.sp,
+                letterSpacing = 1.sp
+            )
+        }
+    }
+}

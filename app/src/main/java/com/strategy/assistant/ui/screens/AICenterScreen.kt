@@ -29,12 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.strategy.assistant.ui.design.AIOrb
-import com.strategy.assistant.ui.design.StrategyColors
 
-private val DeepBlack = Color(0xFF07060B)
-private val PanelDark = Color(0xFF100D18)
-private val PurpleGlow = Color(0xFF542A91)
-private val GoldMetal = Color(0xFFD6B56D)
+private val VoidBlack = Color(0xFF06050A)
+private val PanelBlack = Color(0xFF0D0B12)
+private val RoyalGold = Color(0xFFD6B56D)
+private val NeonPurple = Color(0xFF9A72FF)
+private val QuietText = Color(0xFF82798E)
+private val FineLine = Color(0xFF292332)
 
 @Composable
 fun AICenterScreen() {
@@ -42,242 +43,310 @@ fun AICenterScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DeepBlack)
+            .background(VoidBlack)
             .verticalScroll(rememberScrollState())
     ) {
 
-        // Background atmosphere
+        // COMMAND HEADER
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp)
+                .padding(top = 24.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "NEXUS INTELLIGENCE DIVISION",
+                        color = RoyalGold,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(7.dp))
+
+                    Text(
+                        text = "Command Center",
+                        color = Color.White,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "SYSTEM",
+                        color = QuietText,
+                        fontSize = 8.sp,
+                        letterSpacing = 1.5.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(
+                                    Color(0xFF4ADE80),
+                                    CircleShape
+                                )
+                        )
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = "ONLINE",
+                            color = Color(0xFF8BD6A0),
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(17.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                RoyalGold.copy(alpha = 0.8f),
+                                NeonPurple.copy(alpha = 0.35f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+            )
+        }
+
+        // CENTRAL AI CORE
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 20.dp)
                 .background(
-                    Brush.verticalGradient(
+                    Brush.radialGradient(
                         colors = listOf(
-                            Color(0xFF171025),
-                            Color(0xFF0D0A14),
-                            DeepBlack
-                        )
-                    )
-                )
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 22.dp)
-            ) {
-
-                Spacer(modifier = Modifier.height(25.dp))
-
-                // Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Column {
-                        Text(
-                            text = "STRATEGIC INTELLIGENCE",
-                            color = GoldMetal,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 2.5.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(7.dp))
-
-                        Text(
-                            text = "AI Command",
-                            color = Color.White,
-                            fontSize = 27.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "Your strategic intelligence center",
-                            color = Color(0xFF92899F),
-                            fontSize = 11.sp
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(43.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF21182F))
-                            .border(
-                                1.dp,
-                                GoldMetal.copy(alpha = 0.5f),
-                                CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "♛",
-                            color = GoldMetal,
-                            fontSize = 22.sp
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Fine gold separator
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    GoldMetal.copy(alpha = 0.6f),
-                                    PurpleGlow.copy(alpha = 0.5f),
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                )
-
-                // Orb area
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AIOrb(
-                        orbSize = 250.dp,
-                        status = "INTELLIGENCE STANDBY"
-                    )
-                }
-
-                // Online indicator
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .clip(CircleShape)
-                        .background(Color(0xFF111A17))
-                        .border(
-                            1.dp,
-                            Color(0x334ADE80),
-                            CircleShape
-                        )
-                        .padding(
-                            horizontal = 15.dp,
-                            vertical = 7.dp
+                            Color(0xFF211434),
+                            Color(0xFF100B19),
+                            VoidBlack
                         ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                Color(0xFF4ADE80),
-                                CircleShape
-                            )
+                        radius = 550f
                     )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "CENTRAL INTELLIGENCE CORE",
+                    color = QuietText,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.3.sp
+                )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        text = "CORE SYSTEM ONLINE",
-                        color = Color(0xFF91DCA8),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.2.sp
-                    )
-                }
+                AIOrb(
+                    orbSize = 225.dp,
+                    status = "AWAITING COMMAND"
+                )
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(7.dp))
+
+                Text(
+                    text = "YOUR STRATEGIC ADVANTAGE",
+                    color = RoyalGold.copy(alpha = 0.85f),
+                    fontSize = 8.sp,
+                    letterSpacing = 2.sp
+                )
+
+                Spacer(modifier = Modifier.height(21.dp))
             }
         }
 
+        // SYSTEM TELEMETRY
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 22.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(13.dp))
+                    .background(PanelBlack)
+                    .border(
+                        1.dp,
+                        FineLine,
+                        RoundedCornerShape(13.dp)
+                    )
+                    .padding(vertical = 15.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                TelemetryItem(
+                    label = "AI CORE",
+                    value = "READY",
+                    color = Color(0xFF75D994)
+                )
 
-            // Operations heading
-            SectionHeading(
-                eyebrow = "INTELLIGENCE TOOLS",
-                title = "Strategic Operations"
-            )
+                VerticalDivider()
 
-            Spacer(modifier = Modifier.height(17.dp))
+                TelemetryItem(
+                    label = "OPERATIONS",
+                    value = "03",
+                    color = RoyalGold
+                )
 
-            // Operation list
-            OperationRow(
-                number = "01",
-                title = "Strategic Analysis",
-                description = "Understand your current situation",
-                symbol = "⌕"
-            )
+                VerticalDivider()
 
-            OperationRow(
-                number = "02",
-                title = "Strategy Planning",
-                description = "Build a plan around your objectives",
-                symbol = "◈"
-            )
+                TelemetryItem(
+                    label = "MODE",
+                    value = "LOCAL",
+                    color = NeonPurple
+                )
+            }
 
-            OperationRow(
-                number = "03",
-                title = "Performance Review",
-                description = "Discover weaknesses and improvements",
-                symbol = "↗"
-            )
+            Spacer(modifier = Modifier.height(29.dp))
 
-            Spacer(modifier = Modifier.height(30.dp))
+            // OPERATIONS
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Column {
+                    Text(
+                        text = "TACTICAL MODULES",
+                        color = RoyalGold,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    )
 
-            // Intelligence channel
-            SectionHeading(
-                eyebrow = "PRIVATE AI CHANNEL",
-                title = "Intelligence Channel"
-            )
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Text(
+                        text = "Operations",
+                        color = Color.White,
+                        fontSize = 21.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Text(
+                    text = "03 MODULES",
+                    color = QuietText,
+                    fontSize = 8.sp,
+                    letterSpacing = 1.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            // Chat panel
+            TacticalOperation(
+                number = "01",
+                title = "Strategic Analysis",
+                subtitle = "Analyze the battlefield",
+                symbol = "⌕",
+                tag = "ANALYSIS"
+            )
+
+            TacticalOperation(
+                number = "02",
+                title = "Strategy Planning",
+                subtitle = "Develop your next move",
+                symbol = "◈",
+                tag = "PLANNING"
+            )
+
+            TacticalOperation(
+                number = "03",
+                title = "Performance Review",
+                subtitle = "Evaluate your progress",
+                symbol = "↗",
+                tag = "REVIEW"
+            )
+
+            Spacer(modifier = Modifier.height(29.dp))
+
+            // AI CHANNEL
+            Text(
+                text = "SECURE COMMUNICATION",
+                color = RoyalGold,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 2.sp
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = "Intelligence Channel",
+                color = Color.White,
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(19.dp))
+                    .clip(RoundedCornerShape(16.dp))
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(
+                            listOf(
                                 Color(0xFF171222),
-                                Color(0xFF0E0B14)
+                                Color(0xFF0C0A11)
                             )
                         )
                     )
                     .border(
                         1.dp,
-                        Color(0xFF30263E),
-                        RoundedCornerShape(19.dp)
+                        FineLine,
+                        RoundedCornerShape(16.dp)
                     )
                     .padding(17.dp)
             ) {
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(29.dp)
+                            .size(34.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF302047)),
+                            .background(Color(0xFF2A1B3C))
+                            .border(
+                                1.dp,
+                                RoyalGold.copy(alpha = 0.35f),
+                                CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "✧",
-                            color = GoldMetal,
-                            fontSize = 17.sp
+                            color = RoyalGold,
+                            fontSize = 19.sp
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(11.dp))
 
                     Column {
                         Text(
@@ -290,17 +359,35 @@ fun AICenterScreen() {
 
                         Text(
                             text = "Personal intelligence assistant",
-                            color = Color(0xFF82798F),
+                            color = QuietText,
                             fontSize = 9.sp
                         )
                     }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = "ENCRYPTED",
+                        color = Color(0xFF75D994),
+                        fontSize = 8.sp,
+                        letterSpacing = 0.8.sp
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(17.dp))
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(FineLine)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Welcome, Commander.",
-                    color = GoldMetal,
+                    color = RoyalGold,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -308,43 +395,50 @@ fun AICenterScreen() {
                 Spacer(modifier = Modifier.height(7.dp))
 
                 Text(
-                    text = "Your intelligence center is ready. Select an operation or prepare your next strategic objective.",
-                    color = Color(0xFFB8B0C5),
-                    fontSize = 12.sp,
-                    lineHeight = 20.sp
+                    text = "The intelligence core is standing by. Select a tactical module to begin your next operation.",
+                    color = Color(0xFFB4ADBE),
+                    fontSize = 11.sp,
+                    lineHeight = 19.sp
                 )
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(17.dp))
 
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF09070D))
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF08070C))
                         .border(
                             1.dp,
-                            Color(0xFF30263E),
-                            RoundedCornerShape(12.dp)
+                            FineLine,
+                            RoundedCornerShape(10.dp)
                         )
-                        .padding(horizontal = 14.dp),
-                    contentAlignment = Alignment.CenterStart
+                        .padding(13.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Chat interface coming soon...",
-                        color = Color(0xFF6F667D),
-                        fontSize = 11.sp
+                        text = "✧",
+                        color = NeonPurple,
+                        fontSize = 17.sp
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Text(
+                        text = "AI conversation interface coming soon",
+                        color = QuietText,
+                        fontSize = 10.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
             Text(
-                text = "STRATEGY ASSISTANT  /  INTELLIGENCE DIVISION",
+                text = "STRATEGY ASSISTANT  •  COMMAND DIVISION",
                 color = Color(0xFF51495C),
                 fontSize = 8.sp,
-                letterSpacing = 1.1.sp,
+                letterSpacing = 1.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -354,74 +448,97 @@ fun AICenterScreen() {
 }
 
 @Composable
-private fun SectionHeading(
-    eyebrow: String,
-    title: String
+private fun TelemetryItem(
+    label: String,
+    value: String,
+    color: Color
 ) {
-    Column {
-
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
-            text = eyebrow,
-            color = GoldMetal,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp
+            text = label,
+            color = QuietText,
+            fontSize = 8.sp,
+            letterSpacing = 1.sp
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = title,
-            color = Color.White,
-            fontSize = 19.sp,
-            fontWeight = FontWeight.Bold
+            text = value,
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.8.sp
         )
     }
 }
 
 @Composable
-private fun OperationRow(
+private fun VerticalDivider() {
+    Box(
+        modifier = Modifier
+            .width(1.dp)
+            .height(29.dp)
+            .background(FineLine)
+    )
+}
+
+@Composable
+private fun TacticalOperation(
     number: String,
     title: String,
-    description: String,
-    symbol: String
+    subtitle: String,
+    symbol: String,
+    tag: String
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 7.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF100D17))
+            .padding(vertical = 5.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(
+                        Color(0xFF17131E),
+                        Color(0xFF0D0B12)
+                    )
+                )
+            )
             .border(
                 1.dp,
-                Color(0xFF282132),
-                RoundedCornerShape(14.dp)
+                FineLine,
+                RoundedCornerShape(12.dp)
             )
-            .padding(14.dp),
+            .padding(horizontal = 13.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Text(
             text = number,
-            color = GoldMetal,
+            color = RoyalGold,
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.width(14.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Box(
             modifier = Modifier
-                .size(37.dp)
-                .clip(RoundedCornerShape(11.dp))
-                .background(Color(0xFF21172F)),
+                .size(38.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFF20182C))
+                .border(
+                    1.dp,
+                    NeonPurple.copy(alpha = 0.22f),
+                    RoundedCornerShape(10.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = symbol,
-                color = Color(0xFFB99AFF),
-                fontSize = 22.sp,
+                color = NeonPurple,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -431,10 +548,9 @@ private fun OperationRow(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-
             Text(
                 text = title,
-                color = Color(0xFFF0ECF5),
+                color = Color(0xFFF2EEF7),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -442,16 +558,30 @@ private fun OperationRow(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = description,
-                color = Color(0xFF898194),
+                text = subtitle,
+                color = QuietText,
                 fontSize = 10.sp
             )
         }
 
-        Text(
-            text = "›",
-            color = GoldMetal,
-            fontSize = 24.sp
-        )
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = tag,
+                color = RoyalGold.copy(alpha = 0.8f),
+                fontSize = 7.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.7.sp
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "›",
+                color = RoyalGold,
+                fontSize = 20.sp
+            )
+        }
     }
 }
