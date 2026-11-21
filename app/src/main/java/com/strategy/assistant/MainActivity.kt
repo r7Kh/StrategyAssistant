@@ -23,12 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.strategy.assistant.ui.theme.*
+import com.strategy.assistant.ui.screens.AICenterScreen
+import com.strategy.assistant.ui.theme.StrategyAssistantTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,9 +111,36 @@ fun StrategyAssistantApp() {
     ) { padding ->
         when (selectedTab) {
             0 -> HomeScreen(padding)
-            1 -> PlaceholderScreen("AI Center", "Your AI command center")
-            2 -> PlaceholderScreen("Game Library", "Manage your game modules")
-            3 -> PlaceholderScreen("More", "Settings and application tools")
+
+            1 -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                AICenterScreen()
+            }
+
+            2 -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                PlaceholderScreen(
+                    "Game Library",
+                    "Manage your game modules"
+                )
+            }
+
+            3 -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                PlaceholderScreen(
+                    "More",
+                    "Settings and application tools"
+                )
+            }
         }
     }
 }
@@ -155,11 +181,19 @@ fun HomeScreen(padding: PaddingValues) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .border(1.dp, GoldAccent.copy(alpha = 0.5f), CircleShape)
+                    .border(
+                        1.dp,
+                        GoldAccent.copy(alpha = 0.5f),
+                        CircleShape
+                    )
                     .background(CardBackground, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text("♛", fontSize = 24.sp, color = GoldAccent)
+                Text(
+                    "♛",
+                    fontSize = 24.sp,
+                    color = GoldAccent
+                )
             }
         }
 
@@ -315,13 +349,17 @@ fun AiStatusCard() {
 
                 Spacer(modifier = Modifier.height(7.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Box(
                         modifier = Modifier
                             .size(7.dp)
                             .background(Color(0xFF4ADE80), CircleShape)
                     )
+
                     Spacer(modifier = Modifier.width(6.dp))
+
                     Text(
                         text = "Waiting for command",
                         color = SecondaryText,
@@ -441,7 +479,9 @@ fun OverviewRow(title: String, value: String, color: Color) {
                     .size(6.dp)
                     .background(color, CircleShape)
             )
+
             Spacer(modifier = Modifier.width(7.dp))
+
             Text(
                 text = value,
                 color = MainText,
@@ -460,26 +500,34 @@ fun PlaceholderScreen(title: String, description: String) {
             .background(AppBackground),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = "✧",
                 color = GoldAccent,
                 fontSize = 48.sp
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = title,
                 color = MainText,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = description,
                 color = SecondaryText,
                 fontSize = 13.sp
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = "UNDER DEVELOPMENT",
                 color = GoldAccent,
