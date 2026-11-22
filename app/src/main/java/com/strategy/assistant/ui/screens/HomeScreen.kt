@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.ui.localization.appText
 
 private val HomeBackground = Color(0xFF09090F)
 private val HomePurple = Color(0xFF9B55F5)
@@ -128,7 +129,7 @@ fun PremiumHomeScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "WELCOME BACK",
+                        appText("welcome"),
                         color = HomeGold,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -147,7 +148,7 @@ fun PremiumHomeScreen(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        "Your command center is ready.",
+                        appText("command_ready"),
                         color = HomeMuted,
                         fontSize = 10.sp
                     )
@@ -205,7 +206,7 @@ fun PremiumHomeScreen(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "AI ASSISTANT",
+                    appText("ai_assistant"),
                     color = HomeText,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -240,11 +241,11 @@ fun PremiumHomeScreen(
                 .padding(vertical = 15.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            HomeStatistic("0", "GAMES", "🎮")
+            HomeStatistic("0", appText("games_label"), "🎮")
             StatisticDivider()
-            HomeStatistic("0", "ACCOUNTS", "♟")
+            HomeStatistic("0", appText("accounts"), "♟")
             StatisticDivider()
-            HomeStatistic("0", "ACTIVITIES", "◷")
+            HomeStatistic("0", appText("activities"), "◷")
         }
 
         Spacer(modifier = Modifier.height(23.dp))
@@ -256,14 +257,14 @@ fun PremiumHomeScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                "QUICK ACCESS",
+                appText("quick_access"),
                 color = HomeText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp
             )
 
-            Text("Explore", color = HomeGold, fontSize = 10.sp)
+            Text(appText("explore"), color = HomeGold, fontSize = 10.sp)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -275,14 +276,14 @@ fun PremiumHomeScreen(
             QuickHomeItem(
                 modifier = Modifier.weight(1f),
                 symbol = "✧",
-                title = "AI Center",
+                title = appText("ai_center"),
                 onClick = onOpenAi
             )
 
             QuickHomeItem(
                 modifier = Modifier.weight(1f),
                 symbol = "▣",
-                title = "Game Library",
+                title = appText("game_library"),
                 onClick = onOpenLibrary
             )
         }
@@ -296,14 +297,14 @@ fun PremiumHomeScreen(
             QuickHomeItem(
                 modifier = Modifier.weight(1f),
                 symbol = "◷",
-                title = "Activity",
+                title = appText("activity"),
                 onClick = {}
             )
 
             QuickHomeItem(
                 modifier = Modifier.weight(1f),
                 symbol = "⚙",
-                title = "Management",
+                title = appText("management"),
                 onClick = {}
             )
         }
@@ -311,7 +312,7 @@ fun PremiumHomeScreen(
         Spacer(modifier = Modifier.height(23.dp))
 
         Text(
-            "RECENT ACTIVITY",
+            appText("recent_activity"),
             color = HomeText,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
@@ -323,15 +324,15 @@ fun PremiumHomeScreen(
         RecentActivityItem(
             symbol = "✧",
             title = "AI Assistant",
-            description = "Intelligence core is ready",
-            time = "NOW"
+            description = appText("intelligence_ready"),
+            time = appText("now")
         )
 
         RecentActivityItem(
             symbol = "▣",
-            title = "Game Library",
-            description = "No games added yet",
-            time = "NEW"
+            title = appText("game_library"),
+            description = appText("no_games"),
+            time = appText("new")
         )
 
         Spacer(modifier = Modifier.height(20.dp))
