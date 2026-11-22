@@ -146,9 +146,9 @@ fun NotificationsScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            NotificationStat("00", "TOTAL")
-            NotificationStat("00", "UNREAD")
-            NotificationStat("00", "UPDATES")
+            NotificationStat("00", appText("total"))
+            NotificationStat("00", appText("unread"))
+            NotificationStat("00", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(26.dp))
