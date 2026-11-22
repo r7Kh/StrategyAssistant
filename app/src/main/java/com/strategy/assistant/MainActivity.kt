@@ -287,7 +287,7 @@ fun StrategyAssistantApp() {
                     currentScreen = 3
                 }
             )
-+
+
             // AI CONTROL PANEL
             11 -> AIControlPanelScreen(
                 padding = innerPadding,
