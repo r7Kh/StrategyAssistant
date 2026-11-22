@@ -16,8 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,15 +31,36 @@ fun AIOrb(
     status: String = "SYSTEM READY",
     active: Boolean = false
 ) {
-    val transition = rememberInfiniteTransition(label = "AI Orb")
-    val idlePulse by transition.animateFloat(
-        initialValue = 0.94f,
-        targetValue = 1f,
+    val transition = rememberInfiniteTransition(label = "AI Orb Motion")
+
+    val rotation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2600),
+            animation = tween(durationMillis = if (active) 9000 else 26000),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "Orb rotation"
+    )
+
+    val pulse by transition.animateFloat(
+        initialValue = 0.96f,
+        targetValue = 1.04f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = if (active) 1100 else 2800),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "Orb idle pulse"
+        label = "Orb energy pulse"
+    )
+
+    val glowAlpha by transition.animateFloat(
+        initialValue = 0.48f,
+        targetValue = if (active) 0.95f else 0.72f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = if (active) 900 else 2200),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "Orb glow"
     )
 
     Column(
@@ -53,7 +74,12 @@ fun AIOrb(
             contentDescription = "Strategy Assistant AI orb",
             modifier = Modifier
                 .size(orbSize)
-                .alpha(if (active) 1f else idlePulse)
+                .graphicsLayer {
+                    rotationZ = rotation
+                    scaleX = pulse
+                    scaleY = pulse
+                }
+                .alpha(glowAlpha)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
