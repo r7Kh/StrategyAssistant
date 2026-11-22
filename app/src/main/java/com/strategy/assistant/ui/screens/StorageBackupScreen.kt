@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,16 +76,14 @@ fun StorageBackupScreen(
             Spacer(modifier = Modifier.width(13.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "DATA MANAGEMENT",
+                Text(appText("data_management"),
                     color = StorageGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.6.sp
                 )
 
-                Text(
-                    "Storage & Backup",
+                Text(appText("storage_backup"),
                     color = StorageText,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
@@ -100,8 +100,7 @@ fun StorageBackupScreen(
         Spacer(modifier = Modifier.height(26.dp))
 
         // STORAGE OVERVIEW
-        Text(
-            "STORAGE OVERVIEW",
+        Text(appText("storage_overview"),
             color = StorageGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -151,8 +150,7 @@ fun StorageBackupScreen(
                 Spacer(modifier = Modifier.width(18.dp))
 
                 Column {
-                    Text(
-                        "Storage Data",
+                    Text(appText("storage_data"),
                         color = StorageText,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
@@ -160,16 +158,14 @@ fun StorageBackupScreen(
 
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    Text(
-                        "Waiting for storage information",
+                    Text(appText("waiting_storage"),
                         color = StorageMuted,
                         fontSize = 9.sp
                     )
 
                     Spacer(modifier = Modifier.height(7.dp))
 
-                    Text(
-                        "NOT YET MEASURED",
+                    Text(appText("not_measured"),
                         color = StorageGold,
                         fontSize = 8.sp,
                         fontWeight = FontWeight.Bold,
@@ -180,17 +176,16 @@ fun StorageBackupScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            StorageLegend("App Data", "Not measured", Color(0xFF9A63E8))
-            StorageLegend("Game Data", "Not measured", Color(0xFF6578D8))
-            StorageLegend("Other Files", "Not measured", Color(0xFFB5A8C8))
-            StorageLegend("Free Space", "Not measured", Color(0xFF51445F))
+            StorageLegend(appText("app_data"), "Not measured", Color(0xFF9A63E8))
+            StorageLegend(appText("game_data"), "Not measured", Color(0xFF6578D8))
+            StorageLegend(appText("other_files"), "Not measured", Color(0xFFB5A8C8))
+            StorageLegend(appText("free_space"), "Not measured", Color(0xFF51445F))
         }
 
         Spacer(modifier = Modifier.height(25.dp))
 
         // CLOUD BACKUP
-        Text(
-            "BACKUP & RESTORE",
+        Text(appText("backup_restore"),
             color = StorageGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -225,8 +220,7 @@ fun StorageBackupScreen(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        "Cloud Backup",
+                    Text(appText("cloud_backup"),
                         color = StorageText,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -234,15 +228,13 @@ fun StorageBackupScreen(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        "Not configured",
+                    Text(appText("not_configured_lower"),
                         color = StorageGold,
                         fontSize = 9.sp
                     )
                 }
 
-                Text(
-                    "OFF",
+                Text(appText("off"),
                     color = StorageMuted,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold
@@ -268,8 +260,7 @@ fun StorageBackupScreen(
         Spacer(modifier = Modifier.height(22.dp))
 
         // ACTIONS
-        Text(
-            "STORAGE ACTIONS",
+        Text(appText("storage_actions"),
             color = StorageGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -280,22 +271,22 @@ fun StorageBackupScreen(
 
         StorageAction(
             symbol = "☁",
-            title = "Backup Now",
-            description = "Create a backup of supported data",
+            title = appText("backup_now"),
+            description = appText("create_backup"),
             onClick = onBackup
         )
 
         StorageAction(
             symbol = "↻",
-            title = "Restore Data",
-            description = "Restore a previous backup",
+            title = appText("restore_data"),
+            description = appText("restore_previous"),
             onClick = onRestore
         )
 
         StorageAction(
             symbol = "▤",
-            title = "Clean Cache",
-            description = "Manage temporary application files",
+            title = appText("clean_cache"),
+            description = appText("manage_temp"),
             onClick = onCleanCache
         )
 
@@ -309,8 +300,7 @@ fun StorageBackupScreen(
                 .border(1.dp, Color(0xFF30243D), RoundedCornerShape(14.dp))
                 .padding(15.dp)
         ) {
-            Text(
-                "DATA & PRIVACY",
+            Text(appText("data_privacy"),
                 color = StorageGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -319,8 +309,7 @@ fun StorageBackupScreen(
 
             Spacer(modifier = Modifier.height(7.dp))
 
-            Text(
-                "Only selected persistent application data will be included in future backups. Temporary game-session data and extracted screenshots will not be stored as permanent backup data.",
+            Text(appText("backup_policy"),
                 color = StorageMuted,
                 fontSize = 10.sp,
                 lineHeight = 16.sp
