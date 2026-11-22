@@ -41,6 +41,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import com.strategy.assistant.data.preferences.AppPreferences
+import com.strategy.assistant.data.preferences.AppPreferencesRepository
 
 private val PanelGold = Color(0xFFD6B46A)
 private val PanelBackground = Color(0xFF090811)
