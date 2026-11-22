@@ -275,12 +275,14 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = when (selectedFilter) {
-                    "Unread" -> "No Unread Notifications"
-                    "Updates" -> "No Updates Yet"
-                    "System" -> "No System Alerts"
-                    else -> "You're All Caught Up"
-                },
+                text = appText(
+                    when (selectedFilter) {
+                        "Unread" -> "no_unread"
+                        "Updates" -> "no_updates"
+                        "System" -> "no_system_alerts"
+                        else -> "all_caught_up"
+                    }
+                ),
                 color = NotificationText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
