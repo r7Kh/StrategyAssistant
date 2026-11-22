@@ -11,6 +11,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import com.strategy.assistant.data.preferences.AppPreferences
+import com.strategy.assistant.data.preferences.AppPreferencesRepository
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +34,16 @@ fun SettingsScreen(
     padding: PaddingValues,
     onBack: () -> Unit
 ) {
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var soundEnabled by remember { mutableStateOf(true) }
-    var vibrationEnabled by remember { mutableStateOf(false) }
-    var analyticsEnabled by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val repository = remember(context) { AppPreferencesRepository(context) }
+    val preferences by repository.preferences.collectAsState(initial = AppPreferences())
+    val scope = rememberCoroutineScope()
 
-    var selectedLanguage by remember { mutableStateOf("English") }
+    val notificationsEnabled = preferences.notificationsEnabled
+    val soundEnabled = preferences.soundEnabled
+    val vibrationEnabled = preferences.vibrationEnabled
+    val analyticsEnabled = preferences.analyticsEnabled
+    val selectedLanguage = preferences.language
     var languageMenuExpanded by remember { mutableStateOf(false) }
 
     val languages = listOf(
@@ -151,7 +159,7 @@ fun SettingsScreen(
                                         )
                                     },
                                     onClick = {
-                                        selectedLanguage = language
+                                        scope.launch { repository.setLanguage(language) }
                                         languageMenuExpanded = false
                                     }
                                 )
@@ -194,7 +202,7 @@ fun SettingsScreen(
                 "Push Notifications",
                 "Receive important application alerts",
                 notificationsEnabled
-            ) { notificationsEnabled = it }
+            ) { value -> scope.launch { repository.setNotificationsEnabled(value) } }
 
             SettingsDivider()
 
@@ -203,7 +211,7 @@ fun SettingsScreen(
                 "Sound Effects",
                 "Application sounds and audio feedback",
                 soundEnabled
-            ) { soundEnabled = it }
+            ) { value -> scope.launch { repository.setSoundEnabled(value) } }
 
             SettingsDivider()
 
@@ -212,7 +220,7 @@ fun SettingsScreen(
                 "Vibration",
                 "Haptic feedback for interactions",
                 vibrationEnabled
-            ) { vibrationEnabled = it }
+            ) { value -> scope.launch { repository.setVibrationEnabled(value) } }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -226,7 +234,7 @@ fun SettingsScreen(
                 "Anonymous Analytics",
                 "Allow anonymous usage statistics",
                 analyticsEnabled
-            ) { analyticsEnabled = it }
+            ) { value -> scope.launch { repository.setAnalyticsEnabled(value) } }
 
             SettingsDivider()
 
