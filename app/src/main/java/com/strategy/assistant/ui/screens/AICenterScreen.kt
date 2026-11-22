@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.strategy.assistant.ui.design.AIOrb
+import com.strategy.assistant.ui.localization.appText
 
 private val VoidBlack = Color(0xFF06050A)
 private val PanelBlack = Color(0xFF0D0B12)
@@ -61,7 +62,7 @@ fun AICenterScreen() {
             ) {
                 Column {
                     Text(
-                        text = "NEXUS INTELLIGENCE DIVISION",
+                        text = appText("nexus_division"),
                         color = RoyalGold,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -71,7 +72,7 @@ fun AICenterScreen() {
                     Spacer(modifier = Modifier.height(7.dp))
 
                     Text(
-                        text = "Command Center",
+                        text = appText("command_center"),
                         color = Color.White,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold
@@ -82,7 +83,7 @@ fun AICenterScreen() {
                     horizontalAlignment = Alignment.End
                 ) {
                     Text(
-                        text = "SYSTEM",
+                        text = appText("system"),
                         color = QuietText,
                         fontSize = 8.sp,
                         letterSpacing = 1.5.sp
@@ -105,7 +106,7 @@ fun AICenterScreen() {
                         Spacer(modifier = Modifier.width(6.dp))
 
                         Text(
-                            text = "ONLINE",
+                            text = appText("online"),
                             color = Color(0xFF8BD6A0),
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold
@@ -153,7 +154,7 @@ fun AICenterScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "CENTRAL INTELLIGENCE CORE",
+                    text = appText("central_core"),
                     color = QuietText,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -164,13 +165,13 @@ fun AICenterScreen() {
 
                 AIOrb(
                     orbSize = 225.dp,
-                    status = "AWAITING COMMAND"
+                    status = appText("awaiting_command")
                 )
 
                 Spacer(modifier = Modifier.height(7.dp))
 
                 Text(
-                    text = "YOUR STRATEGIC ADVANTAGE",
+                    text = appText("strategic_advantage"),
                     color = RoyalGold.copy(alpha = 0.85f),
                     fontSize = 8.sp,
                     letterSpacing = 2.sp
@@ -200,15 +201,15 @@ fun AICenterScreen() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 TelemetryItem(
-                    label = "AI CORE",
-                    value = "READY",
+                    label = appText("ai_core"),
+                    value = appText("ready"),
                     color = Color(0xFF75D994)
                 )
 
                 VerticalDivider()
 
                 TelemetryItem(
-                    label = "OPERATIONS",
+                    label = appText("operations"),
                     value = "03",
                     color = RoyalGold
                 )
@@ -216,8 +217,8 @@ fun AICenterScreen() {
                 VerticalDivider()
 
                 TelemetryItem(
-                    label = "MODE",
-                    value = "LOCAL",
+                    label = appText("mode"),
+                    value = appText("local"),
                     color = NeonPurple
                 )
             }
@@ -232,7 +233,7 @@ fun AICenterScreen() {
             ) {
                 Column {
                     Text(
-                        text = "TACTICAL MODULES",
+                        text = appText("tactical_modules"),
                         color = RoyalGold,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -242,7 +243,7 @@ fun AICenterScreen() {
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        text = "Operations",
+                        text = appText("operations"),
                         color = Color.White,
                         fontSize = 21.sp,
                         fontWeight = FontWeight.Bold
@@ -250,7 +251,7 @@ fun AICenterScreen() {
                 }
 
                 Text(
-                    text = "03 MODULES",
+                    text = appText("three_modules"),
                     color = QuietText,
                     fontSize = 8.sp,
                     letterSpacing = 1.sp
@@ -261,33 +262,33 @@ fun AICenterScreen() {
 
             TacticalOperation(
                 number = "01",
-                title = "Strategic Analysis",
-                subtitle = "Analyze the battlefield",
+                title = appText("strategic_analysis"),
+                subtitle = appText("analyze_battlefield"),
                 symbol = "⌕",
-                tag = "ANALYSIS"
+                tag = appText("analysis")
             )
 
             TacticalOperation(
                 number = "02",
-                title = "Strategy Planning",
-                subtitle = "Develop your next move",
+                title = appText("strategy_planning"),
+                subtitle = appText("develop_next_move"),
                 symbol = "◈",
-                tag = "PLANNING"
+                tag = appText("planning")
             )
 
             TacticalOperation(
                 number = "03",
-                title = "Performance Review",
-                subtitle = "Evaluate your progress",
+                title = appText("performance_review"),
+                subtitle = appText("evaluate_progress"),
                 symbol = "↗",
-                tag = "REVIEW"
+                tag = appText("review")
             )
 
             Spacer(modifier = Modifier.height(29.dp))
 
             // AI CHANNEL
             Text(
-                text = "SECURE COMMUNICATION",
+                text = appText("secure_communication"),
                 color = RoyalGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -297,7 +298,7 @@ fun AICenterScreen() {
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "Intelligence Channel",
+                text = appText("intelligence_channel"),
                 color = Color.White,
                 fontSize = 21.sp,
                 fontWeight = FontWeight.Bold
@@ -358,7 +359,7 @@ fun AICenterScreen() {
                         )
 
                         Text(
-                            text = "Personal intelligence assistant",
+                            text = appText("personal_assistant"),
                             color = QuietText,
                             fontSize = 9.sp
                         )
@@ -367,7 +368,7 @@ fun AICenterScreen() {
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
-                        text = "ENCRYPTED",
+                        text = appText("encrypted"),
                         color = Color(0xFF75D994),
                         fontSize = 8.sp,
                         letterSpacing = 0.8.sp
@@ -386,7 +387,7 @@ fun AICenterScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Welcome, Commander.",
+                    text = appText("welcome_commander"),
                     color = RoyalGold,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
@@ -395,7 +396,7 @@ fun AICenterScreen() {
                 Spacer(modifier = Modifier.height(7.dp))
 
                 Text(
-                    text = "The intelligence core is standing by. Select a tactical module to begin your next operation.",
+                    text = appText("core_standing_by"),
                     color = Color(0xFFB4ADBE),
                     fontSize = 11.sp,
                     lineHeight = 19.sp
@@ -425,7 +426,7 @@ fun AICenterScreen() {
                     Spacer(modifier = Modifier.width(10.dp))
 
                     Text(
-                        text = "AI conversation interface coming soon",
+                        text = appText("conversation_coming_soon"),
                         color = QuietText,
                         fontSize = 10.sp
                     )
