@@ -241,7 +241,7 @@ fun GameManagementScreen(
                     GameManagePurple,
                     RoundedCornerShape(14.dp)
                 )
-                .clickable { onAddGame() }
+                .clickable { showAddDialog = true }
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
