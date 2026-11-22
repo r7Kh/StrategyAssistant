@@ -14,6 +14,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalContext
+import com.strategy.assistant.data.preferences.AppPreferences
+import com.strategy.assistant.data.preferences.AppPreferencesRepository
+import com.strategy.assistant.ui.localization.LocalAppLanguage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +69,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun StrategyAssistantApp() {
+    val context = LocalContext.current
+    val preferencesRepository = remember(context) { AppPreferencesRepository(context) }
+    val appPreferences by preferencesRepository.preferences.collectAsState(initial = AppPreferences())
+    val isArabic = appPreferences.language == "العربية"
 
     // Screen IDs
     // 0 = Home
@@ -81,10 +93,10 @@ fun StrategyAssistantApp() {
     }
 
     val navigationItems = listOf(
-        Triple("⌂", "Home", 0),
-        Triple("✧", "AI", 1),
-        Triple("▣", "Games", 2),
-        Triple("☰", "More", 3)
+        Triple("⌂", if (isArabic) "الرئيسية" else "Home", 0),
+        Triple("✧", if (isArabic) "الذكاء" else "AI", 1),
+        Triple("▣", if (isArabic) "الألعاب" else "Games", 2),
+        Triple("☰", if (isArabic) "المزيد" else "More", 3)
     )
 
     // Keep More selected while viewing its subpages
@@ -94,6 +106,10 @@ fun StrategyAssistantApp() {
         currentScreen
     }
 
+    CompositionLocalProvider(
+        LocalAppLanguage provides appPreferences.language,
+        LocalLayoutDirection provides if (isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr
+    ) {
     Scaffold(
         containerColor = AppBackground,
 
