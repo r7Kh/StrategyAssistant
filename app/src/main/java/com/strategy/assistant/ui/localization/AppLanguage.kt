@@ -338,7 +338,7 @@ fun appText(key: String): String {
         "data_privacy" to "DATA & PRIVACY",
         "backup_policy" to "Only selected persistent application data will be included in future backups. Temporary game-session data and extracted screenshots will not be stored as permanent backup data.",
         "about_application" to "About Application",
-        "back" to "Back",
+        
         "tagline" to "Your Strategic Intelligence Companion",
         "version" to "VERSION",
         "initial_release" to "Initial Development Release",
@@ -367,8 +367,8 @@ fun appText(key: String): String {
         "system_records" to "SYSTEM RECORDS",
         "activity_center" to "Activity Center",
         "total" to "TOTAL",
-        "ai" to "AI",
-        "games" to "GAMES",
+        
+        
         "system" to "SYSTEM",
         "activity_filters" to "ACTIVITY FILTERS",
         "filter_all" to "All",
