@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -78,15 +80,13 @@ fun ActivityScreen(
             Spacer(modifier = Modifier.width(13.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "SYSTEM RECORDS",
+                Text(appText("system_records"),
                     color = ActivityGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.6.sp
                 )
-                Text(
-                    "Activity Center",
+                Text(appText("activity_center"),
                     color = ActivityText,
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold
@@ -118,17 +118,16 @@ fun ActivityScreen(
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            ActivityStat("00", "TOTAL")
-            ActivityStat("00", "AI")
-            ActivityStat("00", "GAMES")
-            ActivityStat("00", "SYSTEM")
+            ActivityStat("00", appText("total"))
+            ActivityStat("00", appText("ai"))
+            ActivityStat("00", appText("games"))
+            ActivityStat("00", appText("system"))
         }
 
         Spacer(modifier = Modifier.height(26.dp))
 
         // FILTERS
-        Text(
-            "ACTIVITY FILTERS",
+        Text(appText("activity_filters"),
             color = ActivityGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -166,7 +165,7 @@ fun ActivityScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = filter,
+                        text = appText("filter_${filter.lowercase()}"),
                         color = if (isSelected) Color.White else ActivityMuted,
                         fontSize = 9.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
@@ -183,16 +182,14 @@ fun ActivityScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                "ACTIVITY HISTORY",
+            Text(appText("activity_history"),
                 color = ActivityGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.5.sp
             )
 
-            Text(
-                "LATEST FIRST",
+            Text(appText("latest_first"),
                 color = ActivityMuted,
                 fontSize = 8.sp,
                 letterSpacing = 1.sp
@@ -243,8 +240,7 @@ fun ActivityScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Text(
-                "No Activity Yet",
+            Text(appText("no_activity"),
                 color = ActivityText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -252,16 +248,14 @@ fun ActivityScreen(
 
             Spacer(modifier = Modifier.height(7.dp))
 
-            Text(
-                "Your activity history will appear here.",
+            Text(appText("activity_history_appear"),
                 color = ActivityMuted,
                 fontSize = 10.sp
             )
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(
-                "AI operations and system events will be recorded.",
+            Text(appText("activity_events_recorded"),
                 color = ActivityMuted,
                 fontSize = 9.sp
             )
@@ -289,8 +283,7 @@ fun ActivityScreen(
             Spacer(modifier = Modifier.width(10.dp))
 
             Column {
-                Text(
-                    "ACTIVITY & PRIVACY",
+                Text(appText("activity_privacy"),
                     color = ActivityGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -299,8 +292,7 @@ fun ActivityScreen(
 
                 Spacer(modifier = Modifier.height(5.dp))
 
-                Text(
-                    "The activity center will show useful application events. Temporary game-session data will not be treated as permanent history.",
+                Text(appText("activity_privacy_note"),
                     color = ActivityMuted,
                     fontSize = 9.sp,
                     lineHeight = 15.sp

@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -89,7 +91,7 @@ fun NotificationsScreen(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "SYSTEM MESSAGES",
+                    text = appText("system_messages"),
                     color = NotificationGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -97,7 +99,7 @@ fun NotificationsScreen(
                 )
 
                 Text(
-                    text = "Notifications",
+                    text = appText("notifications"),
                     color = NotificationText,
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold
@@ -144,16 +146,16 @@ fun NotificationsScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            NotificationStat("00", "TOTAL")
-            NotificationStat("00", "UNREAD")
-            NotificationStat("00", "UPDATES")
+            NotificationStat("00", appText("total"))
+            NotificationStat("00", appText("unread"))
+            NotificationStat("00", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(26.dp))
 
         // FILTERS
         Text(
-            text = "NOTIFICATION FILTERS",
+            text = appText("notification_filters"),
             color = NotificationGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -193,7 +195,7 @@ fun NotificationsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = filter,
+                        text = appText("filter_${filter.lowercase()}"),
                         color = if (isSelected) Color.White
                         else NotificationMuted,
                         fontSize = 9.sp,
@@ -213,7 +215,7 @@ fun NotificationsScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "ALL NOTIFICATIONS",
+                text = appText("all_notifications"),
                 color = NotificationGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -221,7 +223,7 @@ fun NotificationsScreen(
             )
 
             Text(
-                text = "LATEST FIRST",
+                text = appText("latest_first"),
                 color = NotificationMuted,
                 fontSize = 8.sp,
                 letterSpacing = 1.sp
@@ -273,12 +275,14 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = when (selectedFilter) {
-                    "Unread" -> "No Unread Notifications"
-                    "Updates" -> "No Updates Yet"
-                    "System" -> "No System Alerts"
-                    else -> "You're All Caught Up"
-                },
+                text = appText(
+                    when (selectedFilter) {
+                        "Unread" -> "no_unread"
+                        "Updates" -> "no_updates"
+                        "System" -> "no_system_alerts"
+                        else -> "all_caught_up"
+                    }
+                ),
                 color = NotificationText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -287,7 +291,7 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "There are no notifications to display.",
+                text = appText("no_notifications"),
                 color = NotificationMuted,
                 fontSize = 10.sp
             )
@@ -295,7 +299,7 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "New messages will appear here.",
+                text = appText("new_messages_appear"),
                 color = NotificationMuted,
                 fontSize = 9.sp
             )
@@ -319,7 +323,7 @@ fun NotificationsScreen(
                 .padding(15.dp)
         ) {
             Text(
-                text = "NOTIFICATION CENTER",
+                text = appText("notification_center"),
                 color = NotificationGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -329,7 +333,7 @@ fun NotificationsScreen(
             Spacer(modifier = Modifier.height(7.dp))
 
             Text(
-                text = "Application updates, important system messages and future game-module notifications will be collected here.",
+                text = appText("notification_center_note"),
                 color = NotificationMuted,
                 fontSize = 10.sp,
                 lineHeight = 16.sp

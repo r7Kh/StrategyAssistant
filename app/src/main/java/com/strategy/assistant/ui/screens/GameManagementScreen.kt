@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,16 +74,14 @@ fun GameManagementScreen(
             Spacer(modifier = Modifier.width(13.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "MODULE CONTROL",
+                Text(appText("module_control"),
                     color = GameManageGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.6.sp
                 )
 
-                Text(
-                    "Game Management",
+                Text(appText("game_management"),
                     color = GameManageText,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
@@ -98,8 +98,7 @@ fun GameManagementScreen(
         Spacer(modifier = Modifier.height(26.dp))
 
         // OVERVIEW
-        Text(
-            "SYSTEM OVERVIEW",
+        Text(appText("system_overview"),
             color = GameManageGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -116,16 +115,15 @@ fun GameManagementScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            GameManageStat("00", "INSTALLED")
-            GameManageStat("00", "ACTIVE")
-            GameManageStat("00", "UPDATES")
+            GameManageStat("00", appText("installed"))
+            GameManageStat("00", appText("active"))
+            GameManageStat("00", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(27.dp))
 
         // FEATURED MODULE AREA
-        Text(
-            "GAME MODULES",
+        Text(appText("game_modules"),
             color = GameManageGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -174,8 +172,7 @@ fun GameManagementScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Text(
-                "No Game Modules",
+            Text(appText("no_game_modules"),
                 color = GameManageText,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
@@ -183,16 +180,14 @@ fun GameManagementScreen(
 
             Spacer(modifier = Modifier.height(7.dp))
 
-            Text(
-                "Your installed game modules will appear here.",
+            Text(appText("installed_modules_appear"),
                 color = GameManageMuted,
                 fontSize = 10.sp
             )
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(
-                "No game has been selected yet.",
+            Text(appText("no_game_selected"),
                 color = GameManageMuted,
                 fontSize = 9.sp
             )
@@ -222,8 +217,7 @@ fun GameManagementScreen(
         ) {
             Text("+", color = Color.White, fontSize = 21.sp)
             Spacer(modifier = Modifier.width(9.dp))
-            Text(
-                "Add Game Module",
+            Text(appText("add_game_module"),
                 color = Color.White,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
@@ -240,8 +234,7 @@ fun GameManagementScreen(
                 .border(1.dp, Color(0xFF30243D), RoundedCornerShape(14.dp))
                 .padding(15.dp)
         ) {
-            Text(
-                "MODULAR PLATFORM",
+            Text(appText("modular_platform"),
                 color = GameManageGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -250,8 +243,7 @@ fun GameManagementScreen(
 
             Spacer(modifier = Modifier.height(7.dp))
 
-            Text(
-                "Each game will have its own independent module, tools and settings. You can decide which games to add later.",
+            Text(appText("module_info"),
                 color = GameManageMuted,
                 fontSize = 10.sp,
                 lineHeight = 16.sp

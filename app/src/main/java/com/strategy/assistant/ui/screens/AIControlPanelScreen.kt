@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
+import com.strategy.assistant.ui.localization.appText
 
 private val PanelGold = Color(0xFFD6B46A)
 private val PanelBackground = Color(0xFF090811)
@@ -83,20 +84,20 @@ fun AIControlPanelScreen(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = appText("back"),
                     tint = Color.White
                 )
             }
 
             Column {
                 Text(
-                    text = "AI CONTROL PANEL",
+                    text = appText("ai_control_panel"),
                     color = Color.White,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Manage your AI experience",
+                    text = appText("manage_ai_experience"),
                     color = PanelMuted,
                     fontSize = 12.sp
                 )
@@ -135,13 +136,13 @@ fun AIControlPanelScreen(
                         modifier = Modifier.padding(start = 13.dp)
                     ) {
                         Text(
-                            text = "AI Assistant",
+                            text = appText("ai_assistant"),
                             color = Color.White,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "System ready",
+                            text = appText("system_ready"),
                             color = Color(0xFF65C99A),
                             fontSize = 12.sp
                         )
@@ -151,7 +152,7 @@ fun AIControlPanelScreen(
                 Spacer(modifier = Modifier.height(22.dp))
 
                 Text(
-                    text = "AI SYSTEM STATUS",
+                    text = appText("ai_system_status"),
                     color = PanelMuted,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -164,61 +165,61 @@ fun AIControlPanelScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StatusItem("Local AI", "Available")
-                    StatusItem("Cloud AI", "Optional")
-                    StatusItem("Mode", "Hybrid")
+                    StatusItem(appText("local_ai"), appText("available"))
+                    StatusItem(appText("cloud_ai"), appText("optional"))
+                    StatusItem(appText("mode"), appText("hybrid"))
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        PanelSectionTitle("PROCESSING")
+        PanelSectionTitle(appText("processing"))
 
         PanelToggle(
             icon = Icons.Default.Memory,
-            title = "Local AI Processing",
-            description = "Process supported tasks directly on your device",
+            title = appText("local_ai_processing"),
+            description = appText("local_processing_description"),
             checked = localProcessing,
             onCheckedChange = { value -> scope.launch { repository.setLocalProcessingEnabled(value) } }
         )
 
         PanelToggle(
             icon = Icons.Default.Cloud,
-            title = "Cloud AI Processing",
-            description = "Allow cloud processing when available",
+            title = appText("cloud_ai_processing"),
+            description = appText("cloud_processing_description"),
             checked = cloudProcessing,
             onCheckedChange = { value -> scope.launch { repository.setCloudProcessingEnabled(value) } }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        PanelSectionTitle("INTELLIGENCE")
+        PanelSectionTitle(appText("intelligence"))
 
         PanelToggle(
             icon = Icons.Default.Speed,
-            title = "Automatic Analysis",
-            description = "Analyze available game information automatically",
+            title = appText("automatic_analysis"),
+            description = appText("automatic_analysis_description"),
             checked = autoAnalysis,
             onCheckedChange = { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
         )
 
         PanelToggle(
             icon = Icons.Default.AutoAwesome,
-            title = "Smart Suggestions",
-            description = "Receive strategic recommendations",
+            title = appText("smart_suggestions"),
+            description = appText("smart_suggestions_description"),
             checked = smartSuggestions,
             onCheckedChange = { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        PanelSectionTitle("PRIVACY & SECURITY")
+        PanelSectionTitle(appText("privacy_security"))
 
         PanelToggle(
             icon = Icons.Default.Security,
-            title = "Privacy Mode",
-            description = "Prefer on-device processing whenever possible",
+            title = appText("privacy_mode"),
+            description = appText("privacy_mode_description"),
             checked = privacyMode,
             onCheckedChange = { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
         )
@@ -244,7 +245,7 @@ fun AIControlPanelScreen(
                 )
 
                 Text(
-                    text = "AI options are currently local UI settings. Processing services will be connected later.",
+                    text = appText("ai_settings_notice"),
                     color = PanelMuted,
                     fontSize = 11.sp,
                     lineHeight = 16.sp,

@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -67,7 +69,7 @@ fun AboutScreen(
             }
 
             Text(
-                text = "About Application",
+                text = appText("about_application"),
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
@@ -102,7 +104,7 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Your Strategic Intelligence Companion",
+                text = appText("tagline"),
                 color = MutedText,
                 fontSize = 13.sp,
                 textAlign = TextAlign.Center
@@ -120,7 +122,7 @@ fun AboutScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "VERSION",
+                        text = appText("version"),
                         color = MutedText,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
@@ -139,7 +141,7 @@ fun AboutScreen(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        text = "Initial Development Release",
+                        text = appText("initial_release"),
                         color = MutedText,
                         fontSize = 12.sp
                     )
@@ -151,24 +153,24 @@ fun AboutScreen(
 
         AboutInfoRow(
             icon = Icons.Default.AutoAwesome,
-            title = "Our Vision",
-            description = "A smart platform designed to help players analyze, plan and improve their gaming strategies."
+            title = appText("our_vision"),
+            description = appText("vision_description")
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         AboutInfoRow(
             icon = Icons.Default.Security,
-            title = "Privacy First",
-            description = "Your data and privacy matter. You stay in control of your information."
+            title = appText("privacy_first"),
+            description = appText("privacy_description")
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         AboutInfoRow(
             icon = Icons.Default.Code,
-            title = "Technology",
-            description = "Built with modern Android technologies and designed for future AI capabilities."
+            title = appText("technology"),
+            description = appText("technology_description")
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -188,7 +190,7 @@ fun AboutScreen(
             )
 
             Text(
-                text = "  Made for strategic minds",
+                text = appText("made_for_strategic"),
                 color = MutedText,
                 fontSize = 12.sp
             )
