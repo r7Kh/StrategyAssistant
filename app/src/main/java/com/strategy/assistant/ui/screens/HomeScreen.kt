@@ -102,7 +102,6 @@ fun PremiumHomeScreen(
                 )
             }
 
-            Text("♙", color = HomePurple, fontSize = 23.sp)
         }
 
         Spacer(modifier = Modifier.height(23.dp))
@@ -166,7 +165,11 @@ fun PremiumHomeScreen(
                         .background(Color(0xFF31194F)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("◈", color = HomePurple, fontSize = 43.sp)
+                    Image(
+                        painter = painterResource(id = com.strategy.assistant.R.drawable.brand_emblem),
+                        contentDescription = null,
+                        modifier = Modifier.size(57.dp)
+                    )
                 }
             }
         }
@@ -204,7 +207,11 @@ fun PremiumHomeScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("⬡", color = HomePurple, fontSize = 39.sp)
+                Image(
+                    painter = painterResource(id = com.strategy.assistant.R.drawable.ai_orb_idle),
+                    contentDescription = null,
+                    modifier = Modifier.size(55.dp)
+                )
             }
 
             Spacer(modifier = Modifier.width(14.dp))
