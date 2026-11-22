@@ -177,60 +177,62 @@ fun PremiumHomeScreen(
 
         Spacer(modifier = Modifier.height(17.dp))
 
-        // AI ASSISTANT FEATURE
+        // FLOATING AI ORB FEATURE
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(17.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(
                     Brush.horizontalGradient(
-                        listOf(Color(0xFF211631), Color(0xFF110D1A))
+                        listOf(
+                            Color(0xFF241638),
+                            Color(0xFF171020),
+                            Color(0xFF100D17)
+                        )
                     )
                 )
                 .border(
                     1.dp,
-                    Color(0xFF69409A).copy(alpha = 0.6f),
-                    RoundedCornerShape(17.dp)
+                    Color(0xFF69409A).copy(alpha = 0.58f),
+                    RoundedCornerShape(20.dp)
                 )
                 .clickable { onOpenAi() }
-                .padding(16.dp),
+                .padding(start = 10.dp, end = 15.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(58.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF301D4C))
-                    .border(
-                        1.dp,
-                        HomePurple.copy(alpha = 0.5f),
-                        RoundedCornerShape(14.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                AIOrbArtwork(
-                    orbSize = 55.dp,
-                    active = false
-                )
-            }
+            AIOrbArtwork(
+                orbSize = 96.dp,
+                active = false,
+                onOrbTap = onOpenAi
+            )
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(7.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     appText("ai_assistant"),
                     color = HomeText,
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    "Get game strategies, analysis\nand smart plans.",
+                    "Get game strategies, analysis\\nand smart plans.",
                     color = HomeMuted,
                     fontSize = 10.sp,
                     lineHeight = 16.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    "TAP TO ENTER  •  AI CORE ONLINE",
+                    color = HomeGold.copy(alpha = 0.9f),
+                    fontSize = 7.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.1.sp
                 )
             }
 
