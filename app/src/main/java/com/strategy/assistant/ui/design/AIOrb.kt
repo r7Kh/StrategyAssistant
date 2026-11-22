@@ -1,7 +1,13 @@
-
 package com.strategy.assistant.ui.design
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +16,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,10 +37,13 @@ import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
+import kotlinx.coroutines.launch
 
 /**
  * Interactive 3D Royal AI Orb.
- * Transparent background with automatic camera framing.
+ *
+ * The transparent Filament surface lets the model blend into the app background.
+ * SceneView's camera manipulator provides touch orbit, pan and zoom.
  */
 @Composable
 fun RoyalOrb3DView(
@@ -37,19 +52,36 @@ fun RoyalOrb3DView(
 ) {
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
+    val idleTransition = rememberInfiniteTransition(label = "orb_idle")
+    val idleScale = idleTransition.animateFloat(
+        initialValue = 0.985f,
+        targetValue = 1.015f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2400),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "orb_breathing"
+    )
 
     Box(
         modifier = modifier
             .size(orbSize)
-            .background(
-                Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF39205F).copy(alpha = 0.48f),
-                        Color(0xFF171024).copy(alpha = 0.22f),
-                        Color.Transparent
-                    )
+            .graphicsLayer {
+                scaleX = idleScale.value
+                scaleY = idleScale.value
+            }
+            .drawBehind {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFF8E55E8).copy(alpha = 0.22f),
+                            Color(0xFF49246F).copy(alpha = 0.10f),
+                            Color.Transparent
+                        )
+                    ),
+                    radius = size.minDimension * 0.49f
                 )
-            ),
+            },
         contentAlignment = Alignment.Center
     ) {
         SceneView(
@@ -76,60 +108,86 @@ fun RoyalOrb3DView(
     }
 }
 
+/**
+ * Compact artwork variant used on Home. It deliberately has no square frame:
+ * the orb floats directly on the surrounding surface.
+ */
 @Composable
 fun AIOrbArtwork(
     modifier: Modifier = Modifier,
     orbSize: Dp = 220.dp,
-    active: Boolean = false
+    active: Boolean = false,
+    onOrbTap: () -> Unit = {}
 ) {
-    val glowColor = if (active) {
-        Color(0xFFB68CFF)
-    } else {
-        Color(0xFF8D63E8)
-    }
+    val haptic = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
+    val tapScale = remember { Animatable(1f) }
+    val glowAlpha = remember { Animatable(if (active) 0.24f else 0.12f) }
 
     Box(
-        modifier = modifier.size(orbSize),
+        modifier = modifier
+            .size(orbSize)
+            .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onOrbTap()
+                scope.launch {
+                    tapScale.snapTo(0.94f)
+                    tapScale.animateTo(1.07f, tween(140))
+                    tapScale.animateTo(1f, tween(260))
+                    glowAlpha.snapTo(0.42f)
+                    glowAlpha.animateTo(if (active) 0.24f else 0.12f, tween(520))
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
-        RoyalOrb3DView(
-            modifier = Modifier,
-            orbSize = orbSize
-        )
-
         Box(
             modifier = Modifier
-                .size(orbSize * 0.96f)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            glowColor.copy(
-                                alpha = if (active) 0.10f else 0.045f
-                            ),
-                            Color.Transparent
-                        )
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = tapScale.value
+                    scaleY = tapScale.value
+                }
+                .drawBehind {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFB68CFF).copy(alpha = glowAlpha.value),
+                                Color(0xFF8D63E8).copy(alpha = glowAlpha.value * 0.45f),
+                                Color.Transparent
+                            )
+                        ),
+                        radius = size.minDimension * 0.5f
                     )
-                )
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            RoyalOrb3DView(
+                modifier = Modifier,
+                orbSize = orbSize
+            )
+        }
     }
 }
 
 @Composable
 fun AIOrb(
     modifier: Modifier = Modifier,
-    orbSize: Dp = 220.dp,
+    orbSize: Dp = 260.dp,
     status: String = "SYSTEM READY",
-    active: Boolean = false
+    active: Boolean = false,
+    onOrbTap: () -> Unit = {}
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoyalOrb3DView(
-            orbSize = orbSize
+        AIOrbArtwork(
+            orbSize = orbSize,
+            active = active,
+            onOrbTap = onOrbTap
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(7.dp))
 
         Text(
             text = "ARTIFICIAL INTELLIGENCE",

@@ -164,8 +164,17 @@ fun AICenterScreen() {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 AIOrb(
-                    orbSize = 225.dp,
-                    status = appText("awaiting_command")
+                    orbSize = 260.dp,
+                    status = appText("awaiting_command"),
+                    active = false
+                )
+
+                Text(
+                    text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
+                    color = QuietText.copy(alpha = 0.78f),
+                    fontSize = 7.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 1.15.sp
                 )
 
                 Spacer(modifier = Modifier.height(7.dp))
