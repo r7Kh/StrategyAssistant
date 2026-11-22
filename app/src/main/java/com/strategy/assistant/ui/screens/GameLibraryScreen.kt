@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.ui.localization.appText
 import androidx.compose.foundation.layout.width
 
 private val LibraryBlack = Color(0xFF090710)
@@ -51,7 +52,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(22.dp))
 
         Text(
-            text = "YOUR COLLECTION",
+            text = appText("your_collection"),
             color = LibraryGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -61,7 +62,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = "Game Library",
+            text = appText("game_library"),
             color = LibraryText,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold
@@ -70,7 +71,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = "Your personal collection of supported games.",
+            text = appText("library_description"),
             color = LibraryMuted,
             fontSize = 11.sp
         )
@@ -83,7 +84,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(28.dp))
 
         Text(
-            text = "MY GAMES",
+            text = appText("my_games"),
             color = LibraryGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -93,7 +94,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Your Collection",
+            text = appText("your_collection"),
             color = LibraryText,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
@@ -145,7 +146,7 @@ fun GameLibraryScreen(
             Spacer(modifier = Modifier.height(19.dp))
 
             Text(
-                text = "Your Library Is Waiting",
+                text = appText("library_waiting"),
                 color = LibraryText,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
@@ -154,7 +155,7 @@ fun GameLibraryScreen(
             Spacer(modifier = Modifier.height(9.dp))
 
             Text(
-                text = "No games have been added yet.",
+                text = appText("no_games"),
                 color = LibraryMuted,
                 fontSize = 11.sp
             )
@@ -162,7 +163,7 @@ fun GameLibraryScreen(
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "Choose your first game when you're ready.",
+                text = appText("choose_first_game"),
                 color = LibraryMuted,
                 fontSize = 10.sp
             )
@@ -190,7 +191,7 @@ fun GameLibraryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "GAME SELECTION COMING SOON",
+                    text = appText("game_selection_soon"),
                     color = Color.White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -215,7 +216,7 @@ fun GameLibraryScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "MULTI-GAME PLATFORM",
+                text = appText("multi_game_platform"),
                 color = LibraryGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -225,7 +226,7 @@ fun GameLibraryScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "One command center. Multiple possibilities.",
+                text = appText("multi_game_tagline"),
                 color = LibraryText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold
@@ -234,7 +235,7 @@ fun GameLibraryScreen(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "Your game modules will appear here after you choose which games to support.",
+                text = appText("game_modules_description"),
                 color = LibraryMuted,
                 fontSize = 10.sp,
                 lineHeight = 16.sp
@@ -278,7 +279,7 @@ private fun RowSummary() {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "GAMES",
+                text = appText("games_label"),
                 color = LibraryMuted,
                 fontSize = 8.sp,
                 letterSpacing = 1.sp
@@ -294,13 +295,13 @@ private fun RowSummary() {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "READY",
+                text = appText("ready"),
                 color = LibraryPurple,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "PLATFORM",
+                text = appText("platform"),
                 color = LibraryMuted,
                 fontSize = 8.sp,
                 letterSpacing = 1.sp
