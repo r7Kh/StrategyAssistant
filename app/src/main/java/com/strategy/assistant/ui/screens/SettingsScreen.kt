@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
+import com.strategy.assistant.ui.localization.appText
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -81,14 +82,14 @@ fun SettingsScreen(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "SYSTEM CONFIGURATION",
+                    appText("system_configuration"),
                     color = SettingsGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.5.sp
                 )
                 Text(
-                    "Settings",
+                    appText("settings"),
                     color = SettingsText,
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold
@@ -101,7 +102,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(25.dp))
 
         // GENERAL
-        SettingsSectionTitle("GENERAL")
+        SettingsSectionTitle(appText("general"))
 
         SettingsGroup {
             Column {
@@ -120,14 +121,14 @@ fun SettingsScreen(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Language",
+                            appText("language"),
                             color = SettingsText,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "Choose your application language",
+                            appText("choose_language"),
                             color = SettingsMuted,
                             fontSize = 9.sp
                         )
@@ -175,18 +176,18 @@ fun SettingsScreen(
 
                 SettingsOption(
                     "◐",
-                    "Appearance",
-                    "Application visual theme",
-                    "Dark Mode"
+                    appText("appearance"),
+                    appText("appearance_description"),
+                    appText("dark_mode")
                 )
 
                 SettingsDivider()
 
                 SettingsOption(
                     "◷",
-                    "Date & Time",
-                    "Regional date and time format",
-                    "System Default"
+                    appText("date_time"),
+                    appText("date_time_description"),
+                    appText("system_default")
                 )
             }
         }
@@ -194,13 +195,13 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // NOTIFICATIONS
-        SettingsSectionTitle("NOTIFICATIONS")
+        SettingsSectionTitle(appText("notifications"))
 
         SettingsGroup {
             SettingsToggle(
                 "♢",
-                "Push Notifications",
-                "Receive important application alerts",
+                appText("push_notifications"),
+                appText("push_notifications_description"),
                 notificationsEnabled
             ) { value -> scope.launch { repository.setNotificationsEnabled(value) } }
 
@@ -208,8 +209,8 @@ fun SettingsScreen(
 
             SettingsToggle(
                 "♫",
-                "Sound Effects",
-                "Application sounds and audio feedback",
+                appText("sound_effects"),
+                appText("sound_effects_description"),
                 soundEnabled
             ) { value -> scope.launch { repository.setSoundEnabled(value) } }
 
@@ -217,8 +218,8 @@ fun SettingsScreen(
 
             SettingsToggle(
                 "〰",
-                "Vibration",
-                "Haptic feedback for interactions",
+                appText("vibration"),
+                appText("vibration_description"),
                 vibrationEnabled
             ) { value -> scope.launch { repository.setVibrationEnabled(value) } }
         }
@@ -226,13 +227,13 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // PRIVACY
-        SettingsSectionTitle("PRIVACY & DATA")
+        SettingsSectionTitle(appText("privacy_data"))
 
         SettingsGroup {
             SettingsToggle(
                 "◈",
-                "Anonymous Analytics",
-                "Allow anonymous usage statistics",
+                appText("anonymous_analytics"),
+                appText("analytics_description"),
                 analyticsEnabled
             ) { value -> scope.launch { repository.setAnalyticsEnabled(value) } }
 
@@ -240,64 +241,64 @@ fun SettingsScreen(
 
             SettingsOption(
                 "▣",
-                "Data Management",
-                "Review your stored application data",
-                "Manage"
+                appText("data_management"),
+                appText("data_management_description"),
+                appText("manage")
             )
 
             SettingsDivider()
 
             SettingsOption(
                 "♧",
-                "Privacy Policy",
-                "Learn how your data is handled",
-                "View"
+                appText("privacy_policy"),
+                appText("privacy_policy_description"),
+                appText("view")
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // AI PREFERENCES
-        SettingsSectionTitle("AI PREFERENCES")
+        SettingsSectionTitle(appText("ai_preferences"))
 
         SettingsGroup {
             SettingsOption(
                 "✧",
-                "AI Configuration",
-                "Configure assistant behavior",
-                "Configure"
+                appText("ai_configuration"),
+                appText("ai_configuration_description"),
+                appText("configure")
             )
 
             SettingsDivider()
 
             SettingsOption(
                 "◉",
-                "AI Processing",
-                "On-device and cloud processing preferences",
-                "Local First"
+                appText("ai_processing"),
+                appText("ai_processing_description"),
+                appText("local_first")
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // SYSTEM
-        SettingsSectionTitle("SYSTEM")
+        SettingsSectionTitle(appText("system"))
 
         SettingsGroup {
             SettingsOption(
                 "↻",
-                "Check for Updates",
-                "Review available application updates",
-                "Check"
+                appText("check_updates"),
+                appText("check_updates_description"),
+                appText("check")
             )
 
             SettingsDivider()
 
             SettingsOption(
                 "ⓘ",
-                "About Application",
-                "Version and application information",
-                "View"
+                appText("about_application"),
+                appText("about_application_description"),
+                appText("view")
             )
         }
 
@@ -326,7 +327,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                "Multilingual interface planned",
+                appText("multilingual_enabled"),
                 color = SettingsMuted,
                 fontSize = 9.sp
             )
