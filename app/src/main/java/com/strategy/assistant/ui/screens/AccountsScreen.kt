@@ -1,6 +1,8 @@
 
 package com.strategy.assistant.ui.screens
 
+import com.strategy.assistant.ui.localization.appText
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -79,7 +81,7 @@ fun AccountsScreen(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "ACCOUNT MANAGEMENT",
+                    text = appText("account_management"),
                     color = AccountGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -87,7 +89,7 @@ fun AccountsScreen(
                 )
 
                 Text(
-                    text = "Accounts",
+                    text = appText("accounts"),
                     color = AccountText,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -105,7 +107,7 @@ fun AccountsScreen(
 
         // ACTIVE ACCOUNT
         Text(
-            text = "ACTIVE ACCOUNT",
+            text = appText("active_account"),
             color = AccountGold,
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
@@ -156,7 +158,7 @@ fun AccountsScreen(
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "No Active Account",
+                text = appText("no_active_account"),
                 color = AccountText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -165,13 +167,13 @@ fun AccountsScreen(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "You haven't connected an account yet.",
+                text = appText("account_not_connected"),
                 color = AccountMuted,
                 fontSize = 10.sp
             )
 
             Text(
-                text = "Add an account to get started.",
+                text = appText("add_account_start"),
                 color = AccountMuted,
                 fontSize = 10.sp
             )
@@ -190,7 +192,7 @@ fun AccountsScreen(
                 Spacer(modifier = Modifier.width(7.dp))
 
                 Text(
-                    text = "NOT CONFIGURED",
+                    text = appText("not_configured"),
                     color = AccountGold,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -208,7 +210,7 @@ fun AccountsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "OTHER ACCOUNTS",
+                text = appText("other_accounts"),
                 color = AccountGold,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
@@ -216,7 +218,7 @@ fun AccountsScreen(
             )
 
             Text(
-                text = "0 ACCOUNTS",
+                text = appText("zero_accounts"),
                 color = AccountMuted,
                 fontSize = 9.sp
             )
@@ -255,7 +257,7 @@ fun AccountsScreen(
 
             Column {
                 Text(
-                    text = "No additional accounts",
+                    text = appText("no_additional_accounts"),
                     color = AccountText,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold
@@ -264,7 +266,7 @@ fun AccountsScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "Your connected accounts will appear here.",
+                    text = appText("connected_accounts_appear"),
                     color = AccountMuted,
                     fontSize = 9.sp
                 )
@@ -305,7 +307,7 @@ fun AccountsScreen(
             Spacer(modifier = Modifier.width(9.dp))
 
             Text(
-                text = "Add Account",
+                text = appText("add_account"),
                 color = Color.White,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
@@ -328,7 +330,7 @@ fun AccountsScreen(
                 .padding(15.dp)
         ) {
             Text(
-                text = "ACCOUNT SECURITY",
+                text = appText("account_security"),
                 color = AccountGold,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
@@ -338,7 +340,7 @@ fun AccountsScreen(
             Spacer(modifier = Modifier.height(7.dp))
 
             Text(
-                text = "Your accounts will be managed separately. Account connection and secure storage will be configured in a later development stage.",
+                text = appText("account_security_note"),
                 color = AccountMuted,
                 fontSize = 10.sp,
                 lineHeight = 16.sp
