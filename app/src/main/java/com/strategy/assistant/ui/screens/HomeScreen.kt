@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.strategy.assistant.ui.localization.appText
+import com.strategy.assistant.ui.design.AIOrbArtwork
 
 private val HomeBackground = Color(0xFF09090F)
 private val HomePurple = Color(0xFF9B55F5)
@@ -207,10 +208,9 @@ fun PremiumHomeScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = com.strategy.assistant.R.drawable.ai_orb_idle),
-                    contentDescription = null,
-                    modifier = Modifier.size(55.dp)
+                AIOrbArtwork(
+                    orbSize = 55.dp,
+                    active = false
                 )
             }
 
