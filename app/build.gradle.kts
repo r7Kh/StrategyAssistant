@@ -51,6 +51,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.datastore.preferences)
 
+    // Filament-powered interactive 3D GLB rendering
+    implementation("io.github.sceneview:sceneview:4.70.0")
+
     // Material Icons Extended
     implementation("androidx.compose.material:material-icons-extended")
 
