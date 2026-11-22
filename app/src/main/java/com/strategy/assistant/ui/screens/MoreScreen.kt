@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.ui.localization.appText
 
 private val MoreBackground = Color(0xFF090710)
 private val MoreGold = Color(0xFFD9B76E)
@@ -167,7 +168,7 @@ fun MoreScreen(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "Premium User",
+                        appText("premium_user"),
                         color = MoreMuted,
                         fontSize = 10.sp
                     )
@@ -184,7 +185,7 @@ fun MoreScreen(
         Spacer(modifier = Modifier.height(27.dp))
 
         Text(
-            "MANAGEMENT",
+            appText("management_section"),
             color = MoreGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -195,43 +196,43 @@ fun MoreScreen(
 
         MoreMenuItem(
             symbol = "♟",
-            title = "Accounts",
-            subtitle = "Manage your game accounts",
+            title = appText("accounts"),
+            subtitle = appText("manage_accounts_description"),
             onClick = onOpenAccounts
         )
 
         MoreMenuItem(
             symbol = "▥",
-            title = "Activity Center",
-            subtitle = "Review your recent operations",
+            title = appText("activity_center"),
+            subtitle = appText("activity_description"),
             onClick = onOpenActivity
         )
 
         MoreMenuItem(
             symbol = "♢",
-            title = "Notifications",
-            subtitle = "Updates and system alerts",
+            title = appText("notifications"),
+            subtitle = appText("notifications_description"),
             onClick = onOpenNotifications
         )
 
         MoreMenuItem(
             symbol = "🎮",
-            title = "Game Management",
-            subtitle = "Manage installed game modules",
+            title = appText("game_management"),
+            subtitle = appText("game_management_description"),
             onClick = onOpenGameManagement
         )
 
         MoreMenuItem(
             symbol = "▤",
-            title = "Storage & Backup",
-            subtitle = "Manage data and backups",
+            title = appText("storage_backup"),
+            subtitle = appText("storage_description"),
             onClick = onOpenStorage
         )
 
         Spacer(modifier = Modifier.height(25.dp))
 
         Text(
-            "PREFERENCES",
+            appText("preferences"),
             color = MoreGold,
             fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
@@ -242,22 +243,22 @@ fun MoreScreen(
 
         MoreMenuItem(
             symbol = "✧",
-            title = "AI Control Panel",
-            subtitle = "Manage AI processing and intelligence",
+            title = appText("ai_control_panel"),
+            subtitle = appText("ai_control_description"),
             onClick = onOpenAIControlPanel
         )
 
         MoreMenuItem(
             symbol = "⚙",
-            title = "Settings",
-            subtitle = "Application preferences",
+            title = appText("settings"),
+            subtitle = appText("app_preferences"),
             onClick = onOpenSettings
         )
 
         MoreMenuItem(
             symbol = "ⓘ",
-            title = "About",
-            subtitle = "Version and application information",
+            title = appText("about"),
+            subtitle = appText("about_application_description"),
             onClick = onOpenAbout
         )
 
