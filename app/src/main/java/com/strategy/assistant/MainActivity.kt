@@ -286,4 +286,5 @@ fun StrategyAssistantApp() {
             }
         }
     }
+    }
 }
