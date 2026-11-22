@@ -176,10 +176,10 @@ fun StorageBackupScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            StorageLegend(appText("app_data"), "Not measured", Color(0xFF9A63E8))
-            StorageLegend(appText("game_data"), "Not measured", Color(0xFF6578D8))
-            StorageLegend(appText("other_files"), "Not measured", Color(0xFFB5A8C8))
-            StorageLegend(appText("free_space"), "Not measured", Color(0xFF51445F))
+            StorageLegend(appText("app_data"), appText("not_measured"), Color(0xFF9A63E8))
+            StorageLegend(appText("game_data"), appText("not_measured"), Color(0xFF6578D8))
+            StorageLegend(appText("other_files"), appText("not_measured"), Color(0xFFB5A8C8))
+            StorageLegend(appText("free_space"), appText("not_measured"), Color(0xFF51445F))
         }
 
         Spacer(modifier = Modifier.height(25.dp))
@@ -252,9 +252,9 @@ fun StorageBackupScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            StorageInfoRow("Last Backup", "Not available")
-            StorageInfoRow("Backup Status", "Not configured")
-            StorageInfoRow("Cloud Provider", "Not connected")
+            StorageInfoRow(appText("last_backup"), appText("not_available"))
+            StorageInfoRow(appText("backup_status"), appText("not_configured_lower"))
+            StorageInfoRow(appText("cloud_provider"), appText("not_connected"))
         }
 
         Spacer(modifier = Modifier.height(22.dp))
