@@ -1,13 +1,13 @@
+
 package com.strategy.assistant.ui.design
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,18 +18,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.sceneview.node.ModelNode
 import io.github.sceneview.SceneView
+import io.github.sceneview.SurfaceType
+import io.github.sceneview.node.ModelNode
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 
 /**
- * Interactive Filament 3D viewer for the Royal AI Orb.
- *
- * The GLB path is relative to app/src/main/assets/.
- * SceneView supplies orbit, pan and zoom gestures for touch interaction.
+ * Interactive 3D Royal AI Orb.
+ * Transparent background with automatic camera framing.
  */
 @Composable
 fun RoyalOrb3DView(
@@ -54,9 +53,12 @@ fun RoyalOrb3DView(
         contentAlignment = Alignment.Center
     ) {
         SceneView(
-            modifier = Modifier.fillMaxWidth().height(orbSize),
+            modifier = Modifier.fillMaxSize(),
+            surfaceType = SurfaceType.TextureSurface,
             engine = engine,
             modelLoader = modelLoader,
+            isOpaque = false,
+            autoFitContent = true,
             cameraManipulator = rememberCameraManipulator()
         ) {
             rememberModelInstance(
@@ -65,7 +67,7 @@ fun RoyalOrb3DView(
             )?.let { instance ->
                 ModelNode(
                     modelInstance = instance,
-                    scaleToUnits = 2.25f,
+                    scaleToUnits = 1.8f,
                     autoAnimate = true,
                     animationLoop = true
                 )
@@ -80,8 +82,11 @@ fun AIOrbArtwork(
     orbSize: Dp = 220.dp,
     active: Boolean = false
 ) {
-    // Active state is represented by the status/glow treatment around the 3D viewport.
-    val glowColor = if (active) Color(0xFFB68CFF) else Color(0xFF8D63E8)
+    val glowColor = if (active) {
+        Color(0xFFB68CFF)
+    } else {
+        Color(0xFF8D63E8)
+    }
 
     Box(
         modifier = modifier.size(orbSize),
@@ -91,13 +96,16 @@ fun AIOrbArtwork(
             modifier = Modifier,
             orbSize = orbSize
         )
+
         Box(
             modifier = Modifier
                 .size(orbSize * 0.96f)
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            glowColor.copy(alpha = if (active) 0.10f else 0.045f),
+                            glowColor.copy(
+                                alpha = if (active) 0.10f else 0.045f
+                            ),
                             Color.Transparent
                         )
                     )
@@ -117,7 +125,9 @@ fun AIOrb(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoyalOrb3DView(orbSize = orbSize)
+        RoyalOrb3DView(
+            orbSize = orbSize
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
