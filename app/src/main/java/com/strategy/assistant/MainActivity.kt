@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalContext
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
+import com.strategy.assistant.data.games.GameRepository
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateOf
 import com.strategy.assistant.ui.localization.LocalAppLanguage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -72,6 +75,9 @@ fun StrategyAssistantApp() {
     val context = LocalContext.current
     val preferencesRepository = remember(context) { AppPreferencesRepository(context) }
     val appPreferences by preferencesRepository.preferences.collectAsState(initial = AppPreferences())
+    val gameRepository = remember(context) { GameRepository(context) }
+    val savedGames by gameRepository.games.collectAsState(initial = emptyList())
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val isArabic = appPreferences.language == "العربية"
 
     // Screen IDs
@@ -185,7 +191,10 @@ fun StrategyAssistantApp() {
 
             // GAME LIBRARY
             2 -> GameLibraryScreen(
-                padding = innerPadding
+                padding = innerPadding,
+                games = savedGames,
+                onAddGame = { name -> scope.launch { gameRepository.addGame(name) } },
+                onRemoveGame = { name -> scope.launch { gameRepository.removeGame(name) } }
             )
 
             // MORE
@@ -249,9 +258,10 @@ fun StrategyAssistantApp() {
             // GAME MANAGEMENT
             7 -> GameManagementScreen(
                 padding = innerPadding,
-                onBack = {
-                    currentScreen = 3
-                }
+                onBack = { currentScreen = 3 },
+                games = savedGames,
+                onAddGame = { name -> scope.launch { gameRepository.addGame(name) } },
+                onRemoveGame = { name -> scope.launch { gameRepository.removeGame(name) } }
             )
 
             // STORAGE & BACKUP
