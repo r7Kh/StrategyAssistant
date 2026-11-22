@@ -165,6 +165,12 @@ fun StrategyAssistantApp() {
                 },
                 onOpenLibrary = {
                     currentScreen = 2
+                },
+                onOpenActivity = {
+                    currentScreen = 5
+                },
+                onOpenManagement = {
+                    currentScreen = 7
                 }
             )
 
