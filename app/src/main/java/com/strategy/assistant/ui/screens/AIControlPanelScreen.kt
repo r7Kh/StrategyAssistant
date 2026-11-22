@@ -30,9 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -52,11 +52,16 @@ fun AIControlPanelScreen(
     padding: PaddingValues,
     onBack: () -> Unit
 ) {
-    var localProcessing by remember { mutableStateOf(true) }
-    var cloudProcessing by remember { mutableStateOf(false) }
-    var autoAnalysis by remember { mutableStateOf(true) }
-    var smartSuggestions by remember { mutableStateOf(true) }
-    var privacyMode by remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    val repository = remember(context) { AppPreferencesRepository(context) }
+    val preferences by repository.preferences.collectAsState(initial = AppPreferences())
+    val scope = rememberCoroutineScope()
+
+    val localProcessing = preferences.localProcessingEnabled
+    val cloudProcessing = preferences.cloudProcessingEnabled
+    val autoAnalysis = preferences.automaticAnalysisEnabled
+    val smartSuggestions = preferences.smartSuggestionsEnabled
+    val privacyMode = preferences.privacyModeEnabled
 
     Column(
         modifier = Modifier
@@ -171,7 +176,7 @@ fun AIControlPanelScreen(
             title = "Local AI Processing",
             description = "Process supported tasks directly on your device",
             checked = localProcessing,
-            onCheckedChange = { localProcessing = it }
+            onCheckedChange = { value -> scope.launch { repository.setLocalProcessingEnabled(value) } }
         )
 
         PanelToggle(
@@ -179,7 +184,7 @@ fun AIControlPanelScreen(
             title = "Cloud AI Processing",
             description = "Allow cloud processing when available",
             checked = cloudProcessing,
-            onCheckedChange = { cloudProcessing = it }
+            onCheckedChange = { value -> scope.launch { repository.setCloudProcessingEnabled(value) } }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -191,7 +196,7 @@ fun AIControlPanelScreen(
             title = "Automatic Analysis",
             description = "Analyze available game information automatically",
             checked = autoAnalysis,
-            onCheckedChange = { autoAnalysis = it }
+            onCheckedChange = { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
         )
 
         PanelToggle(
@@ -199,7 +204,7 @@ fun AIControlPanelScreen(
             title = "Smart Suggestions",
             description = "Receive strategic recommendations",
             checked = smartSuggestions,
-            onCheckedChange = { smartSuggestions = it }
+            onCheckedChange = { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -211,7 +216,7 @@ fun AIControlPanelScreen(
             title = "Privacy Mode",
             description = "Prefer on-device processing whenever possible",
             checked = privacyMode,
-            onCheckedChange = { privacyMode = it }
+            onCheckedChange = { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
         )
 
         Spacer(modifier = Modifier.weight(1f))
