@@ -165,7 +165,7 @@ fun ActivityScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = appText("filter_${"${filter.lowercase()}"}"),
+                        text = appText("filter_${filter.lowercase()}"),
                         color = if (isSelected) Color.White else ActivityMuted,
                         fontSize = 9.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
