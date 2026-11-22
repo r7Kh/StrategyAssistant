@@ -118,10 +118,10 @@ fun ActivityScreen(
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            ActivityStat("00", "TOTAL")
-            ActivityStat("00", "AI")
-            ActivityStat("00", "GAMES")
-            ActivityStat("00", "SYSTEM")
+            ActivityStat("00", appText("total"))
+            ActivityStat("00", appText("ai"))
+            ActivityStat("00", appText("games"))
+            ActivityStat("00", appText("system"))
         }
 
         Spacer(modifier = Modifier.height(26.dp))
