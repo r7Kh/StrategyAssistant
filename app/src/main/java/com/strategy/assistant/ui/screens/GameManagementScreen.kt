@@ -115,9 +115,9 @@ fun GameManagementScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            GameManageStat("00", "INSTALLED")
-            GameManageStat("00", "ACTIVE")
-            GameManageStat("00", "UPDATES")
+            GameManageStat("00", appText("installed"))
+            GameManageStat("00", appText("active"))
+            GameManageStat("00", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(27.dp))
