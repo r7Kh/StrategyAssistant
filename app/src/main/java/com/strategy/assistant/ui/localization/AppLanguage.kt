@@ -1,9 +1,11 @@
 package com.strategy.assistant.ui.localization
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 
 val LocalAppLanguage = compositionLocalOf { "English" }
 
+@Composable
 fun appText(key: String): String {
     val arabic = LocalAppLanguage.current == "العربية"
     val translations = mapOf(
