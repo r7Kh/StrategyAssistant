@@ -156,12 +156,6 @@ class CoreSystemsRepository(context: Context) {
             put("language", settings.language)
             put("notificationsEnabled", settings.notificationsEnabled)
             put("soundEnabled", settings.soundEnabled)
-            put("analyticsEnabled", settings.analyticsEnabled)
-            put("localProcessingEnabled", settings.localProcessingEnabled)
-            put("cloudProcessingEnabled", settings.cloudProcessingEnabled)
-            put("automaticAnalysisEnabled", settings.automaticAnalysisEnabled)
-            put("smartSuggestionsEnabled", settings.smartSuggestionsEnabled)
-            put("privacyModeEnabled", settings.privacyModeEnabled)
             put("use24HourTime", settings.use24HourTime)
         }
         val json = JSONObject().apply {
@@ -198,12 +192,6 @@ class CoreSystemsRepository(context: Context) {
             settingsRepository.setLanguage(settings.optString("language", "English"))
             settingsRepository.setNotificationsEnabled(settings.optBoolean("notificationsEnabled", true))
             settingsRepository.setSoundEnabled(settings.optBoolean("soundEnabled", true))
-            settingsRepository.setAnalyticsEnabled(settings.optBoolean("analyticsEnabled", false))
-            settingsRepository.setLocalProcessingEnabled(settings.optBoolean("localProcessingEnabled", true))
-            settingsRepository.setCloudProcessingEnabled(settings.optBoolean("cloudProcessingEnabled", false))
-            settingsRepository.setAutomaticAnalysisEnabled(settings.optBoolean("automaticAnalysisEnabled", true))
-            settingsRepository.setSmartSuggestionsEnabled(settings.optBoolean("smartSuggestionsEnabled", true))
-            settingsRepository.setPrivacyModeEnabled(settings.optBoolean("privacyModeEnabled", true))
             settingsRepository.setUse24HourTime(settings.optBoolean("use24HourTime", true))
         }
         log("System", "Backup restored", file.name)
