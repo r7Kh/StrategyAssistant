@@ -1,6 +1,10 @@
 package com.strategy.assistant
 
 import android.net.Uri
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -77,6 +81,12 @@ fun StrategyAssistantApp() {
     val activityEntries by coreRepository.activities.collectAsState(initial = emptyList())
     val notifications by coreRepository.notifications.collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
+    val sendAccountNotification: (String, String) -> Unit = { title, message ->
+        scope.launch {
+            coreRepository.addNotification("Accounts", title, message)
+            if (appPreferences.notificationsEnabled) performNotificationFeedback(context, appPreferences)
+        }
+    }
     var cacheBytes by remember { mutableStateOf(0L) }
     var appBytes by remember { mutableStateOf(0L) }
 
@@ -181,7 +191,7 @@ fun StrategyAssistantApp() {
                     onAdd = { title, platform, username, notes ->
                         scope.launch {
                             coreRepository.addAccount(title, platform, username, notes)
-                            if (appPreferences.notificationsEnabled) coreRepository.addNotification("Accounts", "Account added", title)
+                            sendAccountNotification("Account added", title)
                         }
                     },
                     onUpdate = { account -> scope.launch { coreRepository.updateAccount(account) } },
