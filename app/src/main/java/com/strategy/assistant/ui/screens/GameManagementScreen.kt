@@ -43,7 +43,6 @@ private val GameManageMuted = Color(0xFFAAA0B9)
 fun GameManagementScreen(
     padding: PaddingValues,
     onBack: () -> Unit,
-    onAddGame: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -115,9 +114,9 @@ fun GameManagementScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            GameManageStat("00", appText("installed"))
-            GameManageStat("00", appText("active"))
-            GameManageStat("00", appText("updates"))
+            GameManageStat("—", appText("installed"))
+            GameManageStat("—", appText("active"))
+            GameManageStat("—", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(27.dp))
@@ -210,14 +209,13 @@ fun GameManagementScreen(
                     GameManagePurple,
                     RoundedCornerShape(14.dp)
                 )
-                .clickable { onAddGame() }
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("+", color = Color.White, fontSize = 21.sp)
+            Text("⌛", color = Color.White, fontSize = 18.sp)
             Spacer(modifier = Modifier.width(9.dp))
-            Text(appText("add_game_module"),
+            Text("Game module management is planned for a later phase",
                 color = Color.White,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
