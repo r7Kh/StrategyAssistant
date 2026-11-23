@@ -14,7 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import android.view.HapticFeedbackConstants
-import android.view.SoundEffectConstants
+import android.media.RingtoneManager
+import android.content.Context
+import android.os.Vibrator
+import android.os.VibrationEffect
+import android.os.Build
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
@@ -182,7 +186,7 @@ fun SettingsScreen(
                     "◐",
                     appText("appearance"),
                     appText("appearance_description"),
-                    appText("dark_mode")
+                    appText("fixed")
                 )
 
                 SettingsDivider()
@@ -231,11 +235,11 @@ fun SettingsScreen(
 
             Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
-                    onClick = { if (soundEnabled) interactionView.playSoundEffect(SoundEffectConstants.CLICK) },
+                    onClick = { if (soundEnabled) playSettingsTestSound(context) },
                     modifier = Modifier.weight(1f)
                 ) { Text(appText("test_sound"), fontSize = 10.sp) }
                 OutlinedButton(
-                    onClick = { if (vibrationEnabled) interactionView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) },
+                    onClick = { if (vibrationEnabled) playSettingsTestVibration(context) },
                     modifier = Modifier.weight(1f)
                 ) { Text(appText("test_vibration"), fontSize = 10.sp) }
             }
@@ -278,7 +282,7 @@ fun SettingsScreen(
                 "♧",
                 appText("privacy_policy"),
                 appText("privacy_policy_description"),
-                appText("view")
+                appText("not_available")
             )
         }
 
@@ -513,5 +517,26 @@ private fun SettingsToggle(
                 uncheckedBorderColor = Color(0xFF51445F)
             )
         )
+    }
+}
+
+private fun playSettingsTestSound(context: Context) {
+    runCatching {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        if (uri != null) RingtoneManager.getRingtone(context, uri)?.play()
+    }
+}
+
+private fun playSettingsTestVibration(context: Context) {
+    runCatching {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(180, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(180)
+            }
+        }
     }
 }
