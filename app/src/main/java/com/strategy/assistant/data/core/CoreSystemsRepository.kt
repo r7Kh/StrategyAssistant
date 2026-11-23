@@ -210,7 +210,7 @@ class CoreSystemsRepository(context: Context) {
     }
 
     suspend fun cacheSizeBytes(): Long = withContext(Dispatchers.IO) {
-        appContext.cacheDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+        appContext.cacheDir.walkTopDown().filter { it.isFile && it.parentFile?.name != "backups" }.sumOf { it.length() }
     }
 
     suspend fun appStorageSizeBytes(): Long = withContext(Dispatchers.IO) {
