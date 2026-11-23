@@ -44,7 +44,9 @@ private val HomeMuted = Color(0xFFAAA0B9)
 fun PremiumHomeScreen(
     padding: PaddingValues,
     onOpenAi: () -> Unit,
-    onOpenLibrary: () -> Unit
+    onOpenLibrary: () -> Unit,
+    onOpenActivity: () -> Unit = {},
+    onOpenManagement: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -312,14 +314,14 @@ fun PremiumHomeScreen(
                 modifier = Modifier.weight(1f),
                 symbol = "◷",
                 title = appText("activity"),
-                onClick = {}
+                onClick = onOpenActivity
             )
 
             QuickHomeItem(
                 modifier = Modifier.weight(1f),
                 symbol = "⚙",
                 title = appText("management"),
-                onClick = {}
+                onClick = onOpenManagement
             )
         }
 

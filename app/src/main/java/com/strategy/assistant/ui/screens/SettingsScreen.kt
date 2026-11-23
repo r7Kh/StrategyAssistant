@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import android.media.RingtoneManager
+import android.content.Context
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
@@ -33,7 +35,9 @@ private val SettingsMuted = Color(0xFFAAA0B9)
 @Composable
 fun SettingsScreen(
     padding: PaddingValues,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpenStorage: () -> Unit = {},
+    onOpenAbout: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val repository = remember(context) { AppPreferencesRepository(context) }
@@ -42,10 +46,9 @@ fun SettingsScreen(
 
     val notificationsEnabled = preferences.notificationsEnabled
     val soundEnabled = preferences.soundEnabled
-    val vibrationEnabled = preferences.vibrationEnabled
-    val analyticsEnabled = preferences.analyticsEnabled
     val selectedLanguage = preferences.language
     var languageMenuExpanded by remember { mutableStateOf(false) }
+    var showPrivacyPolicy by remember { mutableStateOf(false) }
 
     val languages = listOf(
         "English",
@@ -178,17 +181,17 @@ fun SettingsScreen(
                     "◐",
                     appText("appearance"),
                     appText("appearance_description"),
-                    appText("dark_mode")
+                    appText("fixed")
                 )
 
                 SettingsDivider()
 
-                SettingsOption(
+                SettingsToggle(
                     "◷",
-                    appText("date_time"),
+                    appText("use_24_hour_time"),
                     appText("date_time_description"),
-                    appText("system_default")
-                )
+                    preferences.use24HourTime
+                ) { value -> scope.launch { repository.setUse24HourTime(value) } }
             }
         }
 
@@ -200,8 +203,8 @@ fun SettingsScreen(
         SettingsGroup {
             SettingsToggle(
                 "♢",
-                appText("push_notifications"),
-                appText("push_notifications_description"),
+                appText("in_app_notifications"),
+                appText("in_app_notifications_description"),
                 notificationsEnabled
             ) { value -> scope.launch { repository.setNotificationsEnabled(value) } }
 
@@ -216,12 +219,11 @@ fun SettingsScreen(
 
             SettingsDivider()
 
-            SettingsToggle(
-                "〰",
-                appText("vibration"),
-                appText("vibration_description"),
-                vibrationEnabled
-            ) { value -> scope.launch { repository.setVibrationEnabled(value) } }
+            OutlinedButton(
+                onClick = { if (soundEnabled) playSettingsTestSound(context) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                enabled = soundEnabled
+            ) { Text(appText("test_sound"), fontSize = 10.sp) }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -230,30 +232,48 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("privacy_data"))
 
         SettingsGroup {
-            SettingsToggle(
+            SettingsOption(
                 "◈",
                 appText("anonymous_analytics"),
                 appText("analytics_description"),
-                analyticsEnabled
-            ) { value -> scope.launch { repository.setAnalyticsEnabled(value) } }
-
-            SettingsDivider()
-
-            SettingsOption(
-                "▣",
-                appText("data_management"),
-                appText("data_management_description"),
-                appText("manage")
+                "Not active"
             )
 
             SettingsDivider()
 
-            SettingsOption(
-                "♧",
-                appText("privacy_policy"),
-                appText("privacy_policy_description"),
-                appText("view")
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { onOpenStorage() }.padding(vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SettingsIcon("▣")
+                Spacer(Modifier.width(11.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(appText("data_management"), color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(4.dp))
+                    Text(appText("data_management_description"), color = SettingsMuted, fontSize = 9.sp)
+                }
+                Text(appText("manage"), color = SettingsGold, fontSize = 9.sp)
+                Spacer(Modifier.width(5.dp))
+                Text("›", color = SettingsMuted, fontSize = 19.sp)
+            }
+
+            SettingsDivider()
+
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { showPrivacyPolicy = true }.padding(vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SettingsIcon("♧")
+                Spacer(Modifier.width(11.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(appText("privacy_policy"), color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(4.dp))
+                    Text(appText("privacy_policy_description"), color = SettingsMuted, fontSize = 9.sp)
+                }
+                Text(appText("view"), color = SettingsGold, fontSize = 9.sp)
+                Spacer(Modifier.width(5.dp))
+                Text("›", color = SettingsMuted, fontSize = 19.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -262,21 +282,16 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("ai_preferences"))
 
         SettingsGroup {
-            SettingsOption(
-                "✧",
-                appText("ai_configuration"),
-                appText("ai_configuration_description"),
-                appText("configure")
-            )
-
+            SettingsOption("◉", appText("local_ai_processing"), appText("local_processing_description"), appText("coming_soon"))
             SettingsDivider()
-
-            SettingsOption(
-                "◉",
-                appText("ai_processing"),
-                appText("ai_processing_description"),
-                appText("local_first")
-            )
+            SettingsOption("☁", appText("cloud_ai_processing"), appText("cloud_processing_description"), appText("coming_soon"))
+            SettingsDivider()
+            SettingsOption("↻", appText("automatic_analysis"), appText("automatic_analysis_description"), appText("coming_soon"))
+            SettingsDivider()
+            SettingsOption("✧", appText("smart_suggestions"), appText("smart_suggestions_description"), appText("coming_soon"))
+            SettingsDivider()
+            SettingsOption("◈", appText("privacy_mode"), appText("privacy_mode_description"), appText("coming_soon"))
+            Text(appText("ai_settings_notice"), color = SettingsMuted, fontSize = 9.sp, lineHeight = 14.sp, modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -285,20 +300,12 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("system"))
 
         SettingsGroup {
-            SettingsOption(
-                "↻",
-                appText("check_updates"),
-                appText("check_updates_description"),
-                appText("check")
-            )
-
-            SettingsDivider()
-
-            SettingsOption(
+            SettingsActionRow(
                 "ⓘ",
                 appText("about_application"),
                 appText("about_application_description"),
-                appText("view")
+                appText("view"),
+                onOpenAbout
             )
         }
 
@@ -344,6 +351,25 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(25.dp))
     }
+
+    if (showPrivacyPolicy) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyPolicy = false },
+            containerColor = SettingsSurface,
+            title = { Text(appText("privacy_policy"), color = SettingsText) },
+            text = {
+                Text(
+                    appText("privacy_policy_content"),
+                    color = SettingsMuted
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyPolicy = false }) {
+                    Text(appText("close"), color = SettingsGold)
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -374,6 +400,31 @@ private fun SettingsGroup(
             .padding(horizontal = 13.dp, vertical = 5.dp),
         content = content
     )
+}
+
+@Composable
+private fun SettingsActionRow(
+    symbol: String,
+    title: String,
+    description: String,
+    value: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SettingsIcon(symbol)
+        Spacer(Modifier.width(11.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(4.dp))
+            Text(description, color = SettingsMuted, fontSize = 9.sp)
+        }
+        Text(value, color = SettingsGold, fontSize = 9.sp)
+        Spacer(Modifier.width(5.dp))
+        Text("›", color = SettingsMuted, fontSize = 19.sp)
+    }
 }
 
 @Composable
@@ -436,7 +487,6 @@ private fun SettingsOption(
 
         Text(value, color = SettingsGold, fontSize = 9.sp)
         Spacer(modifier = Modifier.width(5.dp))
-        Text("›", color = SettingsMuted, fontSize = 19.sp)
     }
 }
 
@@ -475,7 +525,10 @@ private fun SettingsToggle(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = { value ->
+                
+                onCheckedChange(value)
+            },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = SettingsPurple,
@@ -486,3 +539,11 @@ private fun SettingsToggle(
         )
     }
 }
+
+private fun playSettingsTestSound(context: Context) {
+    runCatching {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        if (uri != null) RingtoneManager.getRingtone(context, uri)?.play()
+    }
+}
+

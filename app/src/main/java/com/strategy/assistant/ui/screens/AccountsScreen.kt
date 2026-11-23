@@ -1,352 +1,118 @@
-
 package com.strategy.assistant.ui.screens
-
-import com.strategy.assistant.ui.localization.appText
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.data.core.GamingAccount
 
-private val AccountBackground = Color(0xFF090710)
-private val AccountSurface = Color(0xFF171220)
-private val AccountGold = Color(0xFFD9B76E)
-private val AccountPurple = Color(0xFFAD68FF)
-private val AccountText = Color(0xFFF5F0FA)
-private val AccountMuted = Color(0xFFAAA0B9)
+private val Bg = Color(0xFF090710)
+private val Surface = Color(0xFF171220)
+private val Gold = Color(0xFFD9B76E)
+private val Purple = Color(0xFFAD68FF)
+private val Txt = Color(0xFFF5F0FA)
+private val Muted = Color(0xFFAAA0B9)
 
 @Composable
 fun AccountsScreen(
     padding: PaddingValues,
     onBack: () -> Unit,
-    onAddAccount: () -> Unit = {}
+    accounts: List<GamingAccount>,
+    onAdd: (String, String, String, String) -> Unit,
+    onUpdate: (GamingAccount) -> Unit,
+    onActivate: (String) -> Unit,
+    onRemove: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AccountBackground)
-            .padding(padding)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // HEADER
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(AccountSurface)
-                    .border(1.dp, Color(0xFF49345F), CircleShape)
-                    .clickable { onBack() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "‹",
-                    color = AccountText,
-                    fontSize = 27.sp
-                )
+    var showEditor by remember { mutableStateOf(false) }
+    var editing by remember { mutableStateOf<GamingAccount?>(null) }
+    Column(Modifier.fillMaxSize().background(Bg).padding(padding).padding(horizontal = 19.dp)) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("‹", Modifier.clickable { onBack() }.padding(8.dp), color = Txt, fontSize = 28.sp)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text("ACCOUNT MANAGEMENT", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text("Accounts", color = Txt, fontSize = 23.sp, fontWeight = FontWeight.Bold)
             }
-
-            Spacer(modifier = Modifier.width(14.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = appText("account_management"),
-                    color = AccountGold,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.6.sp
-                )
-
-                Text(
-                    text = appText("accounts"),
-                    color = AccountText,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Text(
-                text = "♙",
-                color = AccountPurple,
-                fontSize = 23.sp
-            )
+            Text("${accounts.size} total", color = Muted, fontSize = 11.sp)
         }
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // ACTIVE ACCOUNT
-        Text(
-            text = appText("active_account"),
-            color = AccountGold,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(17.dp))
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color(0xFF291A3D),
-                            Color(0xFF17111F)
-                        )
-                    )
-                )
-                .border(
-                    1.dp,
-                    Color(0xFF67458A),
-                    RoundedCornerShape(17.dp)
-                )
-                .padding(19.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(65.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF342147))
-                    .border(
-                        1.dp,
-                        AccountPurple.copy(alpha = 0.6f),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "♙",
-                    color = AccountPurple,
-                    fontSize = 30.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Text(
-                text = appText("no_active_account"),
-                color = AccountText,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = appText("account_not_connected"),
-                color = AccountMuted,
-                fontSize = 10.sp
-            )
-
-            Text(
-                text = appText("add_account_start"),
-                color = AccountMuted,
-                fontSize = 10.sp
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(7.dp)
-                        .background(Color(0xFFF0B95E), CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(7.dp))
-
-                Text(
-                    text = appText("not_configured"),
-                    color = AccountGold,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                )
+        val active = accounts.firstOrNull { it.isActive }
+        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF251936)), shape = RoundedCornerShape(16.dp)) {
+            Column(Modifier.fillMaxWidth().padding(17.dp)) {
+                Text("ACTIVE ACCOUNT", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(7.dp))
+                Text(active?.title ?: "No active account", color = Txt, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(active?.let { "${it.platform} • ${it.username.ifBlank { "No username" }}" } ?: "Add an account and select it to make it active.", color = Muted, fontSize = 11.sp)
             }
         }
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // OTHER ACCOUNTS
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = appText("other_accounts"),
-                color = AccountGold,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.5.sp
-            )
-
-            Text(
-                text = appText("zero_accounts"),
-                color = AccountMuted,
-                fontSize = 9.sp
-            )
+        Spacer(Modifier.height(18.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("YOUR ACCOUNTS", Modifier.weight(1f), color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Button(onClick = { editing = null; showEditor = true }, colors = ButtonDefaults.buttonColors(containerColor = Purple)) { Text("+ Add account") }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(AccountSurface)
-                .border(
-                    1.dp,
-                    Color(0xFF30243D),
-                    RoundedCornerShape(14.dp)
-                )
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(39.dp)
-                    .clip(RoundedCornerShape(11.dp))
-                    .background(Color(0xFF281B38)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "◈",
-                    color = AccountPurple,
-                    fontSize = 21.sp
-                )
+        Spacer(Modifier.height(10.dp))
+        if (accounts.isEmpty()) {
+            Card(colors = CardDefaults.cardColors(containerColor = Surface)) {
+                Text("No accounts yet. Add a game account profile to manage it here.", Modifier.padding(20.dp), color = Muted)
             }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column {
-                Text(
-                    text = appText("no_additional_accounts"),
-                    color = AccountText,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = appText("connected_accounts_appear"),
-                    color = AccountMuted,
-                    fontSize = 9.sp
-                )
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                items(accounts, key = { it.id }) { account ->
+                    Card(colors = CardDefaults.cardColors(containerColor = Surface), shape = RoundedCornerShape(14.dp)) {
+                        Column(Modifier.fillMaxWidth().padding(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(account.title, color = Txt, fontWeight = FontWeight.Bold)
+                                    Text("${account.platform} • ${account.username.ifBlank { "No username" }}", color = Muted, fontSize = 11.sp)
+                                }
+                                if (account.isActive) Text("ACTIVE", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                            }
+                            if (account.notes.isNotBlank()) Text(account.notes, color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 7.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 10.dp)) {
+                                Text(if (account.isActive) "Selected" else "Set active", Modifier.clickable { onActivate(account.id) }.padding(5.dp), color = Purple, fontSize = 11.sp)
+                                Text("Edit", Modifier.clickable { editing = account; showEditor = true }.padding(5.dp), color = Gold, fontSize = 11.sp)
+                                Text("Delete", Modifier.clickable { onRemove(account.id) }.padding(5.dp), color = Color(0xFFE28A8A), fontSize = 11.sp)
+                            }
+                        }
+                    }
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(25.dp))
-
-        // ADD ACCOUNT BUTTON
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color(0xFF7134B6),
-                            Color(0xFF4C237D)
-                        )
-                    )
-                )
-                .border(
-                    1.dp,
-                    AccountPurple,
-                    RoundedCornerShape(14.dp)
-                )
-                .clickable { onAddAccount() }
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "+",
-                color = Color.White,
-                fontSize = 21.sp
-            )
-
-            Spacer(modifier = Modifier.width(9.dp))
-
-            Text(
-                text = appText("add_account"),
-                color = Color.White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(25.dp))
-
-        // INFORMATION
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF13101B))
-                .border(
-                    1.dp,
-                    Color(0xFF30243D),
-                    RoundedCornerShape(14.dp)
-                )
-                .padding(15.dp)
-        ) {
-            Text(
-                text = appText("account_security"),
-                color = AccountGold,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp
-            )
-
-            Spacer(modifier = Modifier.height(7.dp))
-
-            Text(
-                text = appText("account_security_note"),
-                color = AccountMuted,
-                fontSize = 10.sp,
-                lineHeight = 16.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(Modifier.height(18.dp))
+        Text("Account profiles store descriptive details only. Passwords and login credentials are not collected or stored.", color = Muted, fontSize = 10.sp)
     }
+    if (showEditor) AccountEditor(editing, onDismiss = { showEditor = false }, onSave = { title, platform, username, notes ->
+        if (editing == null) onAdd(title, platform, username, notes)
+        else onUpdate(editing!!.copy(title = title, platform = platform, username = username, notes = notes))
+        showEditor = false
+    })
+}
+
+@Composable
+private fun AccountEditor(account: GamingAccount?, onDismiss: () -> Unit, onSave: (String, String, String, String) -> Unit) {
+    var title by remember(account) { mutableStateOf(account?.title.orEmpty()) }
+    var platform by remember(account) { mutableStateOf(account?.platform.orEmpty()) }
+    var username by remember(account) { mutableStateOf(account?.username.orEmpty()) }
+    var notes by remember(account) { mutableStateOf(account?.notes.orEmpty()) }
+    AlertDialog(onDismissRequest = onDismiss, containerColor = Surface,
+        title = { Text(if (account == null) "Add account" else "Edit account", color = Txt) },
+        text = { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(title, { title = it }, label = { Text("Account name") }, singleLine = true)
+            OutlinedTextField(platform, { platform = it }, label = { Text("Platform / game") }, singleLine = true)
+            OutlinedTextField(username, { username = it }, label = { Text("Username (optional)") }, singleLine = true)
+            OutlinedTextField(notes, { notes = it }, label = { Text("Notes (optional)") })
+        } },
+        confirmButton = { TextButton(onClick = { if (title.isNotBlank()) onSave(title, platform, username, notes) }, enabled = title.isNotBlank()) { Text("Save") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
 }

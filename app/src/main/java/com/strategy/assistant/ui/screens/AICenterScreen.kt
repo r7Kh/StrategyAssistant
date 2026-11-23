@@ -98,7 +98,7 @@ fun AICenterScreen() {
                             modifier = Modifier
                                 .size(6.dp)
                                 .background(
-                                    Color(0xFF4ADE80),
+                                    Color(0xFF82798E),
                                     CircleShape
                                 )
                         )
@@ -106,7 +106,7 @@ fun AICenterScreen() {
                         Spacer(modifier = Modifier.width(6.dp))
 
                         Text(
-                            text = appText("online"),
+                            text = appText("coming_soon"),
                             color = Color(0xFF8BD6A0),
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold
@@ -211,7 +211,7 @@ fun AICenterScreen() {
             ) {
                 TelemetryItem(
                     label = appText("ai_core"),
-                    value = appText("ready"),
+                    value = appText("coming_soon"),
                     color = Color(0xFF75D994)
                 )
 
@@ -227,7 +227,7 @@ fun AICenterScreen() {
 
                 TelemetryItem(
                     label = appText("mode"),
-                    value = appText("local"),
+                    value = appText("coming_soon"),
                     color = NeonPurple
                 )
             }
@@ -274,7 +274,7 @@ fun AICenterScreen() {
                 title = appText("strategic_analysis"),
                 subtitle = appText("analyze_battlefield"),
                 symbol = "⌕",
-                tag = appText("analysis")
+                tag = appText("coming_soon")
             )
 
             TacticalOperation(
@@ -282,7 +282,7 @@ fun AICenterScreen() {
                 title = appText("strategy_planning"),
                 subtitle = appText("develop_next_move"),
                 symbol = "◈",
-                tag = appText("planning")
+                tag = appText("coming_soon")
             )
 
             TacticalOperation(
@@ -290,7 +290,7 @@ fun AICenterScreen() {
                 title = appText("performance_review"),
                 subtitle = appText("evaluate_progress"),
                 symbol = "↗",
-                tag = appText("review")
+                tag = appText("coming_soon")
             )
 
             Spacer(modifier = Modifier.height(29.dp))
@@ -377,7 +377,7 @@ fun AICenterScreen() {
                     Spacer(modifier = Modifier.weight(1f))
 
                     Text(
-                        text = appText("encrypted"),
+                        text = appText("coming_soon"),
                         color = Color(0xFF75D994),
                         fontSize = 8.sp,
                         letterSpacing = 0.8.sp
@@ -587,11 +587,6 @@ private fun TacticalOperation(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = "›",
-                color = RoyalGold,
-                fontSize = 20.sp
-            )
         }
     }
 }
