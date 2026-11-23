@@ -218,7 +218,8 @@ fun StrategyAssistantApp() {
                     padding = innerPadding,
                     onBack = { currentScreen = 3 },
                     entries = activityEntries,
-                    onClear = { scope.launch { coreRepository.clearActivities() } }
+                    onClear = { scope.launch { coreRepository.clearActivities() } },
+                    use24HourTime = appPreferences.use24HourTime
                 )
                 6 -> NotificationsScreen(
                     padding = innerPadding,
@@ -227,7 +228,9 @@ fun StrategyAssistantApp() {
                     onMarkRead = { id -> scope.launch { coreRepository.markNotificationRead(id) } },
                     onMarkAllRead = { scope.launch { coreRepository.markAllNotificationsRead() } },
                     onDelete = { id -> scope.launch { coreRepository.removeNotification(id) } },
-                    onClear = { scope.launch { coreRepository.clearNotifications() } }
+                    onClear = { scope.launch { coreRepository.clearNotifications() } },
+                    use24HourTime = appPreferences.use24HourTime,
+                    onCreateTest = { sendAccountNotification("Test notification", "Notification center and feedback are working.") }
                 )
                 7 -> GameManagementScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 8 -> StorageBackupScreen(
