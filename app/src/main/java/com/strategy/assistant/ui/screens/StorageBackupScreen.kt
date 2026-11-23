@@ -51,7 +51,7 @@ fun StorageBackupScreen(
         Spacer(Modifier.height(20.dp))
         Text("BACKUP & RESTORE", color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(9.dp))
-        StorageAction("Export backup", "Save accounts, activity and notifications as a JSON file", onBackup)
+        StorageAction("Export backup", "Save accounts, activity, notifications and app preferences as a JSON file", onBackup)
         StorageAction("Restore backup", "Import a previously exported Strategy Assistant JSON backup", onRestore)
         Spacer(Modifier.height(18.dp))
         Text("CACHE MANAGEMENT", color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
