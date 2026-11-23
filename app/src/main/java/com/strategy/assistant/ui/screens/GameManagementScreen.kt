@@ -136,6 +136,7 @@ fun GameManagementScreen(
 
         Spacer(modifier = Modifier.height(27.dp))
 
+        if (games.isEmpty()) {
         // FEATURED MODULE AREA
         Text(appText("game_modules"),
             color = GameManageGold,
@@ -205,6 +206,7 @@ fun GameManagementScreen(
                 color = GameManageMuted,
                 fontSize = 9.sp
             )
+        }
         }
 
         if (games.isNotEmpty()) {
