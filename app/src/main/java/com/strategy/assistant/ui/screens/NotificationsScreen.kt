@@ -29,7 +29,7 @@ private val Muted = Color(0xFFAAA0B9)
 @Composable
 fun NotificationsScreen(
     padding: PaddingValues, onBack: () -> Unit, notifications: List<AppNotification>,
-    onMarkRead: (String) -> Unit, onMarkAllRead: () -> Unit, onDelete: (String) -> Unit, onClear: () -> Unit
+    onMarkRead: (String) -> Unit, onMarkAllRead: () -> Unit, onDelete: (String) -> Unit, onClear: () -> Unit, use24HourTime: Boolean = true, onCreateTest: () -> Unit = {}
 ) {
     var filter by remember { mutableStateOf("All") }
     val shown = notifications.filter {
@@ -61,6 +61,7 @@ fun NotificationsScreen(
         Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text("NOTIFICATION LIST", Modifier.weight(1f), color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             Text("Read all", Modifier.clickable { onMarkAllRead() }.padding(5.dp), color = Purple, fontSize = 10.sp)
+            Text("Test", Modifier.clickable { onCreateTest() }.padding(5.dp), color = Gold, fontSize = 10.sp)
             Text("Clear", Modifier.clickable { onClear() }.padding(5.dp), color = Color(0xFFE28A8A), fontSize = 10.sp)
         }
         if (shown.isEmpty()) Card(colors = CardDefaults.cardColors(containerColor = Surface)) {
@@ -75,7 +76,7 @@ fun NotificationsScreen(
                         }
                         Text(item.message, color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 5.dp))
                         Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("${item.category} • ${SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(Date(item.timestamp))}", Modifier.weight(1f), color = Purple, fontSize = 9.sp)
+                            Text("${item.category} • ${SimpleDateFormat(if (use24HourTime) "MM-dd HH:mm" else "MM-dd hh:mm a", Locale.getDefault()).format(Date(item.timestamp))}", Modifier.weight(1f), color = Purple, fontSize = 9.sp)
                             Text("Delete", Modifier.clickable { onDelete(item.id) }.padding(5.dp), color = Color(0xFFE28A8A), fontSize = 10.sp)
                         }
                     }
