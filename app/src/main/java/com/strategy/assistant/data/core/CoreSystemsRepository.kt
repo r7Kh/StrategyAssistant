@@ -227,7 +227,7 @@ class CoreSystemsRepository(context: Context) {
     }
 
     suspend fun backupSummary(): CoreDataSnapshot {
-        val values = kotlinx.coroutines.flow.first(store.data)
+        val values = store.data.first()
         return CoreDataSnapshot(
             decodeAccounts(values[Keys.accounts].orEmpty()),
             decodeActivities(values[Keys.activities].orEmpty()),
