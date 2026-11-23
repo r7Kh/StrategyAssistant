@@ -163,6 +163,7 @@ class CoreSystemsRepository(context: Context) {
             put("automaticAnalysisEnabled", settings.automaticAnalysisEnabled)
             put("smartSuggestionsEnabled", settings.smartSuggestionsEnabled)
             put("privacyModeEnabled", settings.privacyModeEnabled)
+            put("use24HourTime", settings.use24HourTime)
         }
         val json = JSONObject().apply {
             put("format", "strategy-assistant-backup")
@@ -205,6 +206,7 @@ class CoreSystemsRepository(context: Context) {
             settingsRepository.setAutomaticAnalysisEnabled(settings.optBoolean("automaticAnalysisEnabled", true))
             settingsRepository.setSmartSuggestionsEnabled(settings.optBoolean("smartSuggestionsEnabled", true))
             settingsRepository.setPrivacyModeEnabled(settings.optBoolean("privacyModeEnabled", true))
+            settingsRepository.setUse24HourTime(settings.optBoolean("use24HourTime", true))
         }
         log("System", "Backup restored", file.name)
     }
@@ -217,13 +219,21 @@ class CoreSystemsRepository(context: Context) {
         appContext.dataDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
-    suspend fun clearTemporaryCache(): Long {
-        val bytesBefore = cacheSizeBytes()
-        withContext(Dispatchers.IO) {
-            appContext.cacheDir.listFiles()?.filter { it.name != "backups" }?.forEach { it.deleteRecursively() }
+    suspend fun clearTemporaryCache(): Long = withContext(Dispatchers.IO) {
+        val cacheRoot = appContext.cacheDir
+        val backupsDirectory = File(cacheRoot, "backups").canonicalFile
+        var deletedBytes = 0L
+        var failedItems = 0
+        cacheRoot.listFiles()?.forEach { item ->
+            if (item.canonicalFile != backupsDirectory) {
+                val size = item.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+                if (item.deleteRecursively()) deletedBytes += size else failedItems++
+            }
         }
-        log("System", "Temporary cache cleared", "$bytesBefore bytes released")
-        return bytesBefore
+        if (failedItems > 0) throw IllegalStateException("Could not remove $failedItems cache item(s)")
+        deletedBytes
+    }.also { deleted ->
+        log("System", "Temporary cache cleared", "$deleted bytes released")
     }
 
     suspend fun backupSummary(): CoreDataSnapshot {
