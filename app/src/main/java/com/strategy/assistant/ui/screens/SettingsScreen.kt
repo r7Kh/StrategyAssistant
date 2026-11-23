@@ -226,6 +226,19 @@ fun SettingsScreen(
                 appText("vibration_description"),
                 vibrationEnabled
             ) { value -> scope.launch { repository.setVibrationEnabled(value) } }
+
+            SettingsDivider()
+
+            Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { if (soundEnabled) interactionView.playSoundEffect(SoundEffectConstants.CLICK) },
+                    modifier = Modifier.weight(1f)
+                ) { Text(appText("test_sound"), fontSize = 10.sp) }
+                OutlinedButton(
+                    onClick = { if (vibrationEnabled) interactionView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) },
+                    modifier = Modifier.weight(1f)
+                ) { Text(appText("test_vibration"), fontSize = 10.sp) }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -275,46 +288,16 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("ai_preferences"))
 
         SettingsGroup {
-            SettingsToggle(
-                "◉", appText("local_ai_processing"), appText("local_processing_description"),
-                preferences.localProcessingEnabled
-            ) { value -> scope.launch { repository.setLocalProcessingEnabled(value) } }
-
+            SettingsOption("◉", appText("local_ai_processing"), appText("local_processing_description"), appText("coming_soon"))
             SettingsDivider()
-
-            SettingsToggle(
-                "☁", appText("cloud_ai_processing"), appText("cloud_processing_description"),
-                preferences.cloudProcessingEnabled
-            ) { value -> scope.launch { repository.setCloudProcessingEnabled(value) } }
-
+            SettingsOption("☁", appText("cloud_ai_processing"), appText("cloud_processing_description"), appText("coming_soon"))
             SettingsDivider()
-
-            SettingsToggle(
-                "↻", appText("automatic_analysis"), appText("automatic_analysis_description"),
-                preferences.automaticAnalysisEnabled
-            ) { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
-
+            SettingsOption("↻", appText("automatic_analysis"), appText("automatic_analysis_description"), appText("coming_soon"))
             SettingsDivider()
-
-            SettingsToggle(
-                "✧", appText("smart_suggestions"), appText("smart_suggestions_description"),
-                preferences.smartSuggestionsEnabled
-            ) { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
-
+            SettingsOption("✧", appText("smart_suggestions"), appText("smart_suggestions_description"), appText("coming_soon"))
             SettingsDivider()
-
-            SettingsToggle(
-                "◈", appText("privacy_mode"), appText("privacy_mode_description"),
-                preferences.privacyModeEnabled
-            ) { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
-
-            Text(
-                appText("ai_settings_notice"),
-                color = SettingsMuted,
-                fontSize = 9.sp,
-                lineHeight = 14.sp,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
-            )
+            SettingsOption("◈", appText("privacy_mode"), appText("privacy_mode_description"), appText("saved_preference"))
+            Text(appText("ai_settings_notice"), color = SettingsMuted, fontSize = 9.sp, lineHeight = 14.sp, modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
