@@ -287,23 +287,31 @@ fun SettingsScreen(
             SettingsDivider()
 
             SettingsToggle(
-                "↻", appText("automatic_analysis"), appText("ai_processing_description"),
+                "↻", appText("automatic_analysis"), appText("automatic_analysis_description"),
                 preferences.automaticAnalysisEnabled
             ) { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
 
             SettingsDivider()
 
             SettingsToggle(
-                "✧", appText("smart_suggestions"), appText("ai_configuration_description"),
+                "✧", appText("smart_suggestions"), appText("smart_suggestions_description"),
                 preferences.smartSuggestionsEnabled
             ) { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
 
             SettingsDivider()
 
             SettingsToggle(
-                "◈", appText("privacy_mode"), appText("privacy_policy_description"),
+                "◈", appText("privacy_mode"), appText("privacy_mode_description"),
                 preferences.privacyModeEnabled
             ) { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
+
+            Text(
+                appText("ai_settings_notice"),
+                color = SettingsMuted,
+                fontSize = 9.sp,
+                lineHeight = 14.sp,
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
