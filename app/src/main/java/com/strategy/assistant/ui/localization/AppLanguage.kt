@@ -258,6 +258,8 @@ fun appText(key: String): String {
         "system_configuration" to "SYSTEM CONFIGURATION", "general" to "GENERAL",
         "notifications" to "NOTIFICATIONS", "privacy_data" to "PRIVACY & DATA",
         "ai_preferences" to "AI PREFERENCES", "push_notifications" to "Push Notifications",
+        "in_app_notifications" to "In-app notifications",
+        "in_app_notifications_description" to "Save account alerts in the notification center",
         "sound_effects" to "Sound Effects", "vibration" to "Vibration",
         "anonymous_analytics" to "Anonymous Analytics", "appearance" to "Appearance",
         "date_time" to "Date & Time",
