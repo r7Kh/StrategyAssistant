@@ -12,14 +12,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import android.view.HapticFeedbackConstants
 import android.media.RingtoneManager
 import android.content.Context
-import android.os.Vibrator
-import android.os.VibrationEffect
-import android.os.Build
 import android.view.SoundEffectConstants
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
@@ -42,19 +40,19 @@ private val SettingsMuted = Color(0xFFAAA0B9)
 fun SettingsScreen(
     padding: PaddingValues,
     onBack: () -> Unit,
-    onOpenStorage: () -> Unit = {}
+    onOpenStorage: () -> Unit = {},
+    onOpenAbout: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val repository = remember(context) { AppPreferencesRepository(context) }
     val preferences by repository.preferences.collectAsState(initial = AppPreferences())
     val scope = rememberCoroutineScope()
-    val interactionView = LocalView.current
 
     val notificationsEnabled = preferences.notificationsEnabled
     val soundEnabled = preferences.soundEnabled
-    val vibrationEnabled = preferences.vibrationEnabled
     val selectedLanguage = preferences.language
     var languageMenuExpanded by remember { mutableStateOf(false) }
+    var showPrivacyPolicy by remember { mutableStateOf(false) }
 
     val languages = listOf(
         "English",
@@ -225,25 +223,11 @@ fun SettingsScreen(
 
             SettingsDivider()
 
-            SettingsToggle(
-                "〰",
-                appText("vibration"),
-                appText("vibration_description"),
-                vibrationEnabled
-            ) { value -> scope.launch { repository.setVibrationEnabled(value) } }
-
-            SettingsDivider()
-
-            Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(
-                    onClick = { if (soundEnabled) playSettingsTestSound(context) },
-                    modifier = Modifier.weight(1f)
-                ) { Text(appText("test_sound"), fontSize = 10.sp) }
-                OutlinedButton(
-                    onClick = { if (vibrationEnabled) playSettingsTestVibration(context) },
-                    modifier = Modifier.weight(1f)
-                ) { Text(appText("test_vibration"), fontSize = 10.sp) }
-            }
+            OutlinedButton(
+                onClick = { if (soundEnabled) playSettingsTestSound(context) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                enabled = soundEnabled
+            ) { Text(appText("test_sound"), fontSize = 10.sp) }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -279,12 +263,21 @@ fun SettingsScreen(
 
             SettingsDivider()
 
-            SettingsOption(
-                "♧",
-                appText("privacy_policy"),
-                appText("privacy_policy_description"),
-                appText("not_available")
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { showPrivacyPolicy = true }.padding(vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SettingsIcon("♧")
+                Spacer(Modifier.width(11.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(appText("privacy_policy"), color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(4.dp))
+                    Text(appText("privacy_policy_description"), color = SettingsMuted, fontSize = 9.sp)
+                }
+                Text(appText("view"), color = SettingsGold, fontSize = 9.sp)
+                Spacer(Modifier.width(5.dp))
+                Text("›", color = SettingsMuted, fontSize = 19.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -311,20 +304,27 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("system"))
 
         SettingsGroup {
-            SettingsOption(
+            SettingsActionRow(
                 "↻",
                 appText("check_updates"),
                 appText("check_updates_description"),
-                appText("check")
-            )
+                appText("open")
+            ) {
+                runCatching {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/r7Kh/StrategyAssistant/releases")))
+                }.onFailure {
+                    Toast.makeText(context, "Could not open releases page", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             SettingsDivider()
 
-            SettingsOption(
+            SettingsActionRow(
                 "ⓘ",
                 appText("about_application"),
                 appText("about_application_description"),
-                appText("view")
+                appText("view"),
+                onOpenAbout
             )
         }
 
@@ -370,6 +370,25 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(25.dp))
     }
+
+    if (showPrivacyPolicy) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyPolicy = false },
+            containerColor = SettingsSurface,
+            title = { Text(appText("privacy_policy"), color = SettingsText) },
+            text = {
+                Text(
+                    "Strategy Assistant stores account profiles, activity history, notifications and preferences locally on this device. Account passwords are not collected. Backups are created only when you export them. No cloud sync or analytics collection is currently active.",
+                    color = SettingsMuted
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyPolicy = false }) {
+                    Text(appText("close"), color = SettingsGold)
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -400,6 +419,31 @@ private fun SettingsGroup(
             .padding(horizontal = 13.dp, vertical = 5.dp),
         content = content
     )
+}
+
+@Composable
+private fun SettingsActionRow(
+    symbol: String,
+    title: String,
+    description: String,
+    value: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SettingsIcon(symbol)
+        Spacer(Modifier.width(11.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(4.dp))
+            Text(description, color = SettingsMuted, fontSize = 9.sp)
+        }
+        Text(value, color = SettingsGold, fontSize = 9.sp)
+        Spacer(Modifier.width(5.dp))
+        Text("›", color = SettingsMuted, fontSize = 19.sp)
+    }
 }
 
 @Composable
@@ -474,10 +518,6 @@ private fun SettingsToggle(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    val context = LocalContext.current
-    val view = LocalView.current
-    val feedbackRepository = remember(context) { AppPreferencesRepository(context) }
-    val feedbackPreferences by feedbackRepository.preferences.collectAsState(initial = AppPreferences())
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -506,8 +546,7 @@ private fun SettingsToggle(
         Switch(
             checked = checked,
             onCheckedChange = { value ->
-                if (feedbackPreferences.soundEnabled) view.playSoundEffect(SoundEffectConstants.CLICK)
-                if (feedbackPreferences.vibrationEnabled) view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                
                 onCheckedChange(value)
             },
             colors = SwitchDefaults.colors(
@@ -528,16 +567,3 @@ private fun playSettingsTestSound(context: Context) {
     }
 }
 
-private fun playSettingsTestVibration(context: Context) {
-    runCatching {
-        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(180, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(180)
-            }
-        }
-    }
-}
