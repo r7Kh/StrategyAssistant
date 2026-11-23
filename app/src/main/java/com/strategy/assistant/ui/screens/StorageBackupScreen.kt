@@ -1,439 +1,84 @@
-
 package com.strategy.assistant.ui.screens
 
-import com.strategy.assistant.ui.localization.appText
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val StorageBackground = Color(0xFF090710)
-private val StorageSurface = Color(0xFF171220)
-private val StorageGold = Color(0xFFD9B76E)
-private val StoragePurple = Color(0xFFAD68FF)
-private val StorageText = Color(0xFFF5F0FA)
-private val StorageMuted = Color(0xFFAAA0B9)
+private val Bg = Color(0xFF090710)
+private val Surface = Color(0xFF171220)
+private val Gold = Color(0xFFD9B76E)
+private val Purple = Color(0xFFAD68FF)
+private val Txt = Color(0xFFF5F0FA)
+private val Muted = Color(0xFFAAA0B9)
 
 @Composable
 fun StorageBackupScreen(
-    padding: PaddingValues,
-    onBack: () -> Unit,
-    onBackup: () -> Unit = {},
-    onRestore: () -> Unit = {},
-    onCleanCache: () -> Unit = {}
+    padding: PaddingValues, onBack: () -> Unit, cacheBytes: Long, appBytes: Long,
+    onRefresh: () -> Unit, onBackup: () -> Unit, onRestore: () -> Unit, onCleanCache: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(StorageBackground)
-            .padding(padding)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 19.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // HEADER
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(StorageSurface, CircleShape)
-                    .border(1.dp, Color(0xFF49345F), CircleShape)
-                    .clickable { onBack() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text("‹", color = StorageText, fontSize = 27.sp)
-            }
-
-            Spacer(modifier = Modifier.width(13.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(appText("data_management"),
-                    color = StorageGold,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.6.sp
-                )
-
-                Text(appText("storage_backup"),
-                    color = StorageText,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Text(
-                "▤",
-                color = StoragePurple,
-                fontSize = 24.sp
-            )
+    LaunchedEffect(Unit) { onRefresh() }
+    val cacheLabel = when {
+        cacheBytes < 1024 -> "$cacheBytes B"
+        cacheBytes < 1024 * 1024 -> String.format("%.1f KB", cacheBytes / 1024.0)
+        else -> String.format("%.2f MB", cacheBytes / (1024.0 * 1024.0))
+    }
+    Column(Modifier.fillMaxSize().background(Bg).padding(padding).padding(horizontal = 19.dp)) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("‹", Modifier.clickable { onBack() }.padding(8.dp), color = Txt, fontSize = 28.sp)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) { Text("DATA MANAGEMENT", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold); Text("Storage & Backup", color = Txt, fontSize = 23.sp, fontWeight = FontWeight.Bold) }
         }
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        // STORAGE OVERVIEW
-        Text(appText("storage_overview"),
-            color = StorageGold,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF28183A), Color(0xFF17111F))
-                    ),
-                    RoundedCornerShape(18.dp)
-                )
-                .border(
-                    1.dp,
-                    Color(0xFF67458A),
-                    RoundedCornerShape(18.dp)
-                )
-                .padding(19.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(76.dp)
-                        .border(
-                            width = 5.dp,
-                            color = StoragePurple.copy(alpha = 0.7f),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "—",
-                        color = StorageText,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(18.dp))
-
-                Column {
-                    Text(appText("storage_data"),
-                        color = StorageText,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    Text(appText("waiting_storage"),
-                        color = StorageMuted,
-                        fontSize = 9.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(7.dp))
-
-                    Text(appText("not_measured"),
-                        color = StorageGold,
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.sp
-                    )
-                }
+        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF251936)), shape = RoundedCornerShape(17.dp)) {
+            Column(Modifier.fillMaxWidth().padding(18.dp)) {
+                Text("TOTAL APP DATA", color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(8.dp))
+                Text(formatBytes(appBytes), color = Txt, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                Text("Total size of the app data directory", color = Muted, fontSize = 10.sp)
+                Spacer(Modifier.height(10.dp))
+                Text("Temporary cache: $cacheLabel", color = Purple, fontSize = 11.sp)
+                Text("Refresh", Modifier.clickable { onRefresh() }.padding(top = 10.dp), color = Purple, fontSize = 11.sp)
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            StorageLegend(appText("app_data"), appText("not_measured"), Color(0xFF9A63E8))
-            StorageLegend(appText("game_data"), appText("not_measured"), Color(0xFF6578D8))
-            StorageLegend(appText("other_files"), appText("not_measured"), Color(0xFFB5A8C8))
-            StorageLegend(appText("free_space"), appText("not_measured"), Color(0xFF51445F))
         }
-
-        Spacer(modifier = Modifier.height(25.dp))
-
-        // CLOUD BACKUP
-        Text(appText("backup_restore"),
-            color = StorageGold,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StorageSurface, RoundedCornerShape(15.dp))
-                .border(1.dp, Color(0xFF30243D), RoundedCornerShape(15.dp))
-                .padding(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .background(Color(0xFF2B1B3D), RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "☁",
-                        color = StoragePurple,
-                        fontSize = 23.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(appText("cloud_backup"),
-                        color = StorageText,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(appText("not_configured_lower"),
-                        color = StorageGold,
-                        fontSize = 9.sp
-                    )
-                }
-
-                Text(appText("off"),
-                    color = StorageMuted,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Color(0xFF30243D))
-            )
-
-            Spacer(modifier = Modifier.height(13.dp))
-
-            StorageInfoRow(appText("last_backup"), appText("not_available"))
-            StorageInfoRow(appText("backup_status"), appText("not_configured_lower"))
-            StorageInfoRow(appText("cloud_provider"), appText("not_connected"))
-        }
-
-        Spacer(modifier = Modifier.height(22.dp))
-
-        // ACTIONS
-        Text(appText("storage_actions"),
-            color = StorageGold,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        StorageAction(
-            symbol = "☁",
-            title = appText("backup_now"),
-            description = appText("create_backup"),
-            onClick = onBackup
-        )
-
-        StorageAction(
-            symbol = "↻",
-            title = appText("restore_data"),
-            description = appText("restore_previous"),
-            onClick = onRestore
-        )
-
-        StorageAction(
-            symbol = "▤",
-            title = appText("clean_cache"),
-            description = appText("manage_temp"),
-            onClick = onCleanCache
-        )
-
-        Spacer(modifier = Modifier.height(23.dp))
-
-        // DATA POLICY
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF17121D), RoundedCornerShape(14.dp))
-                .border(1.dp, Color(0xFF30243D), RoundedCornerShape(14.dp))
-                .padding(15.dp)
-        ) {
-            Text(appText("data_privacy"),
-                color = StorageGold,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp
-            )
-
-            Spacer(modifier = Modifier.height(7.dp))
-
-            Text(appText("backup_policy"),
-                color = StorageMuted,
-                fontSize = 10.sp,
-                lineHeight = 16.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(Modifier.height(20.dp))
+        Text("BACKUP & RESTORE", color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(9.dp))
+        StorageAction("Export backup", "Save accounts, activity and notifications as a JSON file", onBackup)
+        StorageAction("Restore backup", "Import a previously exported Strategy Assistant JSON backup", onRestore)
+        Spacer(Modifier.height(18.dp))
+        Text("CACHE MANAGEMENT", color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(9.dp))
+        StorageAction("Clean temporary cache", "Remove temporary files only. Exported backups are preserved.", onCleanCache)
+        Spacer(Modifier.height(18.dp))
+        Text("Cloud backup is not enabled because no cloud provider is connected. Backups are exported locally through Android's file picker.", color = Muted, fontSize = 10.sp, lineHeight = 16.sp)
     }
 }
 
 @Composable
-private fun StorageLegend(
-    title: String,
-    value: String,
-    color: Color
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .background(color, CircleShape)
-        )
-
-        Spacer(modifier = Modifier.width(9.dp))
-
-        Text(
-            title,
-            color = StorageText,
-            fontSize = 10.sp,
-            modifier = Modifier.weight(1f)
-        )
-
-        Text(
-            value,
-            color = StorageMuted,
-            fontSize = 9.sp
-        )
+private fun StorageAction(title: String, description: String, onClick: () -> Unit) {
+    Card(Modifier.fillMaxWidth().padding(bottom = 9.dp).clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = Surface), shape = RoundedCornerShape(14.dp)) {
+        Row(Modifier.fillMaxWidth().padding(15.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(title, color = Txt, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(description, color = Muted, fontSize = 10.sp, lineHeight = 15.sp)
+            }
+            Text("›", color = Gold, fontSize = 23.sp)
+        }
     }
 }
 
-@Composable
-private fun StorageInfoRow(
-    title: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 7.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            title,
-            color = StorageMuted,
-            fontSize = 10.sp
-        )
-
-        Text(
-            value,
-            color = StorageText,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Composable
-private fun StorageAction(
-    symbol: String,
-    title: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 9.dp)
-            .background(StorageSurface, RoundedCornerShape(13.dp))
-            .border(1.dp, Color(0xFF30243D), RoundedCornerShape(13.dp))
-            .clickable { onClick() }
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(38.dp)
-                .background(Color(0xFF2B1B3D), RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                symbol,
-                color = StoragePurple,
-                fontSize = 19.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.width(11.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                title,
-                color = StorageText,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                description,
-                color = StorageMuted,
-                fontSize = 9.sp
-            )
-        }
-
-        Text(
-            "›",
-            color = StorageGold,
-            fontSize = 22.sp
-        )
-    }
+private fun formatBytes(bytes: Long): String = when {
+    bytes < 1024 -> "$bytes B"
+    bytes < 1024 * 1024 -> String.format("%.1f KB", bytes / 1024.0)
+    bytes < 1024L * 1024L * 1024L -> String.format("%.2f MB", bytes / (1024.0 * 1024.0))
+    else -> String.format("%.2f GB", bytes / (1024.0 * 1024.0 * 1024.0))
 }
