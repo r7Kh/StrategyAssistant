@@ -117,6 +117,7 @@ fun GameLibraryScreen(
 
         Spacer(modifier = Modifier.height(17.dp))
 
+        if (games.isEmpty()) {
         // EMPTY LIBRARY STATE
         Column(
             modifier = Modifier
@@ -214,6 +215,7 @@ fun GameLibraryScreen(
                     letterSpacing = 0.8.sp
                 )
             }
+        }
         }
 
         if (games.isNotEmpty()) {
