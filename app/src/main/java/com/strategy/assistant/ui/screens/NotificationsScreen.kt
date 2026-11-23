@@ -1,371 +1,90 @@
-
 package com.strategy.assistant.ui.screens
 
-import com.strategy.assistant.ui.localization.appText
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.data.core.AppNotification
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-private val NotificationBackground = Color(0xFF090710)
-private val NotificationSurface = Color(0xFF171220)
-private val NotificationGold = Color(0xFFD9B76E)
-private val NotificationPurple = Color(0xFFAD68FF)
-private val NotificationText = Color(0xFFF5F0FA)
-private val NotificationMuted = Color(0xFFAAA0B9)
+private val Bg = Color(0xFF090710)
+private val Surface = Color(0xFF171220)
+private val Gold = Color(0xFFD9B76E)
+private val Purple = Color(0xFFAD68FF)
+private val Txt = Color(0xFFF5F0FA)
+private val Muted = Color(0xFFAAA0B9)
 
 @Composable
 fun NotificationsScreen(
-    padding: PaddingValues,
-    onBack: () -> Unit
+    padding: PaddingValues, onBack: () -> Unit, notifications: List<AppNotification>,
+    onMarkRead: (String) -> Unit, onMarkAllRead: () -> Unit, onDelete: (String) -> Unit, onClear: () -> Unit
 ) {
-    var selectedFilter by remember {
-        mutableStateOf("All")
+    var filter by remember { mutableStateOf("All") }
+    val shown = notifications.filter {
+        when (filter) {
+            "Unread" -> !it.isRead
+            "Updates" -> it.category.equals("Updates", true)
+            "System" -> it.category.equals("System", true) || it.category.equals("Accounts", true)
+            else -> true
+        }
     }
-
-    val filters = listOf("All", "Unread", "Updates", "System")
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(NotificationBackground)
-            .padding(padding)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 19.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // HEADER
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(NotificationSurface, CircleShape)
-                    .border(
-                        1.dp,
-                        Color(0xFF49345F),
-                        CircleShape
-                    )
-                    .clickable { onBack() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "‹",
-                    color = NotificationText,
-                    fontSize = 27.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.width(13.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = appText("system_messages"),
-                    color = NotificationGold,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.6.sp
-                )
-
-                Text(
-                    text = appText("notifications"),
-                    color = NotificationText,
-                    fontSize = 23.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .background(
-                        Color(0xFF281B3B),
-                        CircleShape
-                    )
-                    .border(
-                        1.dp,
-                        NotificationPurple.copy(alpha = 0.5f),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "♢",
-                    color = NotificationPurple,
-                    fontSize = 23.sp
-                )
+    Column(Modifier.fillMaxSize().background(Bg).padding(padding).padding(horizontal = 18.dp)) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 17.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("‹", Modifier.clickable { onBack() }.padding(8.dp), color = Txt, fontSize = 28.sp)
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) { Text("SYSTEM MESSAGES", color = Gold, fontSize = 9.sp, fontWeight = FontWeight.Bold); Text("Notifications", color = Txt, fontSize = 23.sp, fontWeight = FontWeight.Bold) }
+            Text("${notifications.count { !it.isRead }} unread", color = Purple, fontSize = 10.sp)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Stat(notifications.size.toString(), "Total")
+            Stat(notifications.count { !it.isRead }.toString(), "Unread")
+            Stat(notifications.count { it.category.equals("Updates", true) }.toString(), "Updates")
+        }
+        Spacer(Modifier.height(15.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            listOf("All", "Unread", "Updates", "System").forEach { item ->
+                FilterChip(selected = filter == item, onClick = { filter = item }, label = { Text(item, fontSize = 10.sp) })
             }
         }
-
-        Spacer(modifier = Modifier.height(25.dp))
-
-        // NOTIFICATION SUMMARY
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    NotificationSurface,
-                    RoundedCornerShape(15.dp)
-                )
-                .border(
-                    1.dp,
-                    Color(0xFF30243D),
-                    RoundedCornerShape(15.dp)
-                )
-                .padding(vertical = 17.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            NotificationStat("00", appText("total"))
-            NotificationStat("00", appText("unread"))
-            NotificationStat("00", appText("updates"))
+        Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("NOTIFICATION LIST", Modifier.weight(1f), color = Gold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text("Read all", Modifier.clickable { onMarkAllRead() }.padding(5.dp), color = Purple, fontSize = 10.sp)
+            Text("Clear", Modifier.clickable { onClear() }.padding(5.dp), color = Color(0xFFE28A8A), fontSize = 10.sp)
         }
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        // FILTERS
-        Text(
-            text = appText("notification_filters"),
-            color = NotificationGold,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(7.dp)
-        ) {
-            filters.forEach { filter ->
-                val isSelected = selectedFilter == filter
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            if (isSelected) Color(0xFF713BB0)
-                            else Color(0xFF1A1422),
-                            RoundedCornerShape(20.dp)
-                        )
-                        .border(
-                            1.dp,
-                            if (isSelected) NotificationPurple
-                            else Color(0xFF30243D),
-                            RoundedCornerShape(20.dp)
-                        )
-                        .clickable {
-                            selectedFilter = filter
+        if (shown.isEmpty()) Card(colors = CardDefaults.cardColors(containerColor = Surface)) {
+            Text("You're all caught up. New notifications will appear here.", Modifier.padding(22.dp), color = Muted)
+        } else LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(shown, key = { it.id }) { item ->
+                Card(colors = CardDefaults.cardColors(containerColor = Surface), shape = RoundedCornerShape(13.dp)) {
+                    Column(Modifier.fillMaxWidth().clickable { onMarkRead(item.id) }.padding(13.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(item.title, Modifier.weight(1f), color = Txt, fontWeight = FontWeight.SemiBold)
+                            Text(if (item.isRead) "READ" else "NEW", color = if (item.isRead) Muted else Gold, fontSize = 9.sp)
                         }
-                        .padding(
-                            horizontal = 3.dp,
-                            vertical = 11.dp
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = appText("filter_${filter.lowercase()}"),
-                        color = if (isSelected) Color.White
-                        else NotificationMuted,
-                        fontSize = 9.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold
-                        else FontWeight.Normal
-                    )
+                        Text(item.message, color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 5.dp))
+                        Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("${item.category} • ${SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(Date(item.timestamp))}", Modifier.weight(1f), color = Purple, fontSize = 9.sp)
+                            Text("Delete", Modifier.clickable { onDelete(item.id) }.padding(5.dp), color = Color(0xFFE28A8A), fontSize = 10.sp)
+                        }
+                    }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // NOTIFICATION LIST
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = appText("all_notifications"),
-                color = NotificationGold,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.5.sp
-            )
-
-            Text(
-                text = appText("latest_first"),
-                color = NotificationMuted,
-                fontSize = 8.sp,
-                letterSpacing = 1.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // EMPTY STATE
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    NotificationSurface,
-                    RoundedCornerShape(17.dp)
-                )
-                .border(
-                    1.dp,
-                    Color(0xFF30243D),
-                    RoundedCornerShape(17.dp)
-                )
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 30.dp
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(68.dp)
-                    .background(
-                        Color(0xFF2A1B3B),
-                        CircleShape
-                    )
-                    .border(
-                        1.dp,
-                        NotificationPurple.copy(alpha = 0.5f),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "♢",
-                    color = NotificationPurple,
-                    fontSize = 34.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = appText(
-                    when (selectedFilter) {
-                        "Unread" -> "no_unread"
-                        "Updates" -> "no_updates"
-                        "System" -> "no_system_alerts"
-                        else -> "all_caught_up"
-                    }
-                ),
-                color = NotificationText,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = appText("no_notifications"),
-                color = NotificationMuted,
-                fontSize = 10.sp
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = appText("new_messages_appear"),
-                color = NotificationMuted,
-                fontSize = 9.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // INFORMATION CARD
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Color(0xFF17121D),
-                    RoundedCornerShape(14.dp)
-                )
-                .border(
-                    1.dp,
-                    Color(0xFF30243D),
-                    RoundedCornerShape(14.dp)
-                )
-                .padding(15.dp)
-        ) {
-            Text(
-                text = appText("notification_center"),
-                color = NotificationGold,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp
-            )
-
-            Spacer(modifier = Modifier.height(7.dp))
-
-            Text(
-                text = appText("notification_center_note"),
-                color = NotificationMuted,
-                fontSize = 10.sp,
-                lineHeight = 16.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(25.dp))
     }
 }
 
-@Composable
-private fun NotificationStat(
-    value: String,
-    label: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = value,
-            color = NotificationText,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        Text(
-            text = label,
-            color = NotificationMuted,
-            fontSize = 8.sp,
-            letterSpacing = 0.7.sp
-        )
-    }
+@Composable private fun Stat(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) { Text(value, color = Txt, fontSize = 19.sp, fontWeight = FontWeight.Bold); Text(label, color = Muted, fontSize = 9.sp) }
 }
