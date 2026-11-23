@@ -2,6 +2,11 @@
 package com.strategy.assistant.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,8 +44,11 @@ private val LibraryMuted = Color(0xFFAAA0B9)
 @Composable
 fun GameLibraryScreen(
     padding: PaddingValues,
-    onAddGame: () -> Unit = {}
+    games: List<String> = emptyList(),
+    onAddGame: (String) -> Unit = {},
+    onRemoveGame: (String) -> Unit = {}
 ) {
+    var showAddDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,6 +57,13 @@ fun GameLibraryScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 19.dp)
     ) {
+        if (showAddDialog) {
+            AddGameDialog(
+                onDismiss = { showAddDialog = false },
+                onAdd = { name -> onAddGame(name); showAddDialog = false }
+            )
+        }
+
         Spacer(modifier = Modifier.height(22.dp))
 
         Text(
@@ -79,7 +94,7 @@ fun GameLibraryScreen(
         Spacer(modifier = Modifier.height(27.dp))
 
         // LIBRARY SUMMARY
-        RowSummary()
+        RowSummary(games.size)
 
         Spacer(modifier = Modifier.height(28.dp))
 
@@ -102,6 +117,7 @@ fun GameLibraryScreen(
 
         Spacer(modifier = Modifier.height(17.dp))
 
+        if (games.isEmpty()) {
         // EMPTY LIBRARY STATE
         Column(
             modifier = Modifier
@@ -173,6 +189,7 @@ fun GameLibraryScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { showAddDialog = true }
                     .clip(RoundedCornerShape(13.dp))
                     .background(
                         Brush.horizontalGradient(
@@ -191,12 +208,31 @@ fun GameLibraryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = appText("game_selection_soon"),
+                    text = if (com.strategy.assistant.ui.localization.LocalAppLanguage.current == "العربية") "إضافة لعبة" else "Add a game",
                     color = Color.White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp
                 )
+            }
+        }
+        }
+
+        if (games.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            games.forEach { game ->
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(game, color = LibraryText, fontSize = 13.sp)
+                    Text(
+                        text = if (com.strategy.assistant.ui.localization.LocalAppLanguage.current == "العربية") "حذف" else "Remove",
+                        color = LibraryPurple, fontSize = 11.sp,
+                        modifier = Modifier.clickable { onRemoveGame(game) }.padding(8.dp)
+                    )
+                }
             }
         }
 
@@ -257,7 +293,7 @@ fun GameLibraryScreen(
 }
 
 @Composable
-private fun RowSummary() {
+private fun RowSummary(gameCount: Int) {
     androidx.compose.foundation.layout.Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -273,7 +309,7 @@ private fun RowSummary() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "00",
+                text = gameCount.toString().padStart(2, '0'),
                 color = LibraryGold,
                 fontSize = 21.sp,
                 fontWeight = FontWeight.Bold

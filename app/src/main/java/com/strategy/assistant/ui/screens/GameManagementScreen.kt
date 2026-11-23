@@ -24,6 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -43,8 +47,11 @@ private val GameManageMuted = Color(0xFFAAA0B9)
 fun GameManagementScreen(
     padding: PaddingValues,
     onBack: () -> Unit,
-    onAddGame: () -> Unit = {}
+    games: List<String> = emptyList(),
+    onAddGame: (String) -> Unit = {},
+    onRemoveGame: (String) -> Unit = {}
 ) {
+    var showAddDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,6 +60,13 @@ fun GameManagementScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 19.dp)
     ) {
+        if (showAddDialog) {
+            AddGameDialog(
+                onDismiss = { showAddDialog = false },
+                onAdd = { name -> onAddGame(name); showAddDialog = false }
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // HEADER
@@ -115,13 +129,14 @@ fun GameManagementScreen(
                 .padding(vertical = 17.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            GameManageStat("00", appText("installed"))
-            GameManageStat("00", appText("active"))
+            GameManageStat(games.size.toString().padStart(2, '0'), appText("installed"))
+            GameManageStat(games.size.toString().padStart(2, '0'), appText("active"))
             GameManageStat("00", appText("updates"))
         }
 
         Spacer(modifier = Modifier.height(27.dp))
 
+        if (games.isEmpty()) {
         // FEATURED MODULE AREA
         Text(appText("game_modules"),
             color = GameManageGold,
@@ -192,6 +207,24 @@ fun GameManagementScreen(
                 fontSize = 9.sp
             )
         }
+        }
+
+        if (games.isNotEmpty()) {
+            games.forEach { game ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(game, color = GameManageText, fontSize = 12.sp)
+                    Text(
+                        if (com.strategy.assistant.ui.localization.LocalAppLanguage.current == "العربية") "حذف" else "Remove",
+                        color = GameManagePurple, fontSize = 10.sp,
+                        modifier = Modifier.clickable { onRemoveGame(game) }.padding(8.dp)
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(22.dp))
 
@@ -210,7 +243,7 @@ fun GameManagementScreen(
                     GameManagePurple,
                     RoundedCornerShape(14.dp)
                 )
-                .clickable { onAddGame() }
+                .clickable { showAddDialog = true }
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
