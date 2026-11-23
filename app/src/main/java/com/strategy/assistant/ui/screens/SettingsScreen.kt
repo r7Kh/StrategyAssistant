@@ -14,9 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.media.RingtoneManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
@@ -303,21 +300,6 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("system"))
 
         SettingsGroup {
-            SettingsActionRow(
-                "↻",
-                appText("check_updates"),
-                appText("check_updates_description"),
-                appText("open")
-            ) {
-                runCatching {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/r7Kh/StrategyAssistant/releases")))
-                }.onFailure {
-                    Toast.makeText(context, "Could not open releases page", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            SettingsDivider()
-
             SettingsActionRow(
                 "ⓘ",
                 appText("about_application"),
