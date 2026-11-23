@@ -30,7 +30,7 @@ private val Muted = Color(0xFFAAA0B9)
 fun ActivityScreen(padding: PaddingValues, onBack: () -> Unit, entries: List<ActivityEntry>, onClear: () -> Unit, use24HourTime: Boolean = true) {
     var filter by remember { mutableStateOf("All") }
     var search by remember { mutableStateOf("") }
-    val filters = listOf("All", "AI", "Games", "Accounts", "System")
+    val filters = listOf("All", "Accounts", "System")
     val shown = entries.filter { (filter == "All" || it.category.equals(filter, true)) &&
         (search.isBlank() || it.title.contains(search, true) || it.details.contains(search, true)) }
     Column(Modifier.fillMaxSize().background(Bg).padding(padding).padding(horizontal = 18.dp)) {
@@ -42,9 +42,8 @@ fun ActivityScreen(padding: PaddingValues, onBack: () -> Unit, entries: List<Act
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Stat(entries.size.toString(), "Total")
-            Stat(entries.count { it.category.equals("AI", true) }.toString(), "AI")
-            Stat(entries.count { it.category.equals("Games", true) }.toString(), "Games")
-            Stat(entries.count { it.category.equals("System", true) || it.category.equals("Accounts", true) }.toString(), "System")
+            Stat(entries.count { it.category.equals("Accounts", true) }.toString(), "Accounts")
+            Stat(entries.count { it.category.equals("System", true) }.toString(), "System")
         }
         Spacer(Modifier.height(15.dp))
         OutlinedTextField(search, { search = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Search activity") })
