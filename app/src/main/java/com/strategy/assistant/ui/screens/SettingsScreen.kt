@@ -234,12 +234,12 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("privacy_data"))
 
         SettingsGroup {
-            SettingsToggle(
+            SettingsOption(
                 "◈",
                 appText("anonymous_analytics"),
                 appText("analytics_description"),
-                analyticsEnabled
-            ) { value -> scope.launch { repository.setAnalyticsEnabled(value) } }
+                "Not active"
+            )
 
             SettingsDivider()
 
