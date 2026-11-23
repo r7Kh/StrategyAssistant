@@ -61,6 +61,30 @@ class CoreSystemsRepository(context: Context) {
     val accounts: Flow<List<GamingAccount>> = store.data.map { decodeAccounts(it[Keys.accounts].orEmpty()) }
     val activities: Flow<List<ActivityEntry>> = store.data.map { decodeActivities(it[Keys.activities].orEmpty()) }
     val notifications: Flow<List<AppNotification>> = store.data.map { decodeNotifications(it[Keys.notifications].orEmpty()) }
+    val games: Flow<List<String>> = store.data.map { decodeGames(it[Keys.games].orEmpty()) }
+
+    suspend fun addGame(name: String) {
+        val cleaned = name.trim()
+        require(cleaned.isNotBlank()) { "Game name is required" }
+        require(cleaned.length <= 80) { "Game name must be 80 characters or fewer" }
+        store.edit { prefs ->
+            val current = decodeGames(prefs[Keys.games].orEmpty())
+            if (current.none { it.equals(cleaned, ignoreCase = true) }) {
+                prefs[Keys.games] = encodeGames((current + cleaned).sortedBy { it.lowercase(Locale.ROOT) })
+            }
+        }
+        log("Games", "Game added", cleaned)
+    }
+
+    suspend fun removeGame(name: String) {
+        val cleaned = name.trim()
+        store.edit { prefs ->
+            val current = decodeGames(prefs[Keys.games].orEmpty())
+            val updated = current.filterNot { it.equals(cleaned, ignoreCase = true) }
+            if (updated.size != current.size) prefs[Keys.games] = encodeGames(updated)
+        }
+        log("Games", "Game removed", cleaned)
+    }
 
     suspend fun addAccount(title: String, platform: String, username: String, notes: String) {
         require(title.isNotBlank()) { "Account name is required" }
@@ -165,6 +189,7 @@ class CoreSystemsRepository(context: Context) {
             put("accounts", JSONArray(prefs[Keys.accounts] ?: "[]"))
             put("activities", JSONArray(prefs[Keys.activities] ?: "[]"))
             put("notifications", JSONArray(prefs[Keys.notifications] ?: "[]"))
+            put("games", JSONArray(prefs[Keys.games] ?: "[]"))
             put("settings", settingsJson)
         }.toString(2)
         val directory = File(appContext.cacheDir, "backups").apply { mkdirs() }
@@ -182,11 +207,13 @@ class CoreSystemsRepository(context: Context) {
         val accountsJson = root.optJSONArray("accounts") ?: JSONArray()
         val activitiesJson = root.optJSONArray("activities") ?: JSONArray()
         val notificationsJson = root.optJSONArray("notifications") ?: JSONArray()
+        val gamesJson = root.optJSONArray("games") ?: JSONArray()
         val settings = root.optJSONObject("settings")
         store.edit { prefs ->
             prefs[Keys.accounts] = accountsJson.toString()
             prefs[Keys.activities] = activitiesJson.toString()
             prefs[Keys.notifications] = notificationsJson.toString()
+            prefs[Keys.games] = gamesJson.toString()
         }
         if (settings != null) {
             settingsRepository.setLanguage(settings.optString("language", "English"))
@@ -235,7 +262,19 @@ class CoreSystemsRepository(context: Context) {
         val accounts = stringPreferencesKey("accounts_json")
         val activities = stringPreferencesKey("activities_json")
         val notifications = stringPreferencesKey("notifications_json")
+        val games = stringPreferencesKey("games_json")
     }
+
+    private fun encodeGames(items: List<String>) = JSONArray().apply {
+        items.forEach { put(it) }
+    }.toString()
+
+    private fun decodeGames(raw: String): List<String> = runCatching {
+        val array = JSONArray(raw)
+        (0 until array.length()).mapNotNull { index ->
+            array.optString(index).trim().takeIf { it.isNotEmpty() }
+        }.distinctBy { it.lowercase(Locale.ROOT) }
+    }.getOrDefault(emptyList())
 
     private fun encodeAccounts(items: List<GamingAccount>) = JSONArray().apply {
         items.forEach { item -> put(JSONObject().apply {
