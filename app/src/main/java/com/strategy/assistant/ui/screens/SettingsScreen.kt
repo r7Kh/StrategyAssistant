@@ -43,6 +43,7 @@ fun SettingsScreen(
     val repository = remember(context) { AppPreferencesRepository(context) }
     val preferences by repository.preferences.collectAsState(initial = AppPreferences())
     val scope = rememberCoroutineScope()
+    val interactionView = LocalView.current
 
     val notificationsEnabled = preferences.notificationsEnabled
     val soundEnabled = preferences.soundEnabled
@@ -186,12 +187,12 @@ fun SettingsScreen(
 
                 SettingsDivider()
 
-                SettingsOption(
+                SettingsToggle(
                     "◷",
-                    appText("date_time"),
+                    appText("use_24_hour_time"),
                     appText("date_time_description"),
-                    appText("system_default")
-                )
+                    preferences.use24HourTime
+                ) { value -> scope.launch { repository.setUse24HourTime(value) } }
             }
         }
 
