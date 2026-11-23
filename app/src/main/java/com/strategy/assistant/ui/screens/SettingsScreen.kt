@@ -261,7 +261,7 @@ fun SettingsScreen(
             SettingsOption(
                 "♧",
                 appText("privacy_policy"),
-                appText("privacy_mode_description"),
+                appText("privacy_policy_description"),
                 appText("view")
             )
         }
