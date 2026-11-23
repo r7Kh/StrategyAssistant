@@ -33,7 +33,8 @@ private val SettingsMuted = Color(0xFFAAA0B9)
 @Composable
 fun SettingsScreen(
     padding: PaddingValues,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpenStorage: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val repository = remember(context) { AppPreferencesRepository(context) }
@@ -239,19 +240,28 @@ fun SettingsScreen(
 
             SettingsDivider()
 
-            SettingsOption(
-                "▣",
-                appText("data_management"),
-                appText("data_management_description"),
-                appText("manage")
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { onOpenStorage() }.padding(vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SettingsIcon("▣")
+                Spacer(Modifier.width(11.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(appText("data_management"), color = SettingsText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(4.dp))
+                    Text(appText("data_management_description"), color = SettingsMuted, fontSize = 9.sp)
+                }
+                Text(appText("manage"), color = SettingsGold, fontSize = 9.sp)
+                Spacer(Modifier.width(5.dp))
+                Text("›", color = SettingsMuted, fontSize = 19.sp)
+            }
 
             SettingsDivider()
 
             SettingsOption(
                 "♧",
                 appText("privacy_policy"),
-                appText("privacy_policy_description"),
+                appText("privacy_mode_description"),
                 appText("view")
             )
         }
@@ -262,21 +272,38 @@ fun SettingsScreen(
         SettingsSectionTitle(appText("ai_preferences"))
 
         SettingsGroup {
-            SettingsOption(
-                "✧",
-                appText("ai_configuration"),
-                appText("ai_configuration_description"),
-                appText("configure")
-            )
+            SettingsToggle(
+                "◉", appText("local_ai_processing"), appText("local_processing_description"),
+                preferences.localProcessingEnabled
+            ) { value -> scope.launch { repository.setLocalProcessingEnabled(value) } }
 
             SettingsDivider()
 
-            SettingsOption(
-                "◉",
-                appText("ai_processing"),
-                appText("ai_processing_description"),
-                appText("local_first")
-            )
+            SettingsToggle(
+                "☁", appText("cloud_ai_processing"), appText("cloud_processing_description"),
+                preferences.cloudProcessingEnabled
+            ) { value -> scope.launch { repository.setCloudProcessingEnabled(value) } }
+
+            SettingsDivider()
+
+            SettingsToggle(
+                "↻", appText("automatic_analysis"), appText("ai_processing_description"),
+                preferences.automaticAnalysisEnabled
+            ) { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
+
+            SettingsDivider()
+
+            SettingsToggle(
+                "✧", appText("smart_suggestions"), appText("ai_configuration_description"),
+                preferences.smartSuggestionsEnabled
+            ) { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
+
+            SettingsDivider()
+
+            SettingsToggle(
+                "◈", appText("privacy_mode"), appText("privacy_policy_description"),
+                preferences.privacyModeEnabled
+            ) { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
