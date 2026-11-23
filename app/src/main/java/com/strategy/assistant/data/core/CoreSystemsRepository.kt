@@ -7,6 +7,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
 import org.json.JSONArray
 import org.json.JSONObject
@@ -173,11 +175,14 @@ class CoreSystemsRepository(context: Context) {
         }.toString(2)
         val directory = File(appContext.cacheDir, "backups").apply { mkdirs() }
         val stamp = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
-        return File(directory, "strategy-assistant-$stamp.json").apply { writeText(json) }
+        return withContext(Dispatchers.IO) {
+            File(directory, "strategy-assistant-$stamp.json").apply { writeText(json) }
+        }
     }
 
     suspend fun importBackup(file: File) {
-        val root = JSONObject(file.readText())
+        val backupText = withContext(Dispatchers.IO) { file.readText() }
+        val root = JSONObject(backupText)
         require(root.optString("format") == "strategy-assistant-backup") { "Unsupported backup file" }
         require(root.optInt("version") == 1) { "Unsupported backup version" }
         val accountsJson = root.optJSONArray("accounts") ?: JSONArray()
@@ -204,13 +209,19 @@ class CoreSystemsRepository(context: Context) {
         log("System", "Backup restored", file.name)
     }
 
-    suspend fun cacheSizeBytes(): Long = appContext.cacheDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+    suspend fun cacheSizeBytes(): Long = withContext(Dispatchers.IO) {
+        appContext.cacheDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+    }
 
-    suspend fun appStorageSizeBytes(): Long = appContext.dataDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+    suspend fun appStorageSizeBytes(): Long = withContext(Dispatchers.IO) {
+        appContext.dataDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+    }
 
     suspend fun clearTemporaryCache(): Long {
         val bytesBefore = cacheSizeBytes()
-        appContext.cacheDir.listFiles()?.filter { it.name != "backups" }?.forEach { it.deleteRecursively() }
+        withContext(Dispatchers.IO) {
+            appContext.cacheDir.listFiles()?.filter { it.name != "backups" }?.forEach { it.deleteRecursively() }
+        }
         log("System", "Temporary cache cleared", "$bytesBefore bytes released")
         return bytesBefore
     }
