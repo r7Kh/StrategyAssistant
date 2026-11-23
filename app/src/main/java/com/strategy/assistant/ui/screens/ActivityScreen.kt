@@ -27,7 +27,7 @@ private val Txt = Color(0xFFF5F0FA)
 private val Muted = Color(0xFFAAA0B9)
 
 @Composable
-fun ActivityScreen(padding: PaddingValues, onBack: () -> Unit, entries: List<ActivityEntry>, onClear: () -> Unit) {
+fun ActivityScreen(padding: PaddingValues, onBack: () -> Unit, entries: List<ActivityEntry>, onClear: () -> Unit, use24HourTime: Boolean = true) {
     var filter by remember { mutableStateOf("All") }
     var search by remember { mutableStateOf("") }
     val filters = listOf("All", "AI", "Games", "Accounts", "System")
@@ -69,7 +69,7 @@ fun ActivityScreen(padding: PaddingValues, onBack: () -> Unit, entries: List<Act
                             Text(entry.category, color = Purple, fontSize = 10.sp)
                         }
                         if (entry.details.isNotBlank()) Text(entry.details, color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
-                        Text(SimpleDateFormat("yyyy-MM-dd  HH:mm", Locale.getDefault()).format(Date(entry.timestamp)), color = Gold, fontSize = 9.sp, modifier = Modifier.padding(top = 7.dp))
+                        Text(SimpleDateFormat(if (use24HourTime) "yyyy-MM-dd  HH:mm" else "yyyy-MM-dd  hh:mm a", Locale.getDefault()).format(Date(entry.timestamp)), color = Gold, fontSize = 9.sp, modifier = Modifier.padding(top = 7.dp))
                     }
                 }
             }
