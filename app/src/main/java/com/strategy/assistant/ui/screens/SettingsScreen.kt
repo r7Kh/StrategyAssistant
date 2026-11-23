@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.media.RingtoneManager
 import android.content.Context
-import android.view.SoundEffectConstants
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -506,7 +505,6 @@ private fun SettingsOption(
 
         Text(value, color = SettingsGold, fontSize = 9.sp)
         Spacer(modifier = Modifier.width(5.dp))
-        Text("›", color = SettingsMuted, fontSize = 19.sp)
     }
 }
 
