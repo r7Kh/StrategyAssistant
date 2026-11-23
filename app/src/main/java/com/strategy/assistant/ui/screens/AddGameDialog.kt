@@ -35,7 +35,7 @@ fun AddGameDialog(
                 Text(if (arabic) "اختر لعبة من القائمة أو اكتب اسمها بنفسك." else "Choose a game from the list or type its name.")
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = { value -> if (value.length <= 80) name = value },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(if (arabic) "اسم اللعبة" else "Game name") },
                     singleLine = true
