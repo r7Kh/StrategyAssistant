@@ -20,7 +20,8 @@ data class AppPreferences(
     val cloudProcessingEnabled: Boolean = false,
     val automaticAnalysisEnabled: Boolean = true,
     val smartSuggestionsEnabled: Boolean = true,
-    val privacyModeEnabled: Boolean = true
+    val privacyModeEnabled: Boolean = true,
+    val use24HourTime: Boolean = true
 )
 
 class AppPreferencesRepository(context: Context) {
@@ -37,7 +38,8 @@ class AppPreferencesRepository(context: Context) {
             cloudProcessingEnabled = values[Keys.cloudProcessing] ?: false,
             automaticAnalysisEnabled = values[Keys.automaticAnalysis] ?: true,
             smartSuggestionsEnabled = values[Keys.smartSuggestions] ?: true,
-            privacyModeEnabled = values[Keys.privacyMode] ?: true
+            privacyModeEnabled = values[Keys.privacyMode] ?: true,
+            use24HourTime = values[Keys.use24HourTime] ?: true
         )
     }
 
@@ -51,6 +53,7 @@ class AppPreferencesRepository(context: Context) {
     suspend fun setAutomaticAnalysisEnabled(value: Boolean) = dataStore.edit { it[Keys.automaticAnalysis] = value }
     suspend fun setSmartSuggestionsEnabled(value: Boolean) = dataStore.edit { it[Keys.smartSuggestions] = value }
     suspend fun setPrivacyModeEnabled(value: Boolean) = dataStore.edit { it[Keys.privacyMode] = value }
+    suspend fun setUse24HourTime(value: Boolean) = dataStore.edit { it[Keys.use24HourTime] = value }
 
     private object Keys {
         val language = stringPreferencesKey("language")
@@ -63,5 +66,6 @@ class AppPreferencesRepository(context: Context) {
         val automaticAnalysis = booleanPreferencesKey("automatic_analysis_enabled")
         val smartSuggestions = booleanPreferencesKey("smart_suggestions_enabled")
         val privacyMode = booleanPreferencesKey("privacy_mode_enabled")
+        val use24HourTime = booleanPreferencesKey("use_24_hour_time")
     }
 }
