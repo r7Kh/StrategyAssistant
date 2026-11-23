@@ -104,11 +104,6 @@ fun MoreScreen(
                 )
             }
 
-            Text(
-                "✕",
-                color = MoreMuted,
-                fontSize = 20.sp
-            )
         }
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -179,7 +174,6 @@ fun MoreScreen(
                 }
             }
 
-            Text("›", color = MoreGold, fontSize = 25.sp)
         }
 
         Spacer(modifier = Modifier.height(27.dp))
