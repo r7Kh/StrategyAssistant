@@ -14,7 +14,6 @@ data class AppPreferences(
     val language: String = "English",
     val notificationsEnabled: Boolean = true,
     val soundEnabled: Boolean = true,
-    val vibrationEnabled: Boolean = false,
     val analyticsEnabled: Boolean = false,
     val localProcessingEnabled: Boolean = true,
     val cloudProcessingEnabled: Boolean = false,
@@ -32,7 +31,6 @@ class AppPreferencesRepository(context: Context) {
             language = values[Keys.language] ?: "English",
             notificationsEnabled = values[Keys.notifications] ?: true,
             soundEnabled = values[Keys.sound] ?: true,
-            vibrationEnabled = values[Keys.vibration] ?: false,
             analyticsEnabled = values[Keys.analytics] ?: false,
             localProcessingEnabled = values[Keys.localProcessing] ?: true,
             cloudProcessingEnabled = values[Keys.cloudProcessing] ?: false,
@@ -46,7 +44,6 @@ class AppPreferencesRepository(context: Context) {
     suspend fun setLanguage(value: String) = dataStore.edit { it[Keys.language] = value }
     suspend fun setNotificationsEnabled(value: Boolean) = dataStore.edit { it[Keys.notifications] = value }
     suspend fun setSoundEnabled(value: Boolean) = dataStore.edit { it[Keys.sound] = value }
-    suspend fun setVibrationEnabled(value: Boolean) = dataStore.edit { it[Keys.vibration] = value }
     suspend fun setAnalyticsEnabled(value: Boolean) = dataStore.edit { it[Keys.analytics] = value }
     suspend fun setLocalProcessingEnabled(value: Boolean) = dataStore.edit { it[Keys.localProcessing] = value }
     suspend fun setCloudProcessingEnabled(value: Boolean) = dataStore.edit { it[Keys.cloudProcessing] = value }
@@ -59,7 +56,6 @@ class AppPreferencesRepository(context: Context) {
         val language = stringPreferencesKey("language")
         val notifications = booleanPreferencesKey("notifications_enabled")
         val sound = booleanPreferencesKey("sound_enabled")
-        val vibration = booleanPreferencesKey("vibration_enabled")
         val analytics = booleanPreferencesKey("analytics_enabled")
         val localProcessing = booleanPreferencesKey("local_processing_enabled")
         val cloudProcessing = booleanPreferencesKey("cloud_processing_enabled")
