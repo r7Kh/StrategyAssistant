@@ -142,7 +142,7 @@ fun AIControlPanelScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = appText("system_ready"),
+                            text = appText("coming_soon"),
                             color = Color(0xFF65C99A),
                             fontSize = 12.sp
                         )
@@ -165,64 +165,40 @@ fun AIControlPanelScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StatusItem(appText("local_ai"), appText("available"))
-                    StatusItem(appText("cloud_ai"), appText("optional"))
-                    StatusItem(appText("mode"), appText("hybrid"))
+                    StatusItem(appText("local_ai"), appText("coming_soon"))
+                    StatusItem(appText("cloud_ai"), appText("coming_soon"))
+                    StatusItem(appText("mode"), appText("coming_soon"))
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        PanelSectionTitle(appText("processing"))
-
-        PanelToggle(
-            icon = Icons.Default.Memory,
-            title = appText("local_ai_processing"),
-            description = appText("local_processing_description"),
-            checked = localProcessing,
-            onCheckedChange = { value -> scope.launch { repository.setLocalProcessingEnabled(value) } }
-        )
-
-        PanelToggle(
-            icon = Icons.Default.Cloud,
-            title = appText("cloud_ai_processing"),
-            description = appText("cloud_processing_description"),
-            checked = cloudProcessing,
-            onCheckedChange = { value -> scope.launch { repository.setCloudProcessingEnabled(value) } }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        PanelSectionTitle(appText("intelligence"))
-
-        PanelToggle(
-            icon = Icons.Default.Speed,
-            title = appText("automatic_analysis"),
-            description = appText("automatic_analysis_description"),
-            checked = autoAnalysis,
-            onCheckedChange = { value -> scope.launch { repository.setAutomaticAnalysisEnabled(value) } }
-        )
-
-        PanelToggle(
-            icon = Icons.Default.AutoAwesome,
-            title = appText("smart_suggestions"),
-            description = appText("smart_suggestions_description"),
-            checked = smartSuggestions,
-            onCheckedChange = { value -> scope.launch { repository.setSmartSuggestionsEnabled(value) } }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        PanelSectionTitle(appText("privacy_security"))
-
-        PanelToggle(
-            icon = Icons.Default.Security,
-            title = appText("privacy_mode"),
-            description = appText("privacy_mode_description"),
-            checked = privacyMode,
-            onCheckedChange = { value -> scope.launch { repository.setPrivacyModeEnabled(value) } }
-        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = PanelCard
+        ) {
+            Column(Modifier.padding(18.dp)) {
+                Text(appText("ai_engine_unavailable"), color = PanelGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(8.dp))
+                Text(appText("ai_settings_notice"), color = PanelMuted, fontSize = 11.sp, lineHeight = 17.sp)
+                Spacer(Modifier.height(14.dp))
+                listOf(
+                    appText("local_ai_processing"),
+                    appText("cloud_ai_processing"),
+                    appText("automatic_analysis"),
+                    appText("smart_suggestions"),
+                    appText("privacy_mode")
+                ).forEachIndexed { index, feature ->
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(feature, Modifier.weight(1f), color = Color.White, fontSize = 12.sp)
+                        Text(appText("coming_soon"), color = PanelGold, fontSize = 10.sp)
+                    }
+                    if (index != 4) androidx.compose.material3.HorizontalDivider(color = Color(0xFF393544))
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
