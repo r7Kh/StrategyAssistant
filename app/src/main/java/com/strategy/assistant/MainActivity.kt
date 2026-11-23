@@ -74,6 +74,7 @@ fun StrategyAssistantApp() {
     val preferencesRepository = remember(context) { AppPreferencesRepository(context) }
     val appPreferences by preferencesRepository.preferences.collectAsState(initial = AppPreferences())
     val coreRepository = remember(context) { CoreSystemsRepository(context) }
+    val savedGames by coreRepository.games.collectAsState(initial = emptyList())
     val accounts by coreRepository.accounts.collectAsState(initial = emptyList())
     val activityEntries by coreRepository.activities.collectAsState(initial = emptyList())
     val notifications by coreRepository.notifications.collectAsState(initial = emptyList())
@@ -168,7 +169,12 @@ fun StrategyAssistantApp() {
                     onOpenManagement = { currentScreen = 7 }
                 )
                 1 -> Box(Modifier.fillMaxSize().padding(innerPadding)) { AICenterScreen() }
-                2 -> GameLibraryScreen(padding = innerPadding)
+                2 -> GameLibraryScreen(
+                    padding = innerPadding,
+                    games = savedGames,
+                    onAddGame = { name -> scope.launch { coreRepository.addGame(name) } },
+                    onRemoveGame = { name -> scope.launch { coreRepository.removeGame(name) } }
+                )
                 3 -> Box(Modifier.fillMaxSize().padding(innerPadding)) {
                     MoreScreen(
                         onOpenAccounts = { currentScreen = 4 },
@@ -229,7 +235,13 @@ fun StrategyAssistantApp() {
                     use24HourTime = appPreferences.use24HourTime,
                     onCreateTest = { sendAccountNotification("Test notification", "Notification center and feedback are working.") }
                 )
-                7 -> GameManagementScreen(padding = innerPadding, onBack = { currentScreen = 3 })
+                7 -> GameManagementScreen(
+                    padding = innerPadding,
+                    onBack = { currentScreen = 3 },
+                    games = savedGames,
+                    onAddGame = { name -> scope.launch { coreRepository.addGame(name) } },
+                    onRemoveGame = { name -> scope.launch { coreRepository.removeGame(name) } }
+                )
                 8 -> StorageBackupScreen(
                     padding = innerPadding,
                     onBack = { currentScreen = 3 },
