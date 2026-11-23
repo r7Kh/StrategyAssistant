@@ -67,23 +67,29 @@ class CoreSystemsRepository(context: Context) {
         val cleaned = name.trim()
         require(cleaned.isNotBlank()) { "Game name is required" }
         require(cleaned.length <= 80) { "Game name must be 80 characters or fewer" }
+        var wasAdded = false
         store.edit { prefs ->
             val current = decodeGames(prefs[Keys.games].orEmpty())
             if (current.none { it.equals(cleaned, ignoreCase = true) }) {
                 prefs[Keys.games] = encodeGames((current + cleaned).sortedBy { it.lowercase(Locale.ROOT) })
+                wasAdded = true
             }
         }
-        log("Games", "Game added", cleaned)
+        if (wasAdded) log("Games", "Game added", cleaned)
     }
 
     suspend fun removeGame(name: String) {
         val cleaned = name.trim()
+        var wasRemoved = false
         store.edit { prefs ->
             val current = decodeGames(prefs[Keys.games].orEmpty())
             val updated = current.filterNot { it.equals(cleaned, ignoreCase = true) }
-            if (updated.size != current.size) prefs[Keys.games] = encodeGames(updated)
+            if (updated.size != current.size) {
+                prefs[Keys.games] = encodeGames(updated)
+                wasRemoved = true
+            }
         }
-        log("Games", "Game removed", cleaned)
+        if (wasRemoved) log("Games", "Game removed", cleaned)
     }
 
     suspend fun addAccount(title: String, platform: String, username: String, notes: String) {
@@ -207,13 +213,13 @@ class CoreSystemsRepository(context: Context) {
         val accountsJson = root.optJSONArray("accounts") ?: JSONArray()
         val activitiesJson = root.optJSONArray("activities") ?: JSONArray()
         val notificationsJson = root.optJSONArray("notifications") ?: JSONArray()
-        val gamesJson = root.optJSONArray("games") ?: JSONArray()
+        val gamesJson = root.optJSONArray("games")
         val settings = root.optJSONObject("settings")
         store.edit { prefs ->
             prefs[Keys.accounts] = accountsJson.toString()
             prefs[Keys.activities] = activitiesJson.toString()
             prefs[Keys.notifications] = notificationsJson.toString()
-            prefs[Keys.games] = gamesJson.toString()
+            if (gamesJson != null) prefs[Keys.games] = gamesJson.toString()
         }
         if (settings != null) {
             settingsRepository.setLanguage(settings.optString("language", "English"))
