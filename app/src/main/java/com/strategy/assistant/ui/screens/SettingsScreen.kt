@@ -19,6 +19,7 @@ import android.content.Context
 import android.os.Vibrator
 import android.os.VibrationEffect
 import android.os.Build
+import android.view.SoundEffectConstants
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
