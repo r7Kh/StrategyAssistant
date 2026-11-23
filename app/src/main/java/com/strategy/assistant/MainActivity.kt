@@ -260,7 +260,8 @@ fun StrategyAssistantApp() {
                 9 -> SettingsScreen(
                     padding = innerPadding,
                     onBack = { currentScreen = 3 },
-                    onOpenStorage = { currentScreen = 8 }
+                    onOpenStorage = { currentScreen = 8 },
+                    onOpenAbout = { currentScreen = 10 }
                 )
                 10 -> AboutScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 11 -> AIControlPanelScreen(padding = innerPadding, onBack = { currentScreen = 3 })
