@@ -2,9 +2,6 @@ package com.strategy.assistant
 
 import android.net.Uri
 import android.media.RingtoneManager
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -277,16 +274,5 @@ private fun performNotificationFeedback(context: android.content.Context, prefer
     if (preferences.soundEnabled) runCatching {
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         if (uri != null) RingtoneManager.getRingtone(context, uri)?.play()
-    }
-    if (preferences.vibrationEnabled) runCatching {
-        val vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as? Vibrator
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(180, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(180)
-            }
-        }
     }
 }
