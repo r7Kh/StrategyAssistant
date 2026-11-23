@@ -12,6 +12,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import android.view.HapticFeedbackConstants
+import android.view.SoundEffectConstants
 import kotlinx.coroutines.launch
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
@@ -483,6 +486,10 @@ private fun SettingsToggle(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+    val view = LocalView.current
+    val feedbackRepository = remember(context) { AppPreferencesRepository(context) }
+    val feedbackPreferences by feedbackRepository.preferences.collectAsState(initial = AppPreferences())
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -510,7 +517,11 @@ private fun SettingsToggle(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = { value ->
+                if (feedbackPreferences.soundEnabled) view.playSoundEffect(SoundEffectConstants.CLICK)
+                if (feedbackPreferences.vibrationEnabled) view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                onCheckedChange(value)
+            },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = SettingsPurple,
