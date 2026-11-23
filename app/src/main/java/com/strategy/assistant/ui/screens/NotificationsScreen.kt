@@ -35,8 +35,8 @@ fun NotificationsScreen(
     val shown = notifications.filter {
         when (filter) {
             "Unread" -> !it.isRead
-            "Updates" -> it.category.equals("Updates", true)
-            "System" -> it.category.equals("System", true) || it.category.equals("Accounts", true)
+            "Accounts" -> it.category.equals("Accounts", true)
+            "System" -> it.category.equals("System", true)
             else -> true
         }
     }
@@ -50,11 +50,11 @@ fun NotificationsScreen(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Stat(notifications.size.toString(), "Total")
             Stat(notifications.count { !it.isRead }.toString(), "Unread")
-            Stat(notifications.count { it.category.equals("Updates", true) }.toString(), "Updates")
+            Stat(notifications.count { it.category.equals("Accounts", true) }.toString(), "Accounts")
         }
         Spacer(Modifier.height(15.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-            listOf("All", "Unread", "Updates", "System").forEach { item ->
+            listOf("All", "Unread", "Accounts", "System").forEach { item ->
                 FilterChip(selected = filter == item, onClick = { filter = item }, label = { Text(item, fontSize = 10.sp) })
             }
         }
