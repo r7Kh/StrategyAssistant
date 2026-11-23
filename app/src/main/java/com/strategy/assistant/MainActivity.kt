@@ -194,20 +194,23 @@ fun StrategyAssistantApp() {
                             sendAccountNotification("Account added", title)
                         }
                     },
-                    onUpdate = { account -> scope.launch { coreRepository.updateAccount(account) } },
+                    onUpdate = { account ->
+                        scope.launch {
+                            coreRepository.updateAccount(account)
+                            sendAccountNotification("Account updated", account.title)
+                        }
+                    },
                     onActivate = { id ->
                         scope.launch {
                             coreRepository.setActiveAccount(id)
-                            if (appPreferences.notificationsEnabled) coreRepository.addNotification(
-                                "Accounts", "Active account changed", accounts.firstOrNull { it.id == id }?.title.orEmpty()
-                            )
+                            sendAccountNotification("Active account changed", accounts.firstOrNull { it.id == id }?.title.orEmpty())
                         }
                     },
                     onRemove = { id ->
                         scope.launch {
                             val title = accounts.firstOrNull { it.id == id }?.title.orEmpty()
                             coreRepository.removeAccount(id)
-                            if (appPreferences.notificationsEnabled) coreRepository.addNotification("Accounts", "Account removed", title)
+                            sendAccountNotification("Account removed", title)
                         }
                     }
                 )
@@ -242,7 +245,13 @@ fun StrategyAssistantApp() {
                     onRestore = { restoreLauncher.launch(arrayOf("application/json", "text/json", "*/*")) },
                     onCleanCache = {
                         scope.launch {
-                            coreRepository.clearTemporaryCache()
+                            runCatching { coreRepository.clearTemporaryCache() }
+                                .onSuccess { deleted ->
+                                    Toast.makeText(context, "Cache cleaned: " + deleted + " bytes removed", Toast.LENGTH_LONG).show()
+                                }
+                                .onFailure { error ->
+                                    Toast.makeText(context, "Cache cleanup failed: " + error.message, Toast.LENGTH_LONG).show()
+                                }
                             cacheBytes = coreRepository.cacheSizeBytes()
                             appBytes = coreRepository.appStorageSizeBytes()
                         }
@@ -256,6 +265,24 @@ fun StrategyAssistantApp() {
                 10 -> AboutScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 11 -> AIControlPanelScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 else -> { currentScreen = 0 }
+            }
+        }
+    }
+}
+
+private fun performNotificationFeedback(context: android.content.Context, preferences: AppPreferences) {
+    if (preferences.soundEnabled) runCatching {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        if (uri != null) RingtoneManager.getRingtone(context, uri)?.play()
+    }
+    if (preferences.vibrationEnabled) runCatching {
+        val vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as? Vibrator
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(180, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(180)
             }
         }
     }
