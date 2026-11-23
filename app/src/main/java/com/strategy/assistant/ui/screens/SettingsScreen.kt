@@ -293,7 +293,7 @@ fun SettingsScreen(
             SettingsDivider()
             SettingsOption("✧", appText("smart_suggestions"), appText("smart_suggestions_description"), appText("coming_soon"))
             SettingsDivider()
-            SettingsOption("◈", appText("privacy_mode"), appText("privacy_mode_description"), appText("saved_preference"))
+            SettingsOption("◈", appText("privacy_mode"), appText("privacy_mode_description"), appText("coming_soon"))
             Text(appText("ai_settings_notice"), color = SettingsMuted, fontSize = 9.sp, lineHeight = 14.sp, modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp))
         }
 
