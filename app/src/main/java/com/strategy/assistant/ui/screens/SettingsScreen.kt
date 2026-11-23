@@ -208,8 +208,8 @@ fun SettingsScreen(
         SettingsGroup {
             SettingsToggle(
                 "♢",
-                appText("push_notifications"),
-                appText("push_notifications_description"),
+                appText("in_app_notifications"),
+                appText("in_app_notifications_description"),
                 notificationsEnabled
             ) { value -> scope.launch { repository.setNotificationsEnabled(value) } }
 
