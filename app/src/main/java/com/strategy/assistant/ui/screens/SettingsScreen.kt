@@ -377,7 +377,7 @@ fun SettingsScreen(
             title = { Text(appText("privacy_policy"), color = SettingsText) },
             text = {
                 Text(
-                    "Strategy Assistant stores account profiles, activity history, notifications and preferences locally on this device. Account passwords are not collected. Backups are created only when you export them. No cloud sync or analytics collection is currently active.",
+                    appText("privacy_policy_content"),
                     color = SettingsMuted
                 )
             },
