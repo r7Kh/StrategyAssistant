@@ -47,7 +47,6 @@ fun SettingsScreen(
     val notificationsEnabled = preferences.notificationsEnabled
     val soundEnabled = preferences.soundEnabled
     val vibrationEnabled = preferences.vibrationEnabled
-    val analyticsEnabled = preferences.analyticsEnabled
     val selectedLanguage = preferences.language
     var languageMenuExpanded by remember { mutableStateOf(false) }
 
