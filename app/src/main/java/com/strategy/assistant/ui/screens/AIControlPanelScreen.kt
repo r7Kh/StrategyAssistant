@@ -16,35 +16,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.launch
-import com.strategy.assistant.data.preferences.AppPreferences
-import com.strategy.assistant.data.preferences.AppPreferencesRepository
 import com.strategy.assistant.ui.localization.appText
 
 private val PanelGold = Color(0xFFD6B46A)
@@ -57,17 +41,6 @@ fun AIControlPanelScreen(
     padding: PaddingValues,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
-    val repository = remember(context) { AppPreferencesRepository(context) }
-    val preferences by repository.preferences.collectAsState(initial = AppPreferences())
-    val scope = rememberCoroutineScope()
-
-    val localProcessing = preferences.localProcessingEnabled
-    val cloudProcessing = preferences.cloudProcessingEnabled
-    val autoAnalysis = preferences.automaticAnalysisEnabled
-    val smartSuggestions = preferences.smartSuggestionsEnabled
-    val privacyMode = preferences.privacyModeEnabled
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -233,18 +206,6 @@ fun AIControlPanelScreen(
 }
 
 @Composable
-private fun PanelSectionTitle(title: String) {
-    Text(
-        text = title,
-        color = PanelGold,
-        fontSize = 11.sp,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = 1.5.sp,
-        modifier = Modifier.padding(bottom = 10.dp)
-    )
-}
-
-@Composable
 private fun StatusItem(
     title: String,
     value: String
@@ -265,62 +226,3 @@ private fun StatusItem(
     }
 }
 
-@Composable
-private fun PanelToggle(
-    icon: ImageVector,
-    title: String,
-    description: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        shape = RoundedCornerShape(15.dp),
-        color = PanelCard
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 13.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = PanelGold,
-                modifier = Modifier.size(21.dp)
-            )
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
-            ) {
-                Text(
-                    text = title,
-                    color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    color = PanelMuted,
-                    fontSize = 10.sp,
-                    lineHeight = 14.sp
-                )
-            }
-
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = PanelGold,
-                    uncheckedThumbColor = PanelMuted,
-                    uncheckedTrackColor = Color(0xFF393544)
-                )
-            )
-        }
-    }
-}
