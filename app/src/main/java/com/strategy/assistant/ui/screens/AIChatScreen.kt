@@ -20,16 +20,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.data.ai.AiMemoryRepository
 import com.strategy.assistant.data.ai.AiProviderStore
 import com.strategy.assistant.data.ai.DirectAiClient
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 private data class ChatLine(val role: String, val text: String)
 
 @Composable
-fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: () -> Unit) {
+fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: () -> Unit, onOpenMemory: () -> Unit) {
     val context = LocalContext.current
     val store = remember(context) { AiProviderStore(context) }
+    val memoryRepository = remember(context) { AiMemoryRepository(context) }
     val client = remember { DirectAiClient() }
     val scope = rememberCoroutineScope()
     var config by remember { mutableStateOf(store.load()) }
@@ -50,6 +53,7 @@ fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: ()
                 Text("INTELLIGENCE CHANNEL", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(config.provider.title + " • " + config.model, color = Color(0xFFD6B56D), fontSize = 10.sp)
             }
+            TextButton(onClick = onOpenMemory) { Text("MEMORY", color = Color(0xFFD6B56D), fontSize = 10.sp) }
             TextButton(onClick = onOpenProviders) { Text("PROVIDERS", color = Color(0xFFD6B56D), fontSize = 10.sp) }
         }
         HorizontalDivider(color = Color(0xFF292332))
@@ -114,8 +118,10 @@ fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: ()
                     sending = true
                     scope.launch {
                         runCatching {
+                            memoryRepository.rememberExplicitFacts(prompt)
                             val history = messages.dropLast(1).map { it.role to it.text }
-                            client.send(config, prompt, history)
+                            val memoryContext = memoryRepository.snapshot.first().toPromptContext()
+                            client.send(config, prompt, history, memoryContext)
                         }.onSuccess { reply ->
                             messages.add(ChatLine("assistant", reply.text))
                             config = store.load()
