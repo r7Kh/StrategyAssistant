@@ -24,10 +24,15 @@ class DirectAiClient {
             when (config.provider) {
                 AiProvider.GEMINI -> {
                     endpoint = base + "/v1beta/models/" + model + ":generateContent?key=" + config.apiKey
-                    val parts = JSONArray()
-                    history.takeLast(10).forEach { (_, text) -> parts.put(JSONObject().put("text", text)) }
-                    parts.put(JSONObject().put("text", prompt))
-                    body = JSONObject().put("contents", JSONArray().put(JSONObject().put("parts", parts)))
+                    val contents = JSONArray()
+                    history.takeLast(10).forEach { (role, text) ->
+                        contents.put(JSONObject()
+                            .put("role", if (role == "assistant") "model" else "user")
+                            .put("parts", JSONArray().put(JSONObject().put("text", text))))
+                    }
+                    contents.put(JSONObject().put("role", "user")
+                        .put("parts", JSONArray().put(JSONObject().put("text", prompt))))
+                    body = JSONObject().put("contents", contents)
                         .put("generationConfig", JSONObject().put("temperature", 0.65).put("maxOutputTokens", 1200))
                 }
                 AiProvider.ANTHROPIC -> {
