@@ -95,10 +95,10 @@ class AiMemoryRepository(context: Context) {
         val message = userMessage.trim().take(1000)
         if (message.isBlank()) return
         val patterns = listOf(
-            Regex("""(?i)(?:my name is|call me)\\s+([\\p{L}][\\p{L}0-9 _'-]{0,35})""") to "Personal",
+            Regex("""(?i)(?:my name is|call me)\\s+([\\p{L}][\\p{L}0-9_'-]{0,35})""") to "Personal",
             Regex("""(?i)(?:i play|i main)\\s+([\\p{L}][\\p{L}0-9 _'-]{0,45})""") to "Gaming",
             Regex("""(?i)(?:i prefer|i like|i love)\\s+([^.!?\\n]{2,100})""") to "Preferences",
-            Regex("""(?:اسمي|ناديني)\\s*([\\p{L}][\\p{L}0-9 _'-]{0,35})""") to "Personal",
+            Regex("""(?:اسمي|ناديني)\\s*([\\p{L}][\\p{L}0-9_'-]{0,35})""") to "Personal",
             Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\\s*([^.!؟?\\n]{2,60})""") to "Gaming",
             Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\\s*([^.!؟?\\n]{2,100})""") to "Preferences"
         )
