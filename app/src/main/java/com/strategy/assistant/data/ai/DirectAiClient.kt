@@ -32,7 +32,11 @@ class DirectAiClient {
                     }
                     contents.put(JSONObject().put("role", "user")
                         .put("parts", JSONArray().put(JSONObject().put("text", prompt))))
-                    body = JSONObject().put("contents", contents)
+                    body = JSONObject()
+                        .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put(
+                            "text", "You are STRATEGY ASSISTANT, a gaming strategy assistant. Reply in the user's language. Never invent game facts."
+                        ))))
+                        .put("contents", contents)
                         .put("generationConfig", JSONObject().put("temperature", 0.65).put("maxOutputTokens", 1200))
                 }
                 AiProvider.ANTHROPIC -> {
@@ -42,7 +46,9 @@ class DirectAiClient {
                         messages.put(JSONObject().put("role", if (role == "assistant") "assistant" else "user").put("content", text))
                     }
                     messages.put(JSONObject().put("role", "user").put("content", prompt))
-                    body = JSONObject().put("model", model).put("max_tokens", 1200).put("messages", messages)
+                    body = JSONObject().put("model", model).put("max_tokens", 1200)
+                        .put("system", "You are STRATEGY ASSISTANT, a gaming strategy assistant. Reply in the user's language. Never invent game facts.")
+                        .put("messages", messages)
                 }
                 else -> {
                     endpoint = base + "/v1/chat/completions"
@@ -85,8 +91,14 @@ class DirectAiClient {
                 val json = JSONObject(raw)
                 val answer = when (config.provider) {
                     AiProvider.GEMINI -> json.optJSONArray("candidates")?.optJSONObject(0)
-                        ?.optJSONObject("content")?.optJSONArray("parts")?.optJSONObject(0)?.optString("text")
-                    AiProvider.ANTHROPIC -> json.optJSONArray("content")?.optJSONObject(0)?.optString("text")
+                        ?.optJSONObject("content")?.optJSONArray("parts")?.let { parts ->
+                            (0 until parts.length()).mapNotNull { parts.optJSONObject(it)?.optString("text") }
+                                .filter { it.isNotBlank() }.joinToString("\\n")
+                        }
+                    AiProvider.ANTHROPIC -> json.optJSONArray("content")?.let { blocks ->
+                        (0 until blocks.length()).mapNotNull { blocks.optJSONObject(it)?.optString("text") }
+                            .filter { it.isNotBlank() }.joinToString("\\n")
+                    }
                     else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
                 }.orEmpty().trim()
                 if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
