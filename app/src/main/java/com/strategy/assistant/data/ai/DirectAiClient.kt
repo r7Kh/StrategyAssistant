@@ -70,7 +70,13 @@ class DirectAiClient {
             require(prompt.isNotBlank()) { "Message cannot be empty." }
             val model = config.model.ifBlank { config.provider.defaultModel }
             val base = config.baseUrl.trim().trimEnd('/')
-            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
+            val researchInstruction = if (config.provider == AiProvider.GEMINI && config.webResearchEnabled) {
+                "\n\nWEB RESEARCH STATUS: ENABLED. Use the Google Search tool for current game facts, recent updates, balance changes, and any question where fresh sources materially improve accuracy. Cite the sources returned by the tool."
+            } else {
+                "\n\nWEB RESEARCH STATUS: DISABLED. No live web search tool is available for this request. Never claim that you searched or verified current information. Be transparent when a current fact cannot be confirmed from the supplied context."
+            }
+            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + researchInstruction +
+                if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
             require(base.startsWith("https://")) { "Provider URL must use HTTPS." }
 
             val endpoint: String
