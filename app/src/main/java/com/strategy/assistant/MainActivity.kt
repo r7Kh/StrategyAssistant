@@ -40,6 +40,7 @@ import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
 import com.strategy.assistant.ui.localization.LocalAppLanguage
 import com.strategy.assistant.ui.screens.AICenterScreen
+import com.strategy.assistant.ui.screens.AIChatScreen
 import com.strategy.assistant.ui.screens.AIControlPanelScreen
 import com.strategy.assistant.ui.screens.AboutScreen
 import com.strategy.assistant.ui.screens.AccountsScreen
@@ -132,7 +133,7 @@ fun StrategyAssistantApp() {
         Triple("▣", if (isArabic) "الألعاب" else "Games", 2),
         Triple("☰", if (isArabic) "المزيد" else "More", 3)
     )
-    val selectedNavigationTab = if (currentScreen >= 4) 3 else currentScreen
+    val selectedNavigationTab = when { currentScreen == 12 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
 
     CompositionLocalProvider(
         LocalAppLanguage provides appPreferences.language,
@@ -141,21 +142,23 @@ fun StrategyAssistantApp() {
         Scaffold(
             containerColor = AppBackground,
             bottomBar = {
-                NavigationBar(containerColor = Color(0xFF100C18), contentColor = Color.White) {
-                    navigationItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = selectedNavigationTab == item.third,
-                            onClick = { currentScreen = item.third },
-                            icon = { Text(item.first, fontSize = 22.sp, fontWeight = FontWeight.Bold) },
-                            label = { Text(item.second, fontSize = 10.sp) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = GoldAccent,
-                                selectedTextColor = GoldAccent,
-                                unselectedIconColor = SecondaryText,
-                                unselectedTextColor = SecondaryText,
-                                indicatorColor = PurpleIndicator
+                if (currentScreen != 12) {
+                    NavigationBar(containerColor = Color(0xFF100C18), contentColor = Color.White) {
+                        navigationItems.forEach { item ->
+                            NavigationBarItem(
+                                selected = selectedNavigationTab == item.third,
+                                onClick = { currentScreen = item.third },
+                                icon = { Text(item.first, fontSize = 22.sp, fontWeight = FontWeight.Bold) },
+                                label = { Text(item.second, fontSize = 10.sp) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = GoldAccent,
+                                    selectedTextColor = GoldAccent,
+                                    unselectedIconColor = SecondaryText,
+                                    unselectedTextColor = SecondaryText,
+                                    indicatorColor = PurpleIndicator
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -168,7 +171,7 @@ fun StrategyAssistantApp() {
                     onOpenActivity = { currentScreen = 5 },
                     onOpenManagement = { currentScreen = 7 }
                 )
-                1 -> Box(Modifier.fillMaxSize().padding(innerPadding)) { AICenterScreen() }
+                1 -> Box(Modifier.fillMaxSize().padding(innerPadding)) { AICenterScreen(onOpenChat = { currentScreen = 12 }, onOpenProviders = { currentScreen = 11 }) }
                 2 -> GameLibraryScreen(
                     padding = innerPadding,
                     games = savedGames,
@@ -277,6 +280,7 @@ fun StrategyAssistantApp() {
                 )
                 10 -> AboutScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 11 -> AIControlPanelScreen(padding = innerPadding, onBack = { currentScreen = 3 })
+                12 -> AIChatScreen(padding = innerPadding, onBack = { currentScreen = 1 }, onOpenProviders = { currentScreen = 11 })
                 else -> { currentScreen = 0 }
             }
         }

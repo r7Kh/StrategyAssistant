@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -59,7 +61,7 @@ private val QuietText = Color(0xFF82798E)
 private val FineLine = Color(0xFF292332)
 
 @Composable
-fun AICenterScreen() {
+fun AICenterScreen(onOpenChat: () -> Unit = {}, onOpenProviders: () -> Unit = {}) {
 
     BoxWithConstraints(
         modifier = Modifier
@@ -250,6 +252,21 @@ fun AICenterScreen() {
                         )
                     )
             )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Button(
+                onClick = onOpenChat,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = RoyalGold, contentColor = Color(0xFF17111F))
+            ) { Text("OPEN INTELLIGENCE CHANNEL", fontSize = 9.sp, fontWeight = FontWeight.Bold) }
+            Button(
+                onClick = onOpenProviders,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF241B32), contentColor = RoyalGold)
+            ) { Text("AI SETUP", fontSize = 9.sp) }
         }
 
         // Keep the heading copy in the normal flow. The orb itself lives in
