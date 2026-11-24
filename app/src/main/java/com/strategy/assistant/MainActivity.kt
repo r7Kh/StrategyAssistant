@@ -142,21 +142,23 @@ fun StrategyAssistantApp() {
         Scaffold(
             containerColor = AppBackground,
             bottomBar = {
-                NavigationBar(containerColor = Color(0xFF100C18), contentColor = Color.White) {
-                    navigationItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = selectedNavigationTab == item.third,
-                            onClick = { currentScreen = item.third },
-                            icon = { Text(item.first, fontSize = 22.sp, fontWeight = FontWeight.Bold) },
-                            label = { Text(item.second, fontSize = 10.sp) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = GoldAccent,
-                                selectedTextColor = GoldAccent,
-                                unselectedIconColor = SecondaryText,
-                                unselectedTextColor = SecondaryText,
-                                indicatorColor = PurpleIndicator
+                if (currentScreen != 12) {
+                    NavigationBar(containerColor = Color(0xFF100C18), contentColor = Color.White) {
+                        navigationItems.forEach { item ->
+                            NavigationBarItem(
+                                selected = selectedNavigationTab == item.third,
+                                onClick = { currentScreen = item.third },
+                                icon = { Text(item.first, fontSize = 22.sp, fontWeight = FontWeight.Bold) },
+                                label = { Text(item.second, fontSize = 10.sp) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = GoldAccent,
+                                    selectedTextColor = GoldAccent,
+                                    unselectedIconColor = SecondaryText,
+                                    unselectedTextColor = SecondaryText,
+                                    indicatorColor = PurpleIndicator
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
