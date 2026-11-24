@@ -84,6 +84,7 @@ fun AIControlPanelScreen(padding: PaddingValues, onBack: () -> Unit) {
                         AiProvider.entries.forEach { item ->
                             DropdownMenuItem(text = { Text(item.title) }, onClick = {
                                 provider = item
+                                hasSavedKey = store.hasKey(item)
                                 if (item != AiProvider.CUSTOM) baseUrl = item.defaultBaseUrl
                                 if (item.defaultModel.isNotBlank()) model = item.defaultModel
                                 menuExpanded = false
@@ -118,7 +119,7 @@ fun AIControlPanelScreen(padding: PaddingValues, onBack: () -> Unit) {
                     onClick = {
                         runCatching {
                             store.save(AiProviderConfig(provider, apiKey, model, baseUrl))
-                            hasSavedKey = hasSavedKey || apiKey.isNotBlank()
+                            hasSavedKey = store.hasKey(provider)
                             apiKey = ""
                             Toast.makeText(context, "AI provider settings saved securely", Toast.LENGTH_SHORT).show()
                         }.onFailure {
