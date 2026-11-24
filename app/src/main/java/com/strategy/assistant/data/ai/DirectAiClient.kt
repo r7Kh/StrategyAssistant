@@ -41,12 +41,13 @@ ${StrategyProductKnowledge.CONTENT}
 """
 
 class DirectAiClient {
-    suspend fun send(config: AiProviderConfig, prompt: String, history: List<Pair<String, String>> = emptyList()): AiReply =
+    suspend fun send(config: AiProviderConfig, prompt: String, history: List<Pair<String, String>> = emptyList(), memoryContext: String = ""): AiReply =
         withContext(Dispatchers.IO) {
             require(config.apiKey.isNotBlank()) { "Add your provider API key in AI Control Panel first." }
             require(prompt.isNotBlank()) { "Message cannot be empty." }
             val model = config.model.ifBlank { config.provider.defaultModel }
             val base = config.baseUrl.trim().trimEnd('/')
+            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
             require(base.startsWith("https://")) { "Provider URL must use HTTPS." }
 
             val endpoint: String
@@ -64,7 +65,7 @@ class DirectAiClient {
                         .put("parts", JSONArray().put(JSONObject().put("text", prompt))))
                     body = JSONObject()
                         .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put(
-                            "text", STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim()
+                            "text", systemPrompt
                         ))))
                         .put("contents", contents)
                         .put("generationConfig", JSONObject().put("temperature", 0.55).put("maxOutputTokens", 1200))
@@ -77,13 +78,13 @@ class DirectAiClient {
                     }
                     messages.put(JSONObject().put("role", "user").put("content", prompt))
                     body = JSONObject().put("model", model).put("max_tokens", 1200)
-                        .put("system", STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim())
+                        .put("system", systemPrompt)
                         .put("messages", messages)
                 }
                 else -> {
                     endpoint = base + "/v1/chat/completions"
                     val messages = JSONArray()
-                    messages.put(JSONObject().put("role", "system").put("content", STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim()))
+                    messages.put(JSONObject().put("role", "system").put("content", systemPrompt))
                     history.takeLast(10).forEach { (role, text) ->
                         messages.put(JSONObject().put("role", if (role == "assistant") "assistant" else "user").put("content", text))
                     }
