@@ -1,53 +1,24 @@
-# STRATEGY ASSISTANT — AI Architecture
+# STRATEGY ASSISTANT — BYOK AI Architecture
 
-## Current provider
+## Product decision
+STRATEGY ASSISTANT uses Bring Your Own Key (BYOK). Each user supplies and pays for their own provider API usage. AI requests go directly from the Android device to the selected provider; the project does not proxy prompts or hold provider keys.
 
-Gemini Developer API, initially configured with `gemini-3.8-flash`. The model identifier is an environment setting, not an Android constant.
+## Initial provider adapters
+- Google Gemini REST API
+- OpenAI Chat Completions API
+- Anthropic Messages API
+- OpenRouter (OpenAI-compatible)
+- Custom OpenAI-compatible HTTPS endpoint
+
+## Key storage
+API keys are encrypted with AES-GCM using a non-exportable key held by Android Keystore. The encrypted value is stored in app-private SharedPreferences. Keys must never be included in logs, backups, analytics, source control, or exported app data. Android Keystore reduces extraction risk but cannot protect secrets from a fully compromised/rooted device or malicious instrumentation.
 
 ## Request flow
+Jetpack Compose UI → DirectAiClient → selected provider HTTPS API.
+No Strategy Assistant backend is required for chat. A future optional backend may support features that genuinely need server-side processing, but it must not become a mandatory proxy for BYOK chat.
 
-`Jetpack Compose UI → Android AI data layer → HTTPS backend → Provider adapter → Gemini API`
+## User responsibilities
+Users create their own API keys and are responsible for provider billing, quotas, terms, and data handling. The app should clearly show which provider receives each prompt and warn users not to send sensitive information.
 
-The Gemini API key exists only in the backend environment. It must never be stored in Android resources, BuildConfig, DataStore, source control, or the APK.
-
-## Backend contract
-
-### Health
-`GET /health`
-
-Returns provider, configured model, and a boolean configuration status. Never returns credentials.
-
-### Chat
-`POST /v1/chat`
-
-Request:
-```json
-{
-  "message": "How should I improve my opening strategy?",
-  "history": [
-    { "role": "user", "text": "I play ..." },
-    { "role": "model", "text": "..." }
-  ]
-}
-```
-
-Response:
-```json
-{
-  "reply": " ... ",
-  "provider": "gemini",
-  "model": "gemini-3.8-flash"
-}
-```
-
-## Provider independence
-
-The mobile app talks only to the Strategy Assistant backend contract. Provider selection, model selection, credentials, retries, and future paid providers stay server-side. A future OpenAI or other adapter should implement the same internal interface and response shape.
-
-## Free-tier and privacy note
-
-Gemini API free-tier availability, model access, and quotas depend on the Google AI Studio project and may change. Google's published pricing page says free-tier content may be used to improve its products. Do not send sensitive personal data or confidential game/account credentials. Verify the active project's quotas in AI Studio before testing.
-
-## Production gate
-
-Before public multi-user deployment: authentication, user-bound rate limits and quotas, request logging with prompt redaction, abuse monitoring, TLS-only deployment, managed secrets, privacy disclosure/consent, and automated backend tests.
+## Implementation note
+Provider API compatibility and model availability can change. Keep model IDs editable and test each provider adapter before release.
