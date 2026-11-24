@@ -88,6 +88,18 @@ fun AICenterScreen() {
             animationSpec = infiniteRepeatable(tween(1700), RepeatMode.Reverse),
             label = "lightning_pulse"
         )
+        val orbDriftX by fieldMotion.animateFloat(
+            initialValue = -9.dp.value,
+            targetValue = 9.dp.value,
+            animationSpec = infiniteRepeatable(tween(5200), RepeatMode.Reverse),
+            label = "orb_drift_x"
+        )
+        val orbDriftY by fieldMotion.animateFloat(
+            initialValue = 7.dp.value,
+            targetValue = -7.dp.value,
+            animationSpec = infiniteRepeatable(tween(4100), RepeatMode.Reverse),
+            label = "orb_drift_y"
+        )
         Canvas(Modifier.fillMaxSize()) {
             val w = size.width
             val h = size.height
@@ -535,7 +547,7 @@ fun AICenterScreen() {
 
             AIOrbArtwork(
                 modifier = Modifier
-                    .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
+                    .offset { IntOffset((orbX + with(density) { orbDriftX.dp.toPx() }).roundToInt(), (orbY + with(density) { orbDriftY.dp.toPx() }).roundToInt()) }
                     .pointerInput(maxX, maxY) {
                         detectDragGestures { change, dragAmount ->
                             change.consume()
