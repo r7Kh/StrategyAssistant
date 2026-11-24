@@ -93,9 +93,6 @@ fun RoyalOrb3DView(
                 ModelNode(
                     modelInstance = instance,
                     scaleToUnits = 1.8f,
-                    // Absorb SceneView's internal touch gestures on the model.
-                    // This also blocks its built-in double-tap camera zoom.
-                    isEditable = true,
                     autoAnimate = true,
                     animationLoop = true
                 )
