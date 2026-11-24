@@ -76,7 +76,28 @@ fun AIChatScreen(
     var input by remember { mutableStateOf("") }
     var sending by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    var showWebResearchApproval by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<ChatLine>() }
+
+    if (showWebResearchApproval) {
+        AlertDialog(
+            onDismissRequest = { showWebResearchApproval = false },
+            containerColor = Color(0xFF171220),
+            titleContentColor = Color(0xFFE7D7B7),
+            textContentColor = Color(0xFFC8BDCF),
+            title = { Text("Enable Google Search?") },
+            text = { Text("Live web research uses Google Search grounding through your own Gemini API account. Google currently lists this feature as unavailable on the Gemini 3 free tier. On an eligible paid-tier project, the first 5,000 search requests per month are free; after that, Google lists $14 per 1,000 requests. One message may trigger more than one search query. Any charges are billed by Google to your API account.\n\nWeb research stays OFF unless you confirm.", fontSize = 12.sp, lineHeight = 18.sp) },
+            confirmButton = {
+                TextButton(onClick = {
+                    val updated = config.copy(webResearchEnabled = true)
+                    store.save(updated)
+                    config = updated
+                    showWebResearchApproval = false
+                }) { Text("ENABLE", color = Color(0xFFD6B56D)) }
+            },
+            dismissButton = { TextButton(onClick = { showWebResearchApproval = false }) { Text("NOT NOW", color = Color(0xFFB5A9C3)) } }
+        )
+    }
 
     Box(Modifier.fillMaxSize().background(Color(0xFF080610))) {
         AnimatedIntelligenceBackdrop(Modifier.fillMaxSize())
@@ -94,6 +115,22 @@ fun AIChatScreen(
                         Box(Modifier.size(6.dp).background(Color(0xFFD6B56D), CircleShape))
                         Spacer(Modifier.width(6.dp))
                         Text(config.provider.title + " • " + config.model, color = Color(0xFFC8B78E), fontSize = 10.sp)
+                    }
+                }
+                if (config.provider == com.strategy.assistant.data.ai.AiProvider.GEMINI) {
+                    TextButton(
+                        onClick = {
+                            if (config.webResearchEnabled) {
+                                val updated = config.copy(webResearchEnabled = false)
+                                store.save(updated)
+                                config = updated
+                            } else {
+                                showWebResearchApproval = true
+                            }
+                        },
+                        contentPadding = PaddingValues(horizontal = 4.dp)
+                    ) {
+                        Text(if (config.webResearchEnabled) "WEB ON" else "WEB OFF", color = if (config.webResearchEnabled) Color(0xFFB8D99A) else Color(0xFF9A8DA8), fontSize = 9.sp, letterSpacing = 0.5.sp)
                     }
                 }
                 TextButton(onClick = onOpenMemory, contentPadding = PaddingValues(horizontal = 5.dp)) {
