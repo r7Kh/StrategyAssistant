@@ -46,8 +46,7 @@ class AiProviderStore(context: Context) {
         val editor = prefs.edit().putString("provider", config.provider.id)
             .putString("model", config.model.trim())
             .putString("base_url", config.baseUrl.trim().trimEnd('/'))
-        if (config.apiKey.isBlank()) editor.remove("secret")
-        else editor.putString("secret", encrypt(config.apiKey.trim()))
+        if (config.apiKey.isNotBlank()) editor.putString("secret", encrypt(config.apiKey.trim()))
         editor.apply()
     }
 
