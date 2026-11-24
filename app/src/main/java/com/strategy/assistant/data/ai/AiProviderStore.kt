@@ -46,9 +46,11 @@ class AiProviderStore(context: Context) {
         val editor = prefs.edit().putString("provider", config.provider.id)
             .putString("model", config.model.trim())
             .putString("base_url", config.baseUrl.trim().trimEnd('/'))
-        if (config.apiKey.isNotBlank()) editor.putString("secret", encrypt(config.apiKey.trim()))
+        if (config.apiKey.isNotBlank()) editor.putString(secretName(config.provider), encrypt(config.apiKey.trim()))
         editor.apply()
     }
+
+    fun hasKey(provider: AiProvider): Boolean = prefs.getString(secretName(provider), null)?.let { runCatching { decrypt(it) }.isSuccess } == true
 
     fun clearKey(provider: AiProvider = load().provider) { prefs.edit().remove(secretName(provider)).apply() }
 
