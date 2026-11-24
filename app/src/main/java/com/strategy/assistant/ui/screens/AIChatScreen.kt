@@ -14,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +38,7 @@ fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: ()
     var error by remember { mutableStateOf<String?>(null) }
     val messages = remember { mutableStateListOf<ChatLine>() }
 
-    Column(Modifier.fillMaxSize().background(Color(0xFF090710)).padding(padding)) {
+    Column(Modifier.fillMaxSize().background(Color(0xFF090710)).padding(padding).imePadding()) {
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -52,7 +54,7 @@ fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: ()
         }
         HorizontalDivider(color = Color(0xFF292332))
         if (config.apiKey.isBlank()) {
-            Column(Modifier.fillMaxSize().padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Column(Modifier.weight(1f).fillMaxWidth().padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                 Text("AI CONNECTION REQUIRED", color = Color(0xFFD6B56D), fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
                 Spacer(Modifier.height(10.dp))
                 Text("Add your own provider API key to activate the Intelligence Channel. Your key stays encrypted on this device.", color = Color(0xFFAAA0B9), fontSize = 12.sp, lineHeight = 19.sp)
@@ -92,11 +94,16 @@ fun AIChatScreen(padding: PaddingValues, onBack: () -> Unit, onOpenProviders: ()
             ) {
                 BasicTextField(
                     value = input, onValueChange = { input = it },
-                    modifier = Modifier.weight(1f).padding(horizontal = 10.dp, vertical = 12.dp),
-                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.White, fontSize = 13.sp),
+                    modifier = Modifier.weight(1f).padding(horizontal = 10.dp, vertical = 10.dp),
+                    textStyle = TextStyle(color = Color.White, fontSize = 15.sp, lineHeight = 21.sp),
+                    cursorBrush = SolidColor(Color(0xFFD6B56D)),
+                    minLines = 1,
+                    maxLines = 4,
                     decorationBox = { inner ->
-                        if (input.isEmpty()) Text("Write your command…", color = Color(0xFF82798E), fontSize = 13.sp)
-                        inner()
+                        Box {
+                            if (input.isEmpty()) Text("Write your message…", color = Color(0xFFAAA0B9), fontSize = 14.sp)
+                            inner()
+                        }
                     }
                 )
                 IconButton(enabled = !sending && input.isNotBlank(), onClick = {
