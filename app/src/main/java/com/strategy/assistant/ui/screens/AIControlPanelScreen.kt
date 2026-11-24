@@ -132,7 +132,7 @@ fun AIControlPanelScreen(padding: PaddingValues, onBack: () -> Unit) {
                 if (hasSavedKey) {
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = {
-                        store.clearKey()
+                        store.clearKey(provider)
                         hasSavedKey = false
                         apiKey = ""
                         Toast.makeText(context, "Saved API key removed", Toast.LENGTH_SHORT).show()
