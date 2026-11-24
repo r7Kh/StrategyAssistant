@@ -67,6 +67,7 @@ fun AICenterScreen() {
         var orbY by remember(maxY) {
             mutableStateOf(with(density) { 112.dp.toPx() }.coerceAtMost(maxY))
         }
+        var orbAwake by remember { mutableStateOf(false) }
 
         Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -441,12 +442,12 @@ fun AICenterScreen() {
                 }
                 .pointerInput(Unit) {
                     detectTapGestures {
-                        // Tap is reserved for awakening feedback; it never changes size or position.
+                        orbAwake = !orbAwake
                     }
                 },
             orbSize = orbSize,
             status = appText("awaiting_command"),
-            active = false
+            active = orbAwake
         )
         }
     }
