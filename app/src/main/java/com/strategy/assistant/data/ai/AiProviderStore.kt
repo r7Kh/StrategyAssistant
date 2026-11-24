@@ -11,7 +11,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 enum class AiProvider(val id: String, val title: String, val defaultModel: String, val defaultBaseUrl: String) {
-    GEMINI("gemini", "Google Gemini", "gemini-2.5-flash", "https://generativelanguage.googleapis.com"),
+    GEMINI("gemini", "Google Gemini", "gemini-3.8-flash", "https://generativelanguage.googleapis.com"),
     OPENAI("openai", "OpenAI", "gpt-4.1-mini", "https://api.openai.com"),
     ANTHROPIC("anthropic", "Anthropic Claude", "claude-3-5-haiku-latest", "https://api.anthropic.com"),
     OPENROUTER("openrouter", "OpenRouter", "openai/gpt-4.1-mini", "https://openrouter.ai/api"),
