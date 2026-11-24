@@ -93,11 +93,11 @@ class DirectAiClient {
                     AiProvider.GEMINI -> json.optJSONArray("candidates")?.optJSONObject(0)
                         ?.optJSONObject("content")?.optJSONArray("parts")?.let { parts ->
                             (0 until parts.length()).mapNotNull { parts.optJSONObject(it)?.optString("text") }
-                                .filter { it.isNotBlank() }.joinToString("\\n")
+                                .filter { it.isNotBlank() }.joinToString("\n")
                         }
                     AiProvider.ANTHROPIC -> json.optJSONArray("content")?.let { blocks ->
                         (0 until blocks.length()).mapNotNull { blocks.optJSONObject(it)?.optString("text") }
-                            .filter { it.isNotBlank() }.joinToString("\\n")
+                            .filter { it.isNotBlank() }.joinToString("\n")
                     }
                     else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
                 }.orEmpty().trim()
