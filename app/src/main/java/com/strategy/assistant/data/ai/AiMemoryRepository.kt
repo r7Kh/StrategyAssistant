@@ -53,7 +53,7 @@ class AiMemoryRepository(context: Context) {
     }
 
     suspend fun add(category: String, content: String) {
-        val cleaned = content.trim().replace(Regex("\s+"), " ")
+        val cleaned = content.trim().replace(Regex("\\s+"), " ")
         require(cleaned.length in 2..240) { "Memory must be between 2 and 240 characters." }
         val safeCategory = category.trim().ifBlank { "General" }.take(32)
         store.edit { prefs ->
@@ -67,7 +67,7 @@ class AiMemoryRepository(context: Context) {
     }
 
     suspend fun update(id: String, category: String, content: String) {
-        val cleaned = content.trim().replace(Regex("\s+"), " ")
+        val cleaned = content.trim().replace(Regex("\\s+"), " ")
         require(cleaned.length in 2..240) { "Memory must be between 2 and 240 characters." }
         store.edit { prefs ->
             prefs[Keys.items] = encode(decode(prefs[Keys.items].orEmpty()).map {
