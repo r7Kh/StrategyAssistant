@@ -1,36 +1,29 @@
-
 package com.strategy.assistant.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.strategy.assistant.ui.localization.appText
+import com.strategy.assistant.data.ai.AiProvider
+import com.strategy.assistant.data.ai.AiProviderConfig
+import com.strategy.assistant.data.ai.AiProviderStore
 
 private val PanelGold = Color(0xFFD6B46A)
 private val PanelBackground = Color(0xFF090811)
@@ -38,192 +31,127 @@ private val PanelCard = Color(0xFF151321)
 private val PanelMuted = Color(0xFF9692A5)
 
 @Composable
-fun AIControlPanelScreen(
-    padding: PaddingValues,
-    onBack: () -> Unit
-) {
+fun AIControlPanelScreen(padding: PaddingValues, onBack: () -> Unit) {
+    val context = LocalContext.current
+    val store = remember(context) { AiProviderStore(context) }
+    val saved = remember { store.load() }
+    var provider by remember { mutableStateOf(saved.provider) }
+    var apiKey by remember { mutableStateOf("") }
+    var model by remember { mutableStateOf(saved.model) }
+    var baseUrl by remember { mutableStateOf(saved.baseUrl) }
+    var keyVisible by remember { mutableStateOf(false) }
+    var menuExpanded by remember { mutableStateOf(false) }
+    var hasSavedKey by remember { mutableStateOf(saved.apiKey.isNotBlank()) }
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PanelBackground)
-            .padding(padding)
-            .padding(horizontal = 20.dp)
+        modifier = Modifier.fillMaxSize().background(PanelBackground).padding(padding)
+            .padding(horizontal = 20.dp).verticalScroll(rememberScrollState())
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 22.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 22.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = appText("back"),
-                    tint = Color.White
-                )
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
-
             Column {
-                Text(
-                    text = appText("ai_control_panel"),
-                    color = Color.White,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = appText("manage_ai_experience"),
-                    color = PanelMuted,
-                    fontSize = 12.sp
-                )
+                Text("AI PROVIDER MANAGER", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                Text("Bring Your Own API Key", color = PanelMuted, fontSize = 12.sp)
             }
         }
 
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(22.dp),
-            color = PanelCard
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        modifier = Modifier.size(48.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        color = Color(0xFF29213C)
-                    ) {
-                        androidx.compose.foundation.layout.Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                tint = PanelGold,
-                                modifier = Modifier.size(27.dp)
-                            )
+        Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = PanelCard) {
+            Column(Modifier.padding(18.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Key, contentDescription = null, tint = PanelGold)
+                    Spacer(Modifier.width(10.dp))
+                    Column {
+                        Text("YOUR AI, YOUR ACCOUNT", color = PanelGold, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
+                        Text("Requests go directly from your device to the provider.", color = PanelMuted, fontSize = 11.sp)
+                    }
+                }
+                Spacer(Modifier.height(20.dp))
+                Text("PROVIDER", color = PanelMuted, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Spacer(Modifier.height(7.dp))
+                Box {
+                    OutlinedButton(onClick = { menuExpanded = true }, modifier = Modifier.fillMaxWidth()) {
+                        Text(provider.title, color = Color.White, modifier = Modifier.weight(1f))
+                        Text("⌄", color = PanelGold)
+                    }
+                    DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                        AiProvider.entries.forEach { item ->
+                            DropdownMenuItem(text = { Text(item.title) }, onClick = {
+                                provider = item
+                                if (item != AiProvider.CUSTOM) baseUrl = item.defaultBaseUrl
+                                if (item.defaultModel.isNotBlank()) model = item.defaultModel
+                                menuExpanded = false
+                            })
                         }
                     }
-
-                    Column(
-                        modifier = Modifier.padding(start = 13.dp)
-                    ) {
-                        Text(
-                            text = appText("ai_assistant"),
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = appText("coming_soon"),
-                            color = Color(0xFF65C99A),
-                            fontSize = 12.sp
-                        )
-                    }
                 }
-
-                Spacer(modifier = Modifier.height(22.dp))
-
-                Text(
-                    text = appText("ai_system_status"),
-                    color = PanelMuted,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.5.sp
+                Spacer(Modifier.height(15.dp))
+                OutlinedTextField(
+                    value = apiKey, onValueChange = { apiKey = it }, modifier = Modifier.fillMaxWidth(),
+                    label = { Text(if (hasSavedKey) "API Key (saved — leave blank to keep)" else "API Key") },
+                    singleLine = true,
+                    visualTransformation = if (keyVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = { TextButton(onClick = { keyVisible = !keyVisible }) { Text(if (keyVisible) "Hide" else "Show") } }
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
+                Spacer(Modifier.height(13.dp))
+                OutlinedTextField(
+                    value = model, onValueChange = { model = it }, modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Model ID") }, singleLine = true
+                )
+                if (provider == AiProvider.CUSTOM) {
+                    Spacer(Modifier.height(13.dp))
+                    OutlinedTextField(
+                        value = baseUrl, onValueChange = { baseUrl = it }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text("OpenAI-compatible Base URL") }, singleLine = true,
+                        placeholder = { Text("https://your-provider.example") }
+                    )
+                }
+                Spacer(Modifier.height(18.dp))
+                Button(
+                    onClick = {
+                        runCatching {
+                            store.save(AiProviderConfig(provider, apiKey, model, baseUrl))
+                            hasSavedKey = hasSavedKey || apiKey.isNotBlank()
+                            apiKey = ""
+                            Toast.makeText(context, "AI provider settings saved securely", Toast.LENGTH_SHORT).show()
+                        }.onFailure {
+                            Toast.makeText(context, "Could not save settings: " + it.message, Toast.LENGTH_LONG).show()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    StatusItem(appText("local_ai"), appText("coming_soon"))
-                    StatusItem(appText("cloud_ai"), appText("coming_soon"))
-                    StatusItem(appText("mode"), appText("coming_soon"))
-                }
-            }
-        }
+                    colors = ButtonDefaults.buttonColors(containerColor = PanelGold, contentColor = Color(0xFF17111F))
+                ) { Text("SAVE PROVIDER", fontWeight = FontWeight.Bold) }
 
-        Spacer(modifier = Modifier.height(25.dp))
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = PanelCard
-        ) {
-            Column(Modifier.padding(18.dp)) {
-                Text(appText("ai_engine_unavailable"), color = PanelGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Text(appText("ai_settings_notice"), color = PanelMuted, fontSize = 11.sp, lineHeight = 17.sp)
-                Spacer(Modifier.height(14.dp))
-                listOf(
-                    appText("local_ai_processing"),
-                    appText("cloud_ai_processing"),
-                    appText("automatic_analysis"),
-                    appText("smart_suggestions"),
-                    appText("privacy_mode")
-                ).forEachIndexed { index, feature ->
-                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(feature, Modifier.weight(1f), color = Color.White, fontSize = 12.sp)
-                        Text(appText("coming_soon"), color = PanelGold, fontSize = 10.sp)
+                if (hasSavedKey) {
+                    Spacer(Modifier.height(8.dp))
+                    TextButton(onClick = {
+                        store.clearKey()
+                        hasSavedKey = false
+                        apiKey = ""
+                        Toast.makeText(context, "Saved API key removed", Toast.LENGTH_SHORT).show()
+                    }, modifier = Modifier.align(Alignment.End)) {
+                        Text("Remove saved API key", color = Color(0xFFE39B9B))
                     }
-                    if (index != 4) androidx.compose.material3.HorizontalDivider(color = Color(0xFF393544))
                 }
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
-            shape = RoundedCornerShape(14.dp),
-            color = Color(0xFF211B30)
-        ) {
-            Row(
-                modifier = Modifier.padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = null,
-                    tint = PanelGold,
-                    modifier = Modifier.size(20.dp)
-                )
-
+        Spacer(Modifier.height(16.dp))
+        Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color(0xFF211B30)) {
+            Row(Modifier.padding(15.dp), verticalAlignment = Alignment.Top) {
+                Icon(Icons.Default.Settings, contentDescription = null, tint = PanelGold, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
                 Text(
-                    text = appText("ai_settings_notice"),
-                    color = PanelMuted,
-                    fontSize = 11.sp,
-                    lineHeight = 16.sp,
-                    modifier = Modifier.padding(start = 10.dp)
+                    "Your API key is encrypted with Android Keystore and stored on this device. You pay the provider directly. Never share your key. Provider terms, usage limits and charges still apply.",
+                    color = PanelMuted, fontSize = 11.sp, lineHeight = 17.sp
                 )
             }
         }
+        Spacer(Modifier.height(30.dp))
     }
 }
-
-@Composable
-private fun StatusItem(
-    title: String,
-    value: String
-) {
-    Column {
-        Text(
-            text = title,
-            color = PanelMuted,
-            fontSize = 10.sp
-        )
-        Spacer(modifier = Modifier.height(5.dp))
-        Text(
-            text = value,
-            color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
