@@ -84,6 +84,7 @@ fun RoyalOrb3DView(
             modelLoader = modelLoader,
             isOpaque = false,
             autoFitContent = true,
+            cameraManipulator = null,
         ) {
             rememberModelInstance(
                 modelLoader,
