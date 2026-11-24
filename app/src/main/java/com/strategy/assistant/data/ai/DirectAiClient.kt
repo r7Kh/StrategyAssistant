@@ -23,7 +23,7 @@ class DirectAiClient {
             val body: JSONObject
             when (config.provider) {
                 AiProvider.GEMINI -> {
-                    endpoint = base + "/v1beta/models/" + model + ":generateContent?key=" + config.apiKey
+                    endpoint = base + "/v1beta/models/" + model + ":generateContent"
                     val contents = JSONArray()
                     history.takeLast(10).forEach { (role, text) ->
                         contents.put(JSONObject()
@@ -66,7 +66,7 @@ class DirectAiClient {
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.setRequestProperty("Accept", "application/json")
                 when (config.provider) {
-                    AiProvider.GEMINI -> Unit
+                    AiProvider.GEMINI -> connection.setRequestProperty("x-goog-api-key", config.apiKey)
                     AiProvider.ANTHROPIC -> {
                         connection.setRequestProperty("x-api-key", config.apiKey)
                         connection.setRequestProperty("anthropic-version", "2023-06-01")
@@ -74,7 +74,6 @@ class DirectAiClient {
                     else -> connection.setRequestProperty("Authorization", "Bearer " + config.apiKey)
                 }
                 if (config.provider == AiProvider.OPENROUTER) {
-                    connection.setRequestProperty("HTTP-Referer", "https://strategyassistant.app")
                     connection.setRequestProperty("X-Title", "STRATEGY ASSISTANT")
                 }
                 connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
