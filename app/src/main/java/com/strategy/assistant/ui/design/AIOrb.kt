@@ -1,13 +1,11 @@
 package com.strategy.assistant.ui.design
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,15 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,17 +28,15 @@ import androidx.compose.ui.unit.sp
 import io.github.sceneview.SceneView
 import io.github.sceneview.SurfaceType
 import io.github.sceneview.node.ModelNode
-import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
-import kotlinx.coroutines.launch
 
 /**
  * Interactive 3D Royal AI Orb.
  *
  * The transparent Filament surface lets the model blend into the app background.
- * SceneView's camera manipulator provides touch orbit, pan and zoom.
+ * Camera gestures are intentionally disabled; screen-level gestures control movement.
  */
 @Composable
 fun RoyalOrb3DView(
@@ -91,7 +84,7 @@ fun RoyalOrb3DView(
             modelLoader = modelLoader,
             isOpaque = false,
             autoFitContent = true,
-            cameraManipulator = rememberCameraManipulator()
+            cameraManipulator = null,
         ) {
             rememberModelInstance(
                 modelLoader,
@@ -119,34 +112,23 @@ fun AIOrbArtwork(
     active: Boolean = false,
     onOrbTap: () -> Unit = {}
 ) {
-    val haptic = LocalHapticFeedback.current
-    val scope = rememberCoroutineScope()
-    val tapScale = remember { Animatable(1f) }
-    val glowAlpha = remember { Animatable(if (active) 0.24f else 0.12f) }
+    val glowAlpha = rememberInfiniteTransition(label = "orb_glow").animateFloat(
+        initialValue = if (active) 0.20f else 0.10f,
+        targetValue = if (active) 0.30f else 0.17f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "orb_glow_pulse"
+    )
 
     Box(
-        modifier = modifier
-            .size(orbSize)
-            .clickable {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                onOrbTap()
-                scope.launch {
-                    tapScale.snapTo(0.94f)
-                    tapScale.animateTo(1.07f, tween(140))
-                    tapScale.animateTo(1f, tween(260))
-                    glowAlpha.snapTo(0.42f)
-                    glowAlpha.animateTo(if (active) 0.24f else 0.12f, tween(520))
-                }
-            },
+        modifier = modifier.size(orbSize),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = tapScale.value
-                    scaleY = tapScale.value
-                }
                 .drawBehind {
                     drawCircle(
                         brush = Brush.radialGradient(
