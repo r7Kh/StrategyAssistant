@@ -2,6 +2,7 @@
 package com.strategy.assistant.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.geometry.Offset
 import com.strategy.assistant.ui.design.AIOrbArtwork
 import com.strategy.assistant.ui.localization.appText
 
@@ -58,6 +66,88 @@ fun AICenterScreen() {
             .fillMaxSize()
             .background(VoidBlack)
     ) {
+        val density = LocalDensity.current
+        val orbSize = 112.dp
+        val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
+        val maxY = with(density) { (maxHeight - orbSize).toPx() }.coerceAtLeast(0f)
+        var orbX by remember(maxX) { mutableStateOf(maxX * 0.5f) }
+        var orbY by remember(maxY) { mutableStateOf(with(density) { 150.dp.toPx() }.coerceAtMost(maxY)) }
+        var orbAwake by remember { mutableStateOf(false) }
+
+        // Ambient energy field spans the entire screen, not a boxed hero panel.
+        val fieldMotion = rememberInfiniteTransition(label = "ai_field_motion")
+        val fieldPhase by fieldMotion.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(tween(9000), RepeatMode.Reverse),
+            label = "field_phase"
+        )
+        val lightningPulse by fieldMotion.animateFloat(
+            initialValue = 0.04f,
+            targetValue = 0.20f,
+            animationSpec = infiniteRepeatable(tween(1700), RepeatMode.Reverse),
+            label = "lightning_pulse"
+        )
+        Canvas(Modifier.fillMaxSize()) {
+            val w = size.width
+            val h = size.height
+            // Broad, low-contrast energy currents behind all content.
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Color(0xFF7041C8).copy(alpha = 0.12f), Color.Transparent),
+                    center = Offset(w * (0.18f + fieldPhase * 0.58f), h * 0.36f),
+                    radius = w * 0.72f
+                ),
+                radius = w * 0.72f,
+                center = Offset(w * (0.18f + fieldPhase * 0.58f), h * 0.36f)
+            )
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Color(0xFFD6B56D).copy(alpha = 0.045f), Color.Transparent),
+                    center = Offset(w * (0.82f - fieldPhase * 0.42f), h * 0.76f),
+                    radius = w * 0.62f
+                ),
+                radius = w * 0.62f,
+                center = Offset(w * (0.82f - fieldPhase * 0.42f), h * 0.76f)
+            )
+            // Fine lightning filaments: intentionally subtle so text remains readable.
+            val bolt = Path().apply {
+                moveTo(w * 0.06f, h * (0.20f + fieldPhase * 0.04f))
+                lineTo(w * 0.20f, h * 0.24f)
+                lineTo(w * 0.16f, h * 0.31f)
+                lineTo(w * 0.38f, h * 0.35f)
+                lineTo(w * 0.34f, h * 0.42f)
+                lineTo(w * 0.57f, h * 0.46f)
+            }
+            drawPath(
+                path = bolt,
+                color = NeonPurple.copy(alpha = lightningPulse * 0.55f),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.4.dp.toPx())
+            )
+            val goldBolt = Path().apply {
+                moveTo(w * 0.94f, h * 0.54f)
+                lineTo(w * 0.78f, h * 0.59f)
+                lineTo(w * 0.84f, h * 0.65f)
+                lineTo(w * 0.60f, h * 0.72f)
+                lineTo(w * 0.65f, h * 0.78f)
+                lineTo(w * 0.42f, h * 0.84f)
+            }
+            drawPath(
+                path = goldBolt,
+                color = RoyalGold.copy(alpha = lightningPulse * 0.42f),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.1.dp.toPx())
+            )
+            repeat(24) { i ->
+                val px = ((i * 0.173f + fieldPhase * (if (i % 2 == 0) 0.16f else -0.12f)) % 1f) * w
+                val py = ((i * 0.317f + fieldPhase * 0.11f) % 1f) * h
+                drawCircle(
+                    color = if (i % 3 == 0) RoyalGold.copy(alpha = 0.28f) else NeonPurple.copy(alpha = 0.22f),
+                    radius = if (i % 4 == 0) 2.dp.toPx() else 1.dp.toPx(),
+                    center = Offset(px, py)
+                )
+            }
+        }
+
         Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -150,85 +240,31 @@ fun AICenterScreen() {
             )
         }
 
-        // Fixed information remains in the layout; only the orb artwork floats.
-        BoxWithConstraints(
+        // Keep the heading copy in the normal flow. The orb itself lives in
+        // the full-screen energy field above, so it is not boxed into this hero.
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(340.dp)
+                .height(340.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val density = LocalDensity.current
-            val orbSize = 156.dp
-            // The orb is movable only inside its own hero stage, never over the
-            // telemetry, operation cards, or intelligence channel below.
-            val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
-            val maxY = with(density) { 190.dp.toPx() }
-            var orbX by remember(maxX) { mutableStateOf(maxX / 2f) }
-            var orbY by remember(maxY) { mutableStateOf(with(density) { 24.dp.toPx() }) }
-            var orbAwake by remember { mutableStateOf(false) }
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = appText("central_core"),
-                    color = QuietText,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.3.sp
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "ARTIFICIAL INTELLIGENCE",
-                    color = RoyalGold,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = appText("awaiting_command"),
-                    color = QuietText,
-                    fontSize = 11.sp
-                )
-                Spacer(modifier = Modifier.height(7.dp))
-                Text(
-                    text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
-                    color = QuietText.copy(alpha = 0.78f),
-                    fontSize = 7.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.15.sp
-                )
-                Spacer(modifier = Modifier.height(7.dp))
-                Text(
-                    text = appText("strategic_advantage"),
-                    color = RoyalGold.copy(alpha = 0.85f),
-                    fontSize = 8.sp,
-                    letterSpacing = 2.sp
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            AIOrbArtwork(
-                modifier = Modifier
-                    .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
-                    .pointerInput(maxX, maxY) {
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
-                            orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
-                            orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
-                        }
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = { orbAwake = !orbAwake },
-                            onDoubleTap = { /* Ignore double tap; size never changes. */ }
-                        )
-                    },
-                orbSize = orbSize,
-                active = orbAwake
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = appText("central_core"),
+                color = QuietText,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 2.3.sp
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Text("ARTIFICIAL INTELLIGENCE", color = RoyalGold, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(appText("awaiting_command"), color = QuietText, fontSize = 11.sp)
+            Spacer(modifier = Modifier.height(7.dp))
+            Text("TOUCH TO AWAKEN  •  DRAG TO ORBIT", color = QuietText.copy(alpha = 0.78f), fontSize = 7.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.15.sp)
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(appText("strategic_advantage"), color = RoyalGold.copy(alpha = 0.85f), fontSize = 8.sp, letterSpacing = 2.sp)
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // SYSTEM TELEMETRY
@@ -497,6 +533,25 @@ fun AICenterScreen() {
         }
         }
 
+            AIOrbArtwork(
+                modifier = Modifier
+                    .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
+                    .pointerInput(maxX, maxY) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
+                            orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
+                        }
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { orbAwake = !orbAwake },
+                            onDoubleTap = { /* No zoom or scale gesture. */ }
+                        )
+                    },
+                orbSize = orbSize,
+                active = orbAwake
+            )
         }
     }
 }
