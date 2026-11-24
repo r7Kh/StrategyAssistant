@@ -58,17 +58,6 @@ fun AICenterScreen() {
             .fillMaxSize()
             .background(VoidBlack)
     ) {
-        val density = LocalDensity.current
-        val orbSize = 156.dp
-        val orbHeight = 156.dp
-        val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
-        val maxY = with(density) { (maxHeight - orbHeight).toPx() }.coerceAtLeast(0f)
-        var orbX by remember(maxX) { mutableStateOf(maxX / 2f) }
-        var orbY by remember(maxY) {
-            mutableStateOf(with(density) { 112.dp.toPx() }.coerceAtMost(maxY))
-        }
-        var orbAwake by remember { mutableStateOf(false) }
-
         Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -162,50 +151,84 @@ fun AICenterScreen() {
         }
 
         // Fixed information remains in the layout; only the orb artwork floats.
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(340.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .height(340.dp)
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = appText("central_core"),
-                color = QuietText,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.3.sp
+            val density = LocalDensity.current
+            val orbSize = 156.dp
+            // The orb is movable only inside its own hero stage, never over the
+            // telemetry, operation cards, or intelligence channel below.
+            val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
+            val maxY = with(density) { 190.dp.toPx() }
+            var orbX by remember(maxX) { mutableStateOf(maxX / 2f) }
+            var orbY by remember(maxY) { mutableStateOf(with(density) { 24.dp.toPx() }) }
+            var orbAwake by remember { mutableStateOf(false) }
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = appText("central_core"),
+                    color = QuietText,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.3.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "ARTIFICIAL INTELLIGENCE",
+                    color = RoyalGold,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(
+                    text = appText("awaiting_command"),
+                    color = QuietText,
+                    fontSize = 11.sp
+                )
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
+                    color = QuietText.copy(alpha = 0.78f),
+                    fontSize = 7.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 1.15.sp
+                )
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = appText("strategic_advantage"),
+                    color = RoyalGold.copy(alpha = 0.85f),
+                    fontSize = 8.sp,
+                    letterSpacing = 2.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            AIOrbArtwork(
+                modifier = Modifier
+                    .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
+                    .pointerInput(maxX, maxY) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
+                            orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
+                        }
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { orbAwake = !orbAwake },
+                            onDoubleTap = { /* Ignore double tap; size never changes. */ }
+                        )
+                    },
+                orbSize = orbSize,
+                active = orbAwake
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "ARTIFICIAL INTELLIGENCE",
-                color = RoyalGold,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = appText("awaiting_command"),
-                color = QuietText,
-                fontSize = 11.sp
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
-                color = QuietText.copy(alpha = 0.78f),
-                fontSize = 7.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 1.15.sp
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                text = appText("strategic_advantage"),
-                color = RoyalGold.copy(alpha = 0.85f),
-                fontSize = 8.sp,
-                letterSpacing = 2.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // SYSTEM TELEMETRY
@@ -474,29 +497,6 @@ fun AICenterScreen() {
         }
         }
 
-        AIOrbArtwork(
-            modifier = Modifier
-                .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
-                .pointerInput(maxX, maxY) {
-                    detectDragGestures(
-                        onDragStart = { },
-                        onDragEnd = { },
-                        onDragCancel = { }
-                    ) { change, dragAmount ->
-                        change.consume()
-                        orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
-                        orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
-                    }
-                }
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { orbAwake = !orbAwake },
-                        onDoubleTap = { /* Deliberately ignore double tap. */ }
-                    )
-                },
-            orbSize = orbSize,
-            active = orbAwake
-        )
         }
     }
 }
