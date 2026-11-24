@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.strategy.assistant.ui.design.AIOrb
+import com.strategy.assistant.ui.design.AIOrbArtwork
 import com.strategy.assistant.ui.localization.appText
 
 private val VoidBlack = Color(0xFF06050A)
@@ -59,8 +59,8 @@ fun AICenterScreen() {
             .background(VoidBlack)
     ) {
         val density = LocalDensity.current
-        val orbSize = 260.dp
-        val orbHeight = 315.dp
+        val orbSize = 156.dp
+        val orbHeight = 156.dp
         val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
         val maxY = with(density) { (maxHeight - orbHeight).toPx() }.coerceAtLeast(0f)
         var orbX by remember(maxX) { mutableStateOf(maxX / 2f) }
@@ -161,8 +161,52 @@ fun AICenterScreen() {
             )
         }
 
-        // Keep the original spacing while the orb floats above the screen content.
-        Spacer(modifier = Modifier.height(340.dp))
+        // Fixed information remains in the layout; only the orb artwork floats.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(340.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = appText("central_core"),
+                color = QuietText,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 2.3.sp
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "ARTIFICIAL INTELLIGENCE",
+                color = RoyalGold,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 2.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = appText("awaiting_command"),
+                color = QuietText,
+                fontSize = 11.sp
+            )
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(
+                text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
+                color = QuietText.copy(alpha = 0.78f),
+                fontSize = 7.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.15.sp
+            )
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(
+                text = appText("strategic_advantage"),
+                color = RoyalGold.copy(alpha = 0.85f),
+                fontSize = 8.sp,
+                letterSpacing = 2.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         // SYSTEM TELEMETRY
         Column(
@@ -430,23 +474,27 @@ fun AICenterScreen() {
         }
         }
 
-        AIOrb(
+        AIOrbArtwork(
             modifier = Modifier
                 .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
                 .pointerInput(maxX, maxY) {
-                    detectDragGestures { change, dragAmount ->
+                    detectDragGestures(
+                        onDragStart = { },
+                        onDragEnd = { },
+                        onDragCancel = { }
+                    ) { change, dragAmount ->
                         change.consume()
                         orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
                         orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
                     }
                 }
                 .pointerInput(Unit) {
-                    detectTapGestures {
-                        orbAwake = !orbAwake
-                    }
+                    detectTapGestures(
+                        onTap = { orbAwake = !orbAwake },
+                        onDoubleTap = { /* Deliberately ignore double tap. */ }
+                    )
                 },
             orbSize = orbSize,
-            status = appText("awaiting_command"),
             active = orbAwake
         )
         }
