@@ -35,7 +35,7 @@ class AiProviderStore(context: Context) {
 
     fun load(): AiProviderConfig {
         val provider = AiProvider.fromId(prefs.getString("provider", "gemini").orEmpty())
-        val encrypted = prefs.getString("secret", null)
+        val encrypted = prefs.getString(secretName(provider), null)
         val key = encrypted?.let { runCatching { decrypt(it) }.getOrNull() }.orEmpty()
         return AiProviderConfig(provider, key,
             prefs.getString("model", provider.defaultModel).orEmpty(),
@@ -50,7 +50,9 @@ class AiProviderStore(context: Context) {
         editor.apply()
     }
 
-    fun clearKey() { prefs.edit().remove("secret").apply() }
+    fun clearKey(provider: AiProvider = load().provider) { prefs.edit().remove(secretName(provider)).apply() }
+
+    private fun secretName(provider: AiProvider) = "secret_" + provider.id
 
     private fun getKey(): SecretKey {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
