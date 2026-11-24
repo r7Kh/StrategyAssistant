@@ -30,7 +30,9 @@ FUNCTIONALITY PRESENT IN THE CURRENT APP BUILD
 - Provider keys are encrypted locally using Android Keystore and are not shared by STRATEGY ASSISTANT servers.
 
 IMPORTANT CURRENT LIMITATIONS
-- AI chat history is currently held in memory for the active screen/session; do not claim that chat history is saved permanently or remembered after leaving/restarting the app.
+- AI Conversation Memory is stored locally on this device using Android DataStore. Users can enable/disable memory, add/edit/delete individual entries, or clear all saved memories in the Memory Manager.
+- When memory is enabled, the app may save clearly stated first-person facts from the user's own messages (such as their name, games they play, and preferences). It does not save every message or assistant response. Users can review and remove saved entries.
+- Saved memory facts are added as context to later AI requests while memory is enabled. This is not persistent chat transcript storage: the full conversation history is still not retained after leaving the chat screen or restarting the app.
 - The AI does not have access to a user's device diagnostics, files, game screen, game account, or live game state unless a future explicitly implemented permissioned feature provides that data.
 - There is no live human support desk or direct remote troubleshooting connection. The AI can offer general troubleshooting guidance and point users to the community.
 - There is no implemented community voting or official proposal-review workflow. Users may share ideas in the Discord community, but do not promise that the team has received, reviewed, accepted, or scheduled an idea.
