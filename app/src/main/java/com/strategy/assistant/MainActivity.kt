@@ -136,7 +136,7 @@ fun StrategyAssistantApp() {
         Triple("▣", if (isArabic) "الألعاب" else "Games", 2),
         Triple("☰", if (isArabic) "المزيد" else "More", 3)
     )
-    val selectedNavigationTab = when { currentScreen == 12, 13 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
+    val selectedNavigationTab = when { currentScreen == 12 || currentScreen == 13 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
 
     CompositionLocalProvider(
         LocalAppLanguage provides appPreferences.language,
