@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Locale
 import java.util.UUID
 
 private val Context.aiMemoryDataStore by preferencesDataStore(name = "strategy_assistant_ai_memory")
@@ -54,7 +53,7 @@ class AiMemoryRepository(context: Context) {
     }
 
     suspend fun add(category: String, content: String) {
-        val cleaned = content.trim().replace(Regex("\\s+"), " ")
+        val cleaned = content.trim().replace(Regex("\s+"), " ")
         require(cleaned.length in 2..240) { "Memory must be between 2 and 240 characters." }
         val safeCategory = category.trim().ifBlank { "General" }.take(32)
         store.edit { prefs ->
@@ -68,7 +67,7 @@ class AiMemoryRepository(context: Context) {
     }
 
     suspend fun update(id: String, category: String, content: String) {
-        val cleaned = content.trim().replace(Regex("\\s+"), " ")
+        val cleaned = content.trim().replace(Regex("\s+"), " ")
         require(cleaned.length in 2..240) { "Memory must be between 2 and 240 characters." }
         store.edit { prefs ->
             prefs[Keys.items] = encode(decode(prefs[Keys.items].orEmpty()).map {
@@ -95,12 +94,12 @@ class AiMemoryRepository(context: Context) {
         val message = userMessage.trim().take(1000)
         if (message.isBlank()) return
         val patterns = listOf(
-            Regex("""(?i)(?:my name is|call me)\\s+([\\p{L}][\\p{L}0-9_'-]{0,35})""") to "Personal",
-            Regex("""(?i)(?:i play|i main)\\s+([\\p{L}][\\p{L}0-9 _'-]{0,45})""") to "Gaming",
-            Regex("""(?i)(?:i prefer|i like|i love)\\s+([^.!?\\n]{2,100})""") to "Preferences",
-            Regex("""(?:اسمي|ناديني)\\s*([\\p{L}][\\p{L}0-9_'-]{0,35})""") to "Personal",
-            Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\\s*([^.!؟?\\n]{2,60})""") to "Gaming",
-            Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\\s*([^.!؟?\\n]{2,100})""") to "Preferences"
+            Regex("""(?i)(?:my name is|call me)\s+([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
+            Regex("""(?i)(?:i play|i main)\s+([\p{L}][\p{L}0-9 _'-]{0,45})""") to "Gaming",
+            Regex("""(?i)(?:i prefer|i like|i love)\s+([^.!?\n]{2,100})""") to "Preferences",
+            Regex("""(?:اسمي|ناديني)\s*([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
+            Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\s*([^.!؟?\n]{2,60})""") to "Gaming",
+            Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\s*([^.!؟?\n]{2,100})""") to "Preferences"
         )
         val matches = patterns.mapNotNull { (pattern, category) ->
             pattern.find(message)?.groupValues?.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }?.let { category to it }
