@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +22,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -41,12 +53,27 @@ private val FineLine = Color(0xFF292332)
 @Composable
 fun AICenterScreen() {
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(VoidBlack)
-            .verticalScroll(rememberScrollState())
     ) {
+        val density = LocalDensity.current
+        val orbSize = 260.dp
+        val orbHeight = 315.dp
+        val maxX = with(density) { (maxWidth - orbSize).toPx() }.coerceAtLeast(0f)
+        val maxY = with(density) { (maxHeight - orbHeight).toPx() }.coerceAtLeast(0f)
+        var orbX by remember(maxX) { mutableStateOf(maxX / 2f) }
+        var orbY by remember(maxY) {
+            mutableStateOf(with(density) { 112.dp.toPx() }.coerceAtMost(maxY))
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
 
         // COMMAND HEADER
         Column(
@@ -133,62 +160,8 @@ fun AICenterScreen() {
             )
         }
 
-        // CENTRAL AI CORE
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF211434),
-                            Color(0xFF100B19),
-                            VoidBlack
-                        ),
-                        radius = 550f
-                    )
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = appText("central_core"),
-                    color = QuietText,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.3.sp
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                AIOrb(
-                    orbSize = 260.dp,
-                    status = appText("awaiting_command"),
-                    active = false
-                )
-
-                Text(
-                    text = "TOUCH TO AWAKEN  •  DRAG TO ORBIT",
-                    color = QuietText.copy(alpha = 0.78f),
-                    fontSize = 7.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.15.sp
-                )
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Text(
-                    text = appText("strategic_advantage"),
-                    color = RoyalGold.copy(alpha = 0.85f),
-                    fontSize = 8.sp,
-                    letterSpacing = 2.sp
-                )
-
-                Spacer(modifier = Modifier.height(21.dp))
-            }
-        }
+        // Keep the original spacing while the orb floats above the screen content.
+        Spacer(modifier = Modifier.height(340.dp))
 
         // SYSTEM TELEMETRY
         Column(
@@ -453,6 +426,28 @@ fun AICenterScreen() {
             )
 
             Spacer(modifier = Modifier.height(25.dp))
+        }
+        }
+
+        AIOrb(
+            modifier = Modifier
+                .offset { IntOffset(orbX.roundToInt(), orbY.roundToInt()) }
+                .pointerInput(maxX, maxY) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        orbX = (orbX + dragAmount.x).coerceIn(0f, maxX)
+                        orbY = (orbY + dragAmount.y).coerceIn(0f, maxY)
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        // Tap is reserved for awakening feedback; it never changes size or position.
+                    }
+                },
+            orbSize = orbSize,
+            status = appText("awaiting_command"),
+            active = false
+        )
         }
     }
 }
