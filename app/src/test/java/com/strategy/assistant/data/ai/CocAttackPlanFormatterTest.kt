@@ -22,6 +22,8 @@ class CocAttackPlanFormatterTest {
             "skip_if":["Collectors are empty"],
             "fallback":"Switch to another exposed edge.",
             "assumptions":["Army details were supplied by player."],
+            "evaluation":{"resource_fit":"strong","army_fit":"moderate","entry_safety":"unknown","training_efficiency":"moderate","main_tradeoff":"Safer access but slower cleanup","recommendation_reason":"Matches the stated Elixir goal."},
+            "alternatives":[{"name":"Storage-side entry","best_when":"Storages are exposed","tradeoff":"Higher defensive exposure"}],
             "missing_info":["Exact spell inventory"]
         }"""
         val result = CocAttackPlanFormatter.formatOrFallback(raw)
@@ -31,6 +33,9 @@ class CocAttackPlanFormatterTest {
         assertTrue(result.contains("Deployment phases"))
         assertTrue(result.contains("Splash defense coverage"))
         assertTrue(result.contains("Exact spell inventory"))
+        assertTrue(result.contains("Strategy evaluation"))
+        assertTrue(result.contains("Resource-goal fit: strong"))
+        assertTrue(result.contains("Storage-side entry"))
     }
 
     @Test
