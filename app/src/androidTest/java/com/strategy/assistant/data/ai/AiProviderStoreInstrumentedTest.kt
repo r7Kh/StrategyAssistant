@@ -30,6 +30,7 @@ class AiProviderStoreInstrumentedTest {
     fun tearDown() {
         preferences.edit().clear().commit()
         store.clearKey(AiProvider.GEMINI)
+        store.clearKey(AiProvider.OPENAI)
     }
 
     @Test
@@ -71,5 +72,26 @@ class AiProviderStoreInstrumentedTest {
 
         assertFalse(store.hasKey(AiProvider.GEMINI))
         assertFalse(preferences.contains("secret_gemini"))
+    }
+
+    @Test
+    fun providerKeysRemainIsolatedAcrossProviderSwitchesAndStoreRecreation() {
+        store.save(AiProviderConfig(
+            provider = AiProvider.GEMINI,
+            apiKey = "gemini-integration-key",
+        ))
+        store.save(AiProviderConfig(
+            provider = AiProvider.OPENAI,
+            apiKey = "openai-integration-key",
+        ))
+
+        val restoredOpenAi = AiProviderStore(context).load()
+        assertEquals(AiProvider.OPENAI, restoredOpenAi.provider)
+        assertEquals("openai-integration-key", restoredOpenAi.apiKey)
+
+        store.save(AiProviderConfig(provider = AiProvider.GEMINI))
+        val restoredGemini = AiProviderStore(context).load()
+        assertEquals(AiProvider.GEMINI, restoredGemini.provider)
+        assertEquals("gemini-integration-key", restoredGemini.apiKey)
     }
 }
