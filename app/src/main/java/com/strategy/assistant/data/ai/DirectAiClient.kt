@@ -59,9 +59,6 @@ The following verified product knowledge is authoritative for questions about ST
 
 ${StrategyProductKnowledge.CONTENT}
 
-The following curated Clash of Clans knowledge is an offline snapshot. Its source URLs and verification dates are included. Do not imply that you checked those pages during this conversation.
-
-${ClashOfClansKnowledge.PROMPT_CONTEXT}
 """
 
 class DirectAiClient {
@@ -71,7 +68,12 @@ class DirectAiClient {
             require(prompt.isNotBlank()) { "Message cannot be empty." }
             val model = config.model.ifBlank { config.provider.defaultModel }
             val base = config.baseUrl.trim().trimEnd('/')
-            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() +
+            val gameKnowledge = if (isClashOfClansContext(prompt, history, memoryContext)) {
+                "\n\n" + ClashOfClansKnowledge.PROMPT_CONTEXT
+            } else {
+                ""
+            }
+            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + gameKnowledge +
                 if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
             require(base.startsWith("https://")) { "Provider URL must use HTTPS." }
 
@@ -166,4 +168,32 @@ class DirectAiClient {
                 connection.disconnect()
             }
         }
+}
+
+
+private fun isClashOfClansContext(
+    prompt: String,
+    history: List<Pair<String, String>>,
+    memoryContext: String
+): Boolean {
+    val context = buildString {
+        append(prompt)
+        history.forEach { append(' ').append(it.second) }
+        append(' ').append(memoryContext)
+    }.lowercase()
+
+    val gameIdentifiers = listOf(
+        "clash of clans",
+        "clashofclans",
+        "coc",
+        "town hall",
+        "th19",
+        "th 19",
+        "townhall",
+        "كلاش اوف كلانس",
+        "كلاش أوف كلانس",
+        "كلاش اوف كلانز",
+        "قرية كلاش"
+    )
+    return gameIdentifiers.any(context::contains)
 }
