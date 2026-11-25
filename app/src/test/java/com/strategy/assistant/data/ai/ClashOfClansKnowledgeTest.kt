@@ -75,6 +75,26 @@ class ClashOfClansKnowledgeTest {
         assertTrue(context.contains("Ranked Battles are available from Town Hall 7"))
     }
     @Test
+    fun supportsArabicAliasesForKnowledgeRetrieval() {
+        val context = ClashOfClansKnowledge.contextFor("تعويذة بطولية")
+        assertTrue(context.contains("Heroic Spell"))
+    }
+
+    @Test
+    fun broadQueriesUseBoundedCoreContext() {
+        val context = ClashOfClansKnowledge.contextFor("Tell me about Clash of Clans")
+        assertTrue(context.contains("Town Hall 19 update"))
+        assertFalse(context.contains("Legendary Equipment and Ore economy announcement"))
+    }
+
+    @Test
+    fun selectedEntriesRetainSourceAndVerificationMetadata() {
+        val context = ClashOfClansKnowledge.contextFor("Spiky Tower")
+        assertTrue(context.contains("Source: https://supercell.com/"))
+        assertTrue(context.contains("Verified: 2026-11-25"))
+    }
+
+    @Test
     fun contextForLegendaryEquipmentReturnsOreAndUnlockDetails() {
         val context = ClashOfClansKnowledge.contextFor("What is Legendary Equipment and Blizzard Axe?")
         assertTrue(context.contains("Blizzard Axe"))
