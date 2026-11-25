@@ -75,6 +75,7 @@ class DirectAiClient {
                 append(' ').append(memoryContext)
             }
             val isClashOfClans = isClashOfClansContext(prompt, history, memoryContext)
+            val analyzeClashOfClansScreenshot = image != null && isClashOfClans
             val gameKnowledge = if (isClashOfClans) {
                 "\n\n" + ClashOfClansKnowledge.contextFor(gameQueryContext)
             } else {
@@ -200,7 +201,7 @@ class DirectAiClient {
                     else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
                 }.orEmpty().trim()
                 if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
-                AiReply(if (image != null) CocScreenshotReportFormatter.formatOrFallback(answer) else answer, config.provider.title, model)
+                AiReply(if (analyzeClashOfClansScreenshot) CocScreenshotReportFormatter.formatOrFallback(answer) else answer, config.provider.title, model)
             } catch (error: AiProviderException) {
                 throw error
             } catch (error: Exception) {
@@ -212,7 +213,7 @@ class DirectAiClient {
 }
 
 
-private fun isClashOfClansContext(
+internal fun isClashOfClansContext(
     prompt: String,
     history: List<Pair<String, String>>,
     memoryContext: String
@@ -226,7 +227,6 @@ private fun isClashOfClansContext(
     val gameIdentifiers = listOf(
         "clash of clans",
         "clashofclans",
-        "coc",
         "town hall",
         "th19",
         "th 19",
@@ -236,5 +236,12 @@ private fun isClashOfClansContext(
         "كلاش اوف كلانز",
         "قرية كلاش"
     )
-    return gameIdentifiers.any(context::contains)
+    return Regex("\\bcoc\\b").containsMatchIn(context) || gameIdentifiers.any(context::contains)
 }
+
+internal fun shouldUseClashOfClansScreenshotAnalysis(
+    imageAttached: Boolean,
+    prompt: String,
+    history: List<Pair<String, String>> = emptyList(),
+    memoryContext: String = "",
+): Boolean = imageAttached && isClashOfClansContext(prompt, history, memoryContext)
