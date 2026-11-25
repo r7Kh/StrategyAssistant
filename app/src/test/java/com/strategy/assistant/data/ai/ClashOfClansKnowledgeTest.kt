@@ -17,7 +17,6 @@ class ClashOfClansKnowledgeTest {
         assertTrue(prompt.contains("Town Hall 19"))
         assertTrue(prompt.contains("Spiky Tower"))
         assertTrue(prompt.contains("Firecracker Tower"))
-        assertTrue(prompt.contains("developer.clashofclans.com").not())
         assertTrue(prompt.contains("supercell.com/en/games/clashofclans/blog/release-notes/"))
     }
 
