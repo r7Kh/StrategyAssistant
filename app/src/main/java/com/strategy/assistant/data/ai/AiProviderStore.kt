@@ -27,7 +27,6 @@ data class AiProviderConfig(
     val apiKey: String = "",
     val model: String = AiProvider.GEMINI.defaultModel,
     val baseUrl: String = AiProvider.GEMINI.defaultBaseUrl,
-    val webResearchEnabled: Boolean = false
 )
 
 class AiProviderStore(context: Context) {
@@ -40,16 +39,15 @@ class AiProviderStore(context: Context) {
         val key = encrypted?.let { runCatching { decrypt(it) }.getOrNull() }.orEmpty()
         return AiProviderConfig(provider, key,
             prefs.getString("model", provider.defaultModel).orEmpty(),
-            prefs.getString("base_url", provider.defaultBaseUrl).orEmpty(),
-            prefs.getBoolean("web_research_enabled", false))
+            prefs.getString("base_url", provider.defaultBaseUrl).orEmpty())
     }
 
     fun save(config: AiProviderConfig) {
         val editor = prefs.edit().putString("provider", config.provider.id)
             .putString("model", config.model.trim())
             .putString("base_url", config.baseUrl.trim().trimEnd('/'))
-            .putBoolean("web_research_enabled", config.webResearchEnabled)
         if (config.apiKey.isNotBlank()) editor.putString(secretName(config.provider), encrypt(config.apiKey.trim()))
+        editor.remove("web_research_enabled")
         editor.apply()
     }
 
