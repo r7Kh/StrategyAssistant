@@ -235,10 +235,12 @@ internal fun isClashOfClansContext(
     history: List<Pair<String, String>>,
     memoryContext: String
 ): Boolean {
+    // Saved preferences describe the player; they must never silently select
+    // the active game. Game-specific routing comes from the current request
+    // and the actual conversation only.
     val context = buildString {
         append(prompt)
-        history.forEach { append(' ').append(it.second) }
-        append(' ').append(memoryContext)
+        history.takeLast(6).forEach { append(' ').append(it.second) }
     }.lowercase()
 
     val gameIdentifiers = listOf(
