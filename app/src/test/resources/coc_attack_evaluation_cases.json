@@ -43,7 +43,7 @@
       "entry": {"side":"West","confidence":"certain"},
       "evaluation": {"resource_fit":"excellent"}
     },
-    "expected_warnings": ["not a simple whole number","Duplicate army entry","unsupported qualitative label"],
+    "expected_warnings": ["not a simple whole number","Duplicate army entry","not a supported qualitative label"],
     "expected_output_contains": ["Plan validation warnings","not a simple whole number","Duplicate army entry"],
     "expected_output_not_contains": []
   },
