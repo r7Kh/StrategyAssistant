@@ -26,4 +26,18 @@ class ClashOfClansKnowledgeTest {
         assertTrue(prompt.contains("NOT live game data"))
         assertTrue(prompt.contains("NOT a complete catalog"))
     }
+    @Test
+    fun contextForTownHallQueryReturnsRelevantProgressionFacts() {
+        val context = ClashOfClansKnowledge.contextFor("What changed at Town Hall 19?")
+        assertTrue(context.contains("Town Hall 19 update"))
+        assertTrue(context.contains("Spiky Tower"))
+    }
+
+    @Test
+    fun contextForEquipmentQueryReturnsBalanceFacts() {
+        val context = ClashOfClansKnowledge.contextFor("Tell me about Frost Flake")
+        assertTrue(context.contains("Frost Flake"))
+        assertTrue(context.contains("Royal Champion"))
+    }
+
 }
