@@ -24,6 +24,15 @@ class ClashOfClansScreenshotRoutingTest {
     }
 
     @Test
+    fun savedGamePreferenceDoesNotForceClashOfClansRouting() {
+        assertFalse(isClashOfClansContext(
+            "Help me plan a strategy for another game",
+            emptyList(),
+            "USER MEMORY: I play Clash of Clans"
+        ))
+    }
+
+    @Test
     fun doesNotTreatCocAsAnArbitrarySubstring() {
         assertFalse(isClashOfClansContext("Please describe cocoa beans", emptyList(), ""))
         assertTrue(isClashOfClansContext("I need a CoC farming plan", emptyList(), ""))
