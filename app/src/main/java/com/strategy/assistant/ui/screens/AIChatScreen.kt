@@ -404,6 +404,8 @@ private fun ChatMessage(line: ChatLine) {
         }
         if (!isUser && line.text.startsWith("## Village screenshot report")) {
             ScreenshotReportCard(line.text)
+        } else if (!isUser && line.text.startsWith("## ⚔ ATTACK PLAN")) {
+            AttackPlanCard(line.text)
         } else {
             Surface(
                 color = if (isUser) Color(0xDD38264F) else Color(0xD9181422),
