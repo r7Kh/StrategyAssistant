@@ -286,27 +286,111 @@ private fun ChatMessage(line: ChatLine) {
                 Text("STRATEGY AI", color = Color(0xFFC7A967), fontSize = 9.sp, letterSpacing = 1.1.sp, fontWeight = FontWeight.SemiBold)
             }
         }
-        Surface(
-            color = if (isUser) Color(0xDD38264F) else Color(0xD9181422),
-            shape = RoundedCornerShape(
-                topStart = if (isUser) 17.dp else 5.dp,
-                topEnd = if (isUser) 5.dp else 17.dp,
-                bottomEnd = 17.dp,
-                bottomStart = 17.dp
-            ),
-            modifier = Modifier.widthIn(max = 340.dp),
-            border = BorderStroke(1.dp, if (isUser) Color(0x554F3B68) else Color(0x444D3A65)),
-            shadowElevation = 2.dp
-        ) {
-            Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                Text(
-                    text = renderChatMarkdown(line.text),
-                    color = Color(0xFFF1EDF7),
-                    fontSize = 13.sp,
-                    lineHeight = 22.sp,
-                    style = TextStyle(textDirection = TextDirection.Content, textAlign = TextAlign.Start)
-                )
+        if (!isUser && line.text.startsWith("## Village screenshot report")) {
+            ScreenshotReportCard(line.text)
+        } else {
+            Surface(
+                color = if (isUser) Color(0xDD38264F) else Color(0xD9181422),
+                shape = RoundedCornerShape(
+                    topStart = if (isUser) 17.dp else 5.dp,
+                    topEnd = if (isUser) 5.dp else 17.dp,
+                    bottomEnd = 17.dp,
+                    bottomStart = 17.dp
+                ),
+                modifier = Modifier.widthIn(max = 340.dp),
+                border = BorderStroke(1.dp, if (isUser) Color(0x554F3B68) else Color(0x444D3A65)),
+                shadowElevation = 2.dp
+            ) {
+                Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                    Text(
+                        text = renderChatMarkdown(line.text),
+                        color = Color(0xFFF1EDF7),
+                        fontSize = 13.sp,
+                        lineHeight = 22.sp,
+                        style = TextStyle(textDirection = TextDirection.Content, textAlign = TextAlign.Start)
+                    )
+                }
             }
+        }
+    }
+}
+
+
+private data class ScreenshotReportSection(val title: String, val lines: List<String>)
+
+private fun parseScreenshotReport(source: String): Pair<String, List<ScreenshotReportSection>> {
+    val lines = source.lines()
+    val subtitle = lines.firstOrNull { it.startsWith("**Screenshot type:**") }
+        ?.removePrefix("**Screenshot type:**")?.trim().orEmpty()
+    val sections = mutableListOf<ScreenshotReportSection>()
+    var currentTitle = ""
+    var currentLines = mutableListOf<String>()
+    lines.drop(1).forEach { raw ->
+        val line = raw.trim()
+        if (line.startsWith("### ")) {
+            if (currentTitle.isNotBlank()) sections += ScreenshotReportSection(currentTitle, currentLines.toList())
+            currentTitle = line.removePrefix("### ")
+            currentLines = mutableListOf()
+        } else if (line.isNotBlank() && !line.startsWith("**Screenshot type:**") && !line.startsWith("_Visual confidence")) {
+            currentLines += line.removePrefix("- ").removePrefix("  - ")
+        }
+    }
+    if (currentTitle.isNotBlank()) sections += ScreenshotReportSection(currentTitle, currentLines.toList())
+    return subtitle to sections
+}
+
+@Composable
+private fun ScreenshotReportCard(source: String) {
+    val (subtitle, sections) = remember(source) { parseScreenshotReport(source) }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = Color(0xE914101F),
+        border = BorderStroke(1.dp, Color(0x887B613D)),
+        shadowElevation = 5.dp
+    ) {
+        Column(
+            Modifier.background(
+                Brush.verticalGradient(listOf(Color(0xFF21172F), Color(0xFF110E19), Color(0xFF0D0B14)))
+            ).padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier.size(34.dp).clip(RoundedCornerShape(11.dp))
+                        .background(Brush.linearGradient(listOf(Color(0xFF6B4A88), Color(0xFF30213F)))),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFFE5C77E), modifier = Modifier.size(18.dp))
+                }
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("VILLAGE INTELLIGENCE", color = Color(0xFFE7CC8C), fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.15.sp)
+                    Text("Screenshot analysis", color = Color(0xFFB8AFC4), fontSize = 11.sp)
+                }
+                Text("AI REPORT", color = Color(0xFF9D8BAE), fontSize = 8.sp, letterSpacing = 0.8.sp)
+            }
+            if (subtitle.isNotBlank()) {
+                Text(subtitle, color = Color(0xFFF3E7CF), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            }
+            Box(Modifier.fillMaxWidth().height(1.dp).background(Brush.horizontalGradient(listOf(Color.Transparent, Color(0xFF9A7747), Color.Transparent))))
+            sections.forEach { section ->
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(section.title.uppercase(), color = Color(0xFFD9B96F), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.95.sp)
+                    section.lines.forEach { item ->
+                        val clean = item.replace("**", "").replace("_", "")
+                        Row(verticalAlignment = Alignment.Top) {
+                            Box(Modifier.padding(top = 6.dp).size(5.dp).background(Color(0xFFD6B56D), CircleShape))
+                            Spacer(Modifier.width(8.dp))
+                            Text(clean, color = Color(0xFFE8E1EF), fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.weight(1f), style = TextStyle(textDirection = TextDirection.Content))
+                        }
+                    }
+                }
+            }
+            Text(
+                "Visual estimates are advisory. Verify uncertain targets before attacking.",
+                color = Color(0xFF9D91AA), fontSize = 9.sp, lineHeight = 14.sp
+            )
         }
     }
 }
