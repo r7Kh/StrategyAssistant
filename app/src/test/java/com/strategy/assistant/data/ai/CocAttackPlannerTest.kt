@@ -55,6 +55,7 @@ class CocAttackPlannerTest {
         assertTrue(CocAttackPlanner.isPostAttackReviewQuery("هاي نتيجة الهجوم جبت 500 ألف ذهب"))
         assertTrue(CocAttackPlanner.isPostAttackReviewQuery("After my attack I gained loot"))
         assertFalse(CocAttackPlanner.isPostAttackReviewQuery("Plan my next farming attack"))
+        assertFalse(CocAttackPlanner.isPostAttackReviewQuery("I got a question about farming"))
     }
 
     @Test
