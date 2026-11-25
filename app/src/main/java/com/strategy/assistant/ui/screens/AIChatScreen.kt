@@ -22,6 +22,12 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Close
+import com.strategy.assistant.data.ai.AiImageAttachment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +73,41 @@ fun AIChatScreen(
     var input by remember { mutableStateOf("") }
     var sending by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    var imageAttachment by remember { mutableStateOf<AiImageAttachment?>(null) }
+    var imageLabel by remember { mutableStateOf<String?>(null) }
+    val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            scope.launch {
+                runCatching {
+                    val mime = context.contentResolver.getType(uri)?.lowercase()
+                        ?: throw IllegalArgumentException("Could not identify the image type.")
+                    require(mime in AiImageAttachment.SUPPORTED_MIME_TYPES) { "Choose a JPG, PNG, or WebP image." }
+                    val bytes = context.contentResolver.openInputStream(uri)?.use { stream ->
+                        val output = java.io.ByteArrayOutputStream()
+                        val buffer = ByteArray(8192)
+                        var total = 0
+                        while (true) {
+                            val count = stream.read(buffer)
+                            if (count < 0) break
+                            total += count
+                            require(total <= AiImageAttachment.MAX_BYTES) { "Image must be smaller than 8 MB." }
+                            output.write(buffer, 0, count)
+                        }
+                        output.toByteArray()
+                    } ?: throw IllegalArgumentException("Could not read the selected image.")
+                    AiImageAttachment(bytes, mime)
+                }.onSuccess { attachment ->
+                    imageAttachment = attachment
+                    imageLabel = "Village screenshot attached"
+                    error = null
+                }.onFailure { failure ->
+                    imageAttachment = null
+                    imageLabel = null
+                    error = failure.message ?: "Could not attach image."
+                }
+            }
+        }
+    }
     val messages = remember { mutableStateListOf<ChatLine>() }
 
     Box(Modifier.fillMaxSize().background(Color(0xFF080610))) {
@@ -141,6 +182,16 @@ fun AIChatScreen(
                     }
                 }
 
+                if (imageAttachment != null) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Image, contentDescription = null, tint = Color(0xFFD6B56D), modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(7.dp))
+                        Text(imageLabel ?: "Image attached", color = Color(0xFFD6B56D), fontSize = 11.sp, modifier = Modifier.weight(1f), maxLines = 1)
+                        IconButton(onClick = { imageAttachment = null; imageLabel = null }, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Default.Close, contentDescription = "Remove image", tint = Color(0xFFB9AEC8), modifier = Modifier.size(15.dp))
+                        }
+                    }
+                }
                 Row(
                     Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 10.dp, top = 6.dp)
                         .clip(RoundedCornerShape(20.dp))
@@ -164,19 +215,30 @@ fun AIChatScreen(
                         }
                     )
                     IconButton(
-                        enabled = !sending && input.isNotBlank(),
+                        enabled = !sending,
+                        onClick = { imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+                    ) {
+                        Icon(Icons.Default.Image, contentDescription = "Attach image", tint = Color(0xFFD6B56D))
+                    }
+                    IconButton(
+                        enabled = !sending && (input.isNotBlank() || imageAttachment != null),
                         onClick = {
-                            val prompt = input.trim()
+                            val selectedImage = imageAttachment
+                            val prompt = input.trim().ifBlank {
+                                "Analyze this Clash of Clans village screenshot for a farming attack. Identify visible resource buildings, defenses, a suitable entry side, and a cautious deployment plan. Clearly state anything you cannot identify."
+                            }
                             input = ""
+                            imageAttachment = null
+                            imageLabel = null
                             error = null
-                            messages.add(ChatLine("user", prompt))
+                            messages.add(ChatLine("user", if (selectedImage != null) "$prompt\n[Village screenshot attached]" else prompt))
                             sending = true
                             scope.launch {
                                 runCatching {
                                     memoryRepository.rememberExplicitFacts(prompt)
                                     val history = messages.dropLast(1).map { it.role to it.text }
                                     val memoryContext = memoryRepository.snapshot.first().toPromptContext()
-                                    client.send(config, prompt, history, memoryContext)
+                                    client.send(config, prompt, history, memoryContext, selectedImage)
                                 }.onSuccess { reply ->
                                     messages.add(ChatLine("assistant", reply.text))
                                     config = store.load()
