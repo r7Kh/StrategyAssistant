@@ -58,3 +58,15 @@ Official portal: https://developer.clashofclans.com/
 - Add tests for stale-version handling, missing facts, prompt-size limits, and query matching.
 - Extend farming planning with structured player/base inputs and a deterministic validator before attempting automated army calculations or screenshot analysis.
 - Consider official player/clan API integration only after a secure backend/IP strategy is approved. Do not add paid infrastructure without explicit approval.
+
+## Village screenshot input (first implementation)
+
+The Intelligence Channel can attach one JPG, PNG, or WebP image (maximum 8 MB) to a single request. The image is read through Android's system photo picker and passed transiently to the selected provider:
+
+- Gemini: `inline_data` image part.
+- Anthropic: base64 image content block.
+- OpenAI-compatible providers, including OpenRouter: data-URL `image_url` content part.
+
+The selected model must support image/vision input; model support varies by provider and custom endpoint. This feature sends the image to the provider selected by the user over HTTPS. The app does not add image bytes to chat history, saved memory, or local backup. The UI keeps only a text marker in its in-memory chat list. A provider may reject unsupported image input or oversized requests.
+
+Image interpretation is advisory, not a guaranteed game-state detector. The model must distinguish clearly visible objects from uncertain ones, avoid inventing resource quantities or troop levels, and state when a building cannot be identified. This is not yet a deterministic computer-vision pipeline, automatic loot counter, or battle simulator.
