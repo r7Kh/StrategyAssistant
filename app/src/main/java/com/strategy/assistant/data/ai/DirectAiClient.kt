@@ -98,6 +98,13 @@ class DirectAiClient {
                     append("\n\n")
                     append(CocAttackPlanner.attackPlanInstructions(gameQueryContext))
                 }
+                val postAttackReview = if (isClashOfClans) {
+                    CocAttackPlanner.postAttackReviewInstructions(gameQueryContext)
+                } else ""
+                if (postAttackReview.isNotBlank()) {
+                    append("\\n\\n")
+                    append(postAttackReview)
+                }
                 if (analyzeClashOfClansScreenshot && !generateAttackPlan) {
                     append("\n\n")
                     append(CocAttackPlanner.screenshotAnalysisInstructions())
