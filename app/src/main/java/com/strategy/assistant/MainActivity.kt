@@ -5,6 +5,7 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,12 +37,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.strategy.assistant.data.ai.AiMemoryRepository
 import com.strategy.assistant.data.core.CoreSystemsRepository
 import com.strategy.assistant.data.preferences.AppPreferences
 import com.strategy.assistant.data.preferences.AppPreferencesRepository
 import com.strategy.assistant.ui.localization.LocalAppLanguage
 import com.strategy.assistant.ui.screens.AICenterScreen
 import com.strategy.assistant.ui.screens.AIChatScreen
+import com.strategy.assistant.ui.screens.AIMemoryScreen
 import com.strategy.assistant.ui.screens.AIControlPanelScreen
 import com.strategy.assistant.ui.screens.AboutScreen
 import com.strategy.assistant.ui.screens.AccountsScreen
@@ -75,6 +79,7 @@ fun StrategyAssistantApp() {
     val preferencesRepository = remember(context) { AppPreferencesRepository(context) }
     val appPreferences by preferencesRepository.preferences.collectAsState(initial = AppPreferences())
     val coreRepository = remember(context) { CoreSystemsRepository(context) }
+    val aiMemoryRepository = remember(context) { AiMemoryRepository(context) }
     val savedGames by coreRepository.games.collectAsState(initial = emptyList())
     val accounts by coreRepository.accounts.collectAsState(initial = emptyList())
     val activityEntries by coreRepository.activities.collectAsState(initial = emptyList())
@@ -126,14 +131,24 @@ fun StrategyAssistantApp() {
     }
 
     val isArabic = appPreferences.language == "العربية"
-    var currentScreen by remember { mutableIntStateOf(0) }
+    var currentScreen by rememberSaveable { mutableIntStateOf(0) }
     val navigationItems = listOf(
         Triple("⌂", if (isArabic) "الرئيسية" else "Home", 0),
         Triple("✧", if (isArabic) "الذكاء" else "AI", 1),
         Triple("▣", if (isArabic) "الألعاب" else "Games", 2),
         Triple("☰", if (isArabic) "المزيد" else "More", 3)
     )
-    val selectedNavigationTab = when { currentScreen == 12 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
+    val selectedNavigationTab = when { currentScreen == 12 || currentScreen == 13 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
+    // Keep the current destination across configuration changes and make system
+    // Back navigate through the app instead of immediately closing it.
+    BackHandler(enabled = currentScreen != 0) {
+        currentScreen = when (currentScreen) {
+            1, 2, 3 -> 0
+            12 -> 1
+            13 -> 12
+            else -> 3
+        }
+    }
 
     CompositionLocalProvider(
         LocalAppLanguage provides appPreferences.language,
@@ -142,7 +157,7 @@ fun StrategyAssistantApp() {
         Scaffold(
             containerColor = AppBackground,
             bottomBar = {
-                if (currentScreen != 12) {
+                if (currentScreen != 12 && currentScreen != 13) {
                     NavigationBar(containerColor = Color(0xFF100C18), contentColor = Color.White) {
                         navigationItems.forEach { item ->
                             NavigationBarItem(
@@ -280,7 +295,8 @@ fun StrategyAssistantApp() {
                 )
                 10 -> AboutScreen(padding = innerPadding, onBack = { currentScreen = 3 })
                 11 -> AIControlPanelScreen(padding = innerPadding, onBack = { currentScreen = 3 })
-                12 -> AIChatScreen(padding = innerPadding, onBack = { currentScreen = 1 }, onOpenProviders = { currentScreen = 11 })
+                12 -> AIChatScreen(padding = innerPadding, onBack = { currentScreen = 1 }, onOpenProviders = { currentScreen = 11 }, onOpenMemory = { currentScreen = 13 })
+                13 -> AIMemoryScreen(padding = innerPadding, repository = aiMemoryRepository, isArabic = isArabic, onBack = { currentScreen = 12 })
                 else -> { currentScreen = 0 }
             }
         }

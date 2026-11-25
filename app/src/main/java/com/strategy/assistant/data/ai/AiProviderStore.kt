@@ -26,12 +26,17 @@ data class AiProviderConfig(
     val provider: AiProvider = AiProvider.GEMINI,
     val apiKey: String = "",
     val model: String = AiProvider.GEMINI.defaultModel,
-    val baseUrl: String = AiProvider.GEMINI.defaultBaseUrl
+    val baseUrl: String = AiProvider.GEMINI.defaultBaseUrl,
 )
 
 class AiProviderStore(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences("ai_provider_secure", Context.MODE_PRIVATE)
     private val alias = "strategy_assistant_ai_key_v1"
+
+    init {
+        // Remove the retired paid-search preference left by earlier development builds.
+        prefs.edit().remove("web_research_enabled").apply()
+    }
 
     fun load(): AiProviderConfig {
         val provider = AiProvider.fromId(prefs.getString("provider", "gemini").orEmpty())
@@ -47,6 +52,7 @@ class AiProviderStore(context: Context) {
             .putString("model", config.model.trim())
             .putString("base_url", config.baseUrl.trim().trimEnd('/'))
         if (config.apiKey.isNotBlank()) editor.putString(secretName(config.provider), encrypt(config.apiKey.trim()))
+        editor.remove("web_research_enabled")
         editor.apply()
     }
 
