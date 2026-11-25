@@ -31,4 +31,23 @@ class CocAttackPlannerTest {
     fun unrelatedQuestionsReceiveNoAttackPlanningPrompt() {
         assertTrue(CocAttackPlanner.planningInstructions("What is a Guardian?").isBlank())
     }
+
+    @Test
+    fun screenshotInstructionsSeparateVisibleAndUncertainObservations() {
+        val instructions = CocAttackPlanner.screenshotAnalysisInstructions()
+        assertTrue(instructions.contains("clearly visible"))
+        assertTrue(instructions.contains("probable but uncertain"))
+        assertTrue(instructions.contains("not identifiable"))
+        assertTrue(instructions.contains("Do not infer exact loot amounts"))
+        assertTrue(instructions.contains("relative screen directions"))
+    }
+
+    @Test
+    fun screenshotInstructionsWarnAgainstInventingBaseLayout() {
+        val instructions = CocAttackPlanner.screenshotAnalysisInstructions()
+        assertTrue(instructions.contains("do not invent a base layout"))
+        assertTrue(instructions.contains("say 'unclear'"))
+        assertTrue(instructions.contains("single most useful missing player detail"))
+    }
+
 }
