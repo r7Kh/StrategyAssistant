@@ -28,6 +28,10 @@ Provide the Intelligence Channel with a structured, source-backed offline refere
 
 This remains a curated snapshot, not a complete catalog of every troop, building, level, cost, equipment item, or attack strategy. Each record carries a source URL and review date. Historical mechanics are identified as patch-specific and must not be represented as guaranteed current behavior.
 
+## Farming attack planning
+
+The AI request pipeline now adds a focused planning framework when a Clash of Clans attack/farming request is detected. It considers Town Hall, available army and levels, resource objective, spells/Siege Machine, hero availability, and target layout. It asks for no more than two concise missing-detail questions, can provide a provisional plan when appropriate, and structures a complete plan around army, target selection, deployment sequence, risks, and an alternative. It explicitly avoids claiming image analysis when no image is supplied, inventing troop capacity or levels, or promising fixed loot. This is an LLM-guidance layer, not a deterministic battle simulator or automatic base-image analyzer.
+
 ## Data governance
 
 1. Prefer official Supercell release notes and official game API documentation.
@@ -52,4 +56,5 @@ Official portal: https://developer.clashofclans.com/
 - Continue filling exact troop, spell, Hero, Pet, equipment, building, trap, and defense records from official source material, prioritizing complete individual item mechanics over broad patch summaries.
 - Add dedicated retrieval aliases for Arabic names and common transliterations.
 - Add tests for stale-version handling, missing facts, prompt-size limits, and query matching.
+- Extend farming planning with structured player/base inputs and a deterministic validator before attempting automated army calculations or screenshot analysis.
 - Consider official player/clan API integration only after a secure backend/IP strategy is approved. Do not add paid infrastructure without explicit approval.
