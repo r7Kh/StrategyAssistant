@@ -20,6 +20,26 @@ internal object CocAttackPlanner {
     }
 
 
+    fun attackPlanInstructions(query: String): String {
+        if (!isAttackPlanningQuery(query)) return ""
+        return buildString {
+            appendLine("STRUCTURED CLASH OF CLANS ATTACK PLAN OUTPUT")
+            appendLine("Return one valid JSON object only. Do not use Markdown fences or prose outside JSON.")
+            appendLine("Use exactly this schema:")
+            appendLine("""{"title":"string","strategy_summary":"string","resource_goal":"Gold|Elixir|Dark Elixir|Balanced|Unknown","target_criteria":["string"],"base_observations":[{"item":"string","location":"string","confidence":"high|medium|low","evidence":"string"}],"army":[{"unit":"string","quantity":"string or empty if unknown","confidence":"high|medium|low","reason":"string"}],"entry":{"side":"string or Unknown","rationale":"string","confidence":"high|medium|low"},"phases":[{"name":"string","actions":["string"],"timing":"string"}],"spell_timing":["string"],"risks":["string"],"skip_if":["string"],"fallback":"string","assumptions":["string"],"missing_info":["string"]}""")
+            appendLine("Never invent quantities, levels, housing space, spell capacity, loot amounts, or percentages. If unknown, use an empty quantity and explicitly list the missing detail.")
+            appendLine("Use only units confirmed in the current conversation/profile. If none are known, leave army empty and give target-selection guidance instead.")
+            appendLine("For screenshot observations, include only visible evidence. Do not infer hidden traps, exact levels, exact coordinates, or guaranteed pathing.")
+            appendLine("Use qualitative confidence only. Do not express success probability as a number or guarantee stars/loot.")
+            appendLine("Phases should be practical and ordered (funnel, main force, support/heroes, spells, cleanup) only where relevant to the confirmed army.")
+            appendLine("Ask no more than two essential follow-up questions, represented in missing_info. Avoid repeating details already supplied.")
+            appendLine("If inputs are incomplete, return a clearly provisional safe plan and state assumptions.")
+            appendLine()
+            appendLine("PLAYER REQUEST")
+            appendLine(query.trim())
+        }
+    }
+
     fun screenshotAnalysisInstructions(): String = buildString {
         appendLine("CLASH OF CLANS VILLAGE SCREENSHOT ANALYSIS")
         appendLine("An image is attached to this request. Inspect only what is actually visible in the supplied screenshot.")
