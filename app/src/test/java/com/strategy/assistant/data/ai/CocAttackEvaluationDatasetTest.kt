@@ -41,7 +41,7 @@ class CocAttackEvaluationDatasetTest {
             }
             for (textIndex in 0 until expectedContains.length()) {
                 val expected = expectedContains.getString(textIndex)
-                assertTrue("$id should render '$expected'.", rendered.contains(expected, ignoreCase = true))
+                assertTrue("$id should render '$expected'. Actual output:\n$rendered", rendered.contains(expected, ignoreCase = true))
             }
             for (textIndex in 0 until expectedNotContains.length()) {
                 val unexpected = expectedNotContains.getString(textIndex)
