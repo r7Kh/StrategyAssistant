@@ -2,6 +2,7 @@ package com.strategy.assistant.data.ai
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -174,57 +175,95 @@ class DirectAiClient {
                 }
             }
 
-            val connection = URL(endpoint).openConnection() as HttpURLConnection
-            try {
-                connection.requestMethod = "POST"
-                connection.connectTimeout = 15000
-                connection.readTimeout = 60000
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.setRequestProperty("Accept", "application/json")
-                when (config.provider) {
-                    AiProvider.GEMINI -> connection.setRequestProperty("x-goog-api-key", config.apiKey)
-                    AiProvider.ANTHROPIC -> {
-                        connection.setRequestProperty("x-api-key", config.apiKey)
-                        connection.setRequestProperty("anthropic-version", "2023-06-01")
+            var attempt = 0
+            while (true) {
+                val connection = URL(endpoint).openConnection() as HttpURLConnection
+                try {
+                    connection.requestMethod = "POST"
+                    connection.connectTimeout = 20000
+                    connection.readTimeout = 90000
+                    connection.doOutput = true
+                    connection.setRequestProperty("Content-Type", "application/json")
+                    connection.setRequestProperty("Accept", "application/json")
+                    when (config.provider) {
+                        AiProvider.GEMINI -> connection.setRequestProperty("x-goog-api-key", config.apiKey)
+                        AiProvider.ANTHROPIC -> {
+                            connection.setRequestProperty("x-api-key", config.apiKey)
+                            connection.setRequestProperty("anthropic-version", "2023-06-01")
+                        }
+                        else -> connection.setRequestProperty("Authorization", "Bearer " + config.apiKey)
                     }
-                    else -> connection.setRequestProperty("Authorization", "Bearer " + config.apiKey)
-                }
-                if (config.provider == AiProvider.OPENROUTER) {
-                    connection.setRequestProperty("X-Title", "STRATEGY ASSISTANT")
-                }
-                connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
-                val status = connection.responseCode
-                val stream = if (status in 200..299) connection.inputStream else connection.errorStream
-                val raw = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
-                if (status !in 200..299) throw AiProviderException(
-                    "Provider request failed (HTTP " + status + "). Check the API key, model and account quota.", status)
-                val json = JSONObject(raw)
-                val answer = when (config.provider) {
-                    AiProvider.GEMINI -> json.optJSONArray("candidates")?.optJSONObject(0)
-                        ?.optJSONObject("content")?.optJSONArray("parts")?.let { parts ->
-                            (0 until parts.length()).mapNotNull { parts.optJSONObject(it)?.optString("text") }
+                    if (config.provider == AiProvider.OPENROUTER) {
+                        connection.setRequestProperty("X-Title", "STRATEGY ASSISTANT")
+                    }
+                    connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+                    val status = connection.responseCode
+                    val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+                    val raw = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
+
+                    // Retry only transient provider/server throttling failures.
+                    // Authentication, invalid model and malformed-request errors are not retried.
+                    if (status in setOf(429, 500, 502, 503, 504) && attempt < 2) {
+                        attempt += 1
+                        connection.disconnect()
+                        delay(900L * attempt)
+                        continue
+                    }
+                    if (status !in 200..299) {
+                        val detail = runCatching {
+                            val errorObject = JSONObject(raw).optJSONObject("error")
+                            errorObject?.optString("message").orEmpty()
+                        }.getOrDefault("")
+                        val friendly = when (status) {
+                            401, 403 -> "The provider rejected the API key or its permissions. Check the key in AI Setup."
+                            404 -> "The selected AI model or provider endpoint was not found. Check the model name."
+                            429 -> "The AI provider rate limit or account quota was reached. Wait a little and try again."
+                            500, 502, 503, 504 -> "The AI provider is temporarily unavailable. Please try again shortly."
+                            else -> "The AI provider returned an error (HTTP $status)."
+                        }
+                        throw AiProviderException(
+                            if (detail.isBlank()) friendly else "$friendly ($detail)",
+                            status
+                        )
+                    }
+                    val json = JSONObject(raw)
+                    val answer = when (config.provider) {
+                        AiProvider.GEMINI -> json.optJSONArray("candidates")?.optJSONObject(0)
+                            ?.optJSONObject("content")?.optJSONArray("parts")?.let { parts ->
+                                (0 until parts.length()).mapNotNull { parts.optJSONObject(it)?.optString("text") }
+                                    .filter { it.isNotBlank() }.joinToString("\n")
+                            }
+                        AiProvider.ANTHROPIC -> json.optJSONArray("content")?.let { blocks ->
+                            (0 until blocks.length()).mapNotNull { blocks.optJSONObject(it)?.optString("text") }
                                 .filter { it.isNotBlank() }.joinToString("\n")
                         }
-                    AiProvider.ANTHROPIC -> json.optJSONArray("content")?.let { blocks ->
-                        (0 until blocks.length()).mapNotNull { blocks.optJSONObject(it)?.optString("text") }
-                            .filter { it.isNotBlank() }.joinToString("\n")
+                        else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
+                    }.orEmpty().trim()
+                    if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
+                    val formattedAnswer = when {
+                        generateAttackPlan -> CocAttackPlanFormatter.formatOrFallback(answer)
+                        analyzeClashOfClansScreenshot -> CocScreenshotReportFormatter.formatOrFallback(answer)
+                        else -> answer
                     }
-                    else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
-                }.orEmpty().trim()
-                if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
-                val formattedAnswer = when {
-                    generateAttackPlan -> CocAttackPlanFormatter.formatOrFallback(answer)
-                    analyzeClashOfClansScreenshot -> CocScreenshotReportFormatter.formatOrFallback(answer)
-                    else -> answer
+                    return@withContext AiReply(formattedAnswer, config.provider.title, model)
+                } catch (error: AiProviderException) {
+                    throw error
+                } catch (error: Exception) {
+                    if (attempt < 2 && (error is java.net.SocketTimeoutException ||
+                            error is java.net.ConnectException || error is java.io.IOException)) {
+                        attempt += 1
+                        delay(900L * attempt)
+                        continue
+                    }
+                    val message = if (error is java.net.SocketTimeoutException) {
+                        "The AI provider took too long to respond. Check your connection and try again."
+                    } else {
+                        error.message ?: "Could not connect to the AI provider."
+                    }
+                    throw AiProviderException(message)
+                } finally {
+                    connection.disconnect()
                 }
-                AiReply(formattedAnswer, config.provider.title, model)
-            } catch (error: AiProviderException) {
-                throw error
-            } catch (error: Exception) {
-                throw AiProviderException(error.message ?: "Could not connect to the AI provider.")
-            } finally {
-                connection.disconnect()
             }
         }
 }
