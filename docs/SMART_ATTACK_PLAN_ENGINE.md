@@ -41,3 +41,23 @@ The formatter extracts valid JSON and renders a readable report. Invalid or unre
 ## Validation
 
 Unit tests cover structured formatting, evaluation labels, alternative rendering, fenced JSON/provider preambles, missing quantities, empty armies, malformed output, and unrelated JSON fallback.
+
+## Deterministic plan validation
+
+Before rendering, `CocAttackPlanValidator` checks the structured response for duplicate army entries, non-integer quantities, unsupported qualitative labels, excessive alternatives, and unusually long deployment sequences. It reports warnings without inventing values or silently rewriting the model response. It cannot verify player capacity or troop availability from free-form text; those remain explicit player checks until the profile uses structured unit records.
+
+## Knowledge retrieval
+
+The offline snapshot uses keyword matching with ranked, bounded retrieval. Up to five relevant entries are sent for a specific query; broad or unmatched questions receive a small core subset rather than the entire catalog. English and Arabic aliases are tested. Every selected entry retains its official source URL and review date. This remains curated retrieval, not a live or complete game database.
+
+## Screenshot analysis improvements
+
+The screenshot prompt groups evidence around resources, defenses, walls/compartments, and entry lanes. It explicitly rejects inferences about objects hidden by overlays or outside the image boundary, and keeps relative positions and qualitative confidence rather than exact coordinates or numeric certainty.
+
+## Post-attack review
+
+When a Clash of Clans message describes a completed attack or reports its result, the request pipeline adds a review framework. It compares the result with a prior plan only when that plan exists in the conversation, separates reported facts from visible evidence and interpretation, and identifies a small number of actionable lessons. It must not invent loot, destruction, troop losses, or causal explanations. Lessons are not claimed to be permanently learned or saved; persistence requires an explicit user request.
+
+## Validation coverage
+
+Unit tests cover duplicate units, malformed quantities, unsupported labels, excessive plan complexity, Arabic knowledge aliases, bounded retrieval, source metadata, and post-attack review routing.
