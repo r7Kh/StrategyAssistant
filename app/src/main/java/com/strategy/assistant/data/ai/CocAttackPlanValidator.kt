@@ -33,7 +33,7 @@ internal object CocAttackPlanValidator {
                 }
                 val confidence = unit.optString("confidence").lowercase()
                 if (confidence.isNotBlank() && confidence !in confidenceValues) {
-                    warnings += "Confidence for ${name.ifBlank { "an army unit" }} is not a supported qualitative label."
+                    warnings += "Confidence for ${name.ifBlank { "an army unit" }} uses an unsupported qualitative label."
                 }
             }
         }
