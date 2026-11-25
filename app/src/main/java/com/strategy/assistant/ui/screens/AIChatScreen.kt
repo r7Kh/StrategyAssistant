@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.strategy.assistant.data.ai.AiMemoryRepository
 import com.strategy.assistant.data.ai.AiProviderStore
 import com.strategy.assistant.data.ai.DirectAiClient
+import com.strategy.assistant.data.ai.isClashOfClansContext
 import com.strategy.assistant.data.ai.CocPlayerProfile
 import com.strategy.assistant.data.ai.CocPlayerProfileRepository
 import com.strategy.assistant.data.ai.CocFarmingGoal
