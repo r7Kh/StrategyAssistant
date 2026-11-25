@@ -17,7 +17,9 @@ class CocScreenshotReportFormatterTest {
   val unrelated = """{"message":"hello"}"""; assertEquals(unrelated, CocScreenshotReportFormatter.formatOrFallback(unrelated))
  }
  @Test fun acceptsFencedJson() {
-  val raw = """```json\n{"screenshot_context":"Village","observations":[]}\n```"""
+  val raw = """```json
+{"screenshot_context":"Village","observations":[]}
+```"""
   assertTrue(CocScreenshotReportFormatter.formatOrFallback(raw).contains("No reliable building observations"))
  }
 }
