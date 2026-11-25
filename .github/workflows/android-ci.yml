@@ -19,8 +19,9 @@ concurrency:
 
 jobs:
   build:
-    name: Build and unit tests
+    name: Build, unit tests and Android integration tests
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -39,3 +40,12 @@ jobs:
 
       - name: Run unit tests
         run: bash ./gradlew testDebugUnitTest
+
+      - name: Run Android integration tests on emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          script: bash ./gradlew connectedDebugAndroidTest
