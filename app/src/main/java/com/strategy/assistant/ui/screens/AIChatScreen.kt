@@ -237,7 +237,7 @@ fun AIChatScreen(
                         onClick = {
                             val selectedImage = imageAttachment
                             val prompt = input.trim().ifBlank {
-                                "Analyze this Clash of Clans village screenshot for a farming attack. Identify visible resource buildings, defenses, a suitable entry side, and a cautious deployment plan. Clearly state anything you cannot identify."
+                                "Analyze the attached image. Describe the important visible details and clearly state anything you cannot identify."
                             }
                             input = ""
                             imageAttachment = null
