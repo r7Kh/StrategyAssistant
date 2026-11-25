@@ -73,12 +73,19 @@ class DirectAiClient {
                 history.forEach { append(' ').append(it.second) }
                 append(' ').append(memoryContext)
             }
-            val gameKnowledge = if (isClashOfClansContext(prompt, history, memoryContext)) {
+            val isClashOfClans = isClashOfClansContext(prompt, history, memoryContext)
+            val gameKnowledge = if (isClashOfClans) {
                 "\n\n" + ClashOfClansKnowledge.contextFor(gameQueryContext)
             } else {
                 ""
             }
+            val attackPlanning = if (isClashOfClans) {
+                CocAttackPlanner.planningInstructions(gameQueryContext)
+            } else {
+                ""
+            }
             val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + gameKnowledge +
+                if (attackPlanning.isBlank()) "" else "\n\n" + attackPlanning +
                 if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
             require(base.startsWith("https://")) { "Provider URL must use HTTPS." }
 
