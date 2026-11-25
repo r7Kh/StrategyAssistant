@@ -5,6 +5,7 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -129,7 +131,7 @@ fun StrategyAssistantApp() {
     }
 
     val isArabic = appPreferences.language == "العربية"
-    var currentScreen by remember { mutableIntStateOf(0) }
+    var currentScreen by rememberSaveable { mutableIntStateOf(0) }
     val navigationItems = listOf(
         Triple("⌂", if (isArabic) "الرئيسية" else "Home", 0),
         Triple("✧", if (isArabic) "الذكاء" else "AI", 1),
@@ -137,6 +139,16 @@ fun StrategyAssistantApp() {
         Triple("☰", if (isArabic) "المزيد" else "More", 3)
     )
     val selectedNavigationTab = when { currentScreen == 12 || currentScreen == 13 -> 1; currentScreen >= 4 -> 3; else -> currentScreen }
+    // Keep the current destination across configuration changes and make system
+    // Back navigate through the app instead of immediately closing it.
+    BackHandler(enabled = currentScreen != 0) {
+        currentScreen = when (currentScreen) {
+            1, 2, 3 -> 0
+            12 -> 1
+            13 -> 12
+            else -> 3
+        }
+    }
 
     CompositionLocalProvider(
         LocalAppLanguage provides appPreferences.language,
