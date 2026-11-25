@@ -265,6 +265,7 @@ class DirectAiClient {
                     connection.disconnect()
                 }
             }
+            throw AiProviderException("The AI provider request ended without a response.")
         }
 }
 
