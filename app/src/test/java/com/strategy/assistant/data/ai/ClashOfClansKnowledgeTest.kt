@@ -74,4 +74,14 @@ class ClashOfClansKnowledgeTest {
         assertTrue(context.contains("Regular Battles are available from Town Hall 2"))
         assertTrue(context.contains("Ranked Battles are available from Town Hall 7"))
     }
+    @Test
+    fun contextForLegendaryEquipmentReturnsOreAndUnlockDetails() {
+        val context = ClashOfClansKnowledge.contextFor("What is Legendary Equipment and Blizzard Axe?")
+        assertTrue(context.contains("Blizzard Axe"))
+        assertTrue(context.contains("79,760 Shiny Ore"))
+        assertTrue(context.contains("Town Hall 16"))
+        assertTrue(context.contains("Town Hall 18"))
+        assertFalse(context.contains("Squads are available from Town Hall 8"))
+    }
+
 }
