@@ -10,7 +10,7 @@ Provide the Intelligence Channel with a small, structured, source-backed offline
 - Last reviewed: 2026-11-25
 - Primary source: official Supercell Clash of Clans release notes.
 - Kotlin source: `app/src/main/java/com/strategy/assistant/data/ai/ClashOfClansKnowledge.kt`
-- Prompt integration: `DirectAiClient.kt`
+- Prompt integration: `DirectAiClient.kt`\n- Retrieval: `ClashOfClansKnowledge.contextFor(query)` selects entries using English and Arabic keywords; if no keyword matches, it falls back to the small curated snapshot.
 
 The snapshot currently covers the November 2026 Clash of Titans update, selected Town Hall 19 facts, selected launch balance notes, and selected August 2026 update history. It is intentionally not a complete catalog of troops, buildings, levels, costs, equipment, or strategies.
 
@@ -35,6 +35,6 @@ Official portal: https://developer.clashofclans.com/
 
 - Add verified catalog records for Town Hall progression, troops, spells, heroes, pets, equipment, buildings, traps, and defenses.
 - Add per-record source links and version/verification metadata.
-- Add retrieval by category and query keywords so only relevant facts enter the prompt.
+- Expand retrieval keywords and category-specific records as the catalog grows. Current implementation selects matching records by query keywords and falls back to the small curated snapshot.
 - Add automated unit tests for stale-version handling, missing facts, and bounded prompt size.
 - Consider official player/clan API integration only after a secure backend/IP strategy is approved. Do not add paid infrastructure without explicit approval.
