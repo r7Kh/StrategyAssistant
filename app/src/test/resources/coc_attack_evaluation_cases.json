@@ -1,0 +1,78 @@
+[
+  {
+    "id": "confirmed-farming-plan",
+    "purpose": "A plan based on a player-confirmed army and a clearly stated farming goal.",
+    "plan": {
+      "title": "Collector-side farming",
+      "strategy_summary": "Prefer exposed collectors and avoid entering the strongest defensive compartment.",
+      "resource_goal": "Elixir",
+      "army": [{"unit":"Archer","quantity":"20","confidence":"high","reason":"Confirmed by the player"}],
+      "entry": {"side":"North","rationale":"Visible collectors are exposed on this edge.","confidence":"medium"},
+      "phases": [{"name":"Funnel","actions":["Clear outside buildings"],"timing":"Before the main group"}],
+      "evaluation": {"resource_fit":"strong","army_fit":"moderate","entry_safety":"unknown","training_efficiency":"moderate"},
+      "alternatives": []
+    },
+    "expected_warnings": [],
+    "expected_output_contains": ["Collector-side farming","Farming objective: Elixir","Archer** × 20","Deployment phases","Resource-goal fit: strong"],
+    "expected_output_not_contains": ["Plan validation warnings","Archer × 0"]
+  },
+  {
+    "id": "unknown-army-must-not-be-invented",
+    "purpose": "A provisional plan where the player has not confirmed an army.",
+    "plan": {
+      "title": "Provisional target guidance",
+      "strategy_summary": "Inspect exposed collectors before selecting an army.",
+      "resource_goal": "Gold",
+      "army": [],
+      "phases": [],
+      "evaluation": {"resource_fit":"moderate","army_fit":"unknown","entry_safety":"unknown","training_efficiency":"unknown"}
+    },
+    "expected_warnings": ["No army composition was confirmed"],
+    "expected_output_contains": ["No confirmed army composition","Plan validation warnings","Do not train an assumed army"],
+    "expected_output_not_contains": ["Barbarian** ×","Archer** ×"]
+  },
+  {
+    "id": "duplicate-and-invalid-quantities",
+    "purpose": "Catch duplicate army entries and non-integer quantities from model output.",
+    "plan": {
+      "title": "Needs verification",
+      "army": [
+        {"unit":"Archer","quantity":"many","confidence":"high"},
+        {"unit":"archer","quantity":"5","confidence":"high"}
+      ],
+      "entry": {"side":"West","confidence":"certain"},
+      "evaluation": {"resource_fit":"excellent"}
+    },
+    "expected_warnings": ["not a simple whole number","Duplicate army entry","unsupported qualitative label"],
+    "expected_output_contains": ["Plan validation warnings","not a simple whole number","Duplicate army entry"],
+    "expected_output_not_contains": []
+  },
+  {
+    "id": "unsupported-complexity-is-flagged",
+    "purpose": "Flag excessive alternatives and deployment phases rather than silently accepting them.",
+    "plan": {
+      "title": "Overly complex response",
+      "army": [{"unit":"Giant","quantity":"10","confidence":"medium"}],
+      "phases": [{},{},{},{},{},{},{},{},{}],
+      "alternatives": [{},{},{}]
+    },
+    "expected_warnings": ["More than two alternatives","unusually many deployment phases"],
+    "expected_output_contains": ["Plan validation warnings","More than two alternatives","unusually many deployment phases"],
+    "expected_output_not_contains": []
+  },
+  {
+    "id": "arabic-plan-content-is-preserved",
+    "purpose": "Ensure Arabic text survives structured formatting without fabricated values.",
+    "plan": {
+      "title": "هجوم لجمع الذهب",
+      "strategy_summary": "استهدف جامعات الذهب الظاهرة وتجنب الدفاعات القوية.",
+      "resource_goal": "Gold",
+      "army": [{"unit":"رامي السهام","quantity":"","confidence":"low"}],
+      "entry": {"side":"غير واضح","rationale":"الصورة لا تكفي لتحديد المدخل.","confidence":"low"},
+      "phases": []
+    },
+    "expected_warnings": [],
+    "expected_output_contains": ["هجوم لجمع الذهب","استهدف جامعات الذهب","رامي السهام","غير واضح"],
+    "expected_output_not_contains": ["رامي السهام** ×"]
+  }
+]
