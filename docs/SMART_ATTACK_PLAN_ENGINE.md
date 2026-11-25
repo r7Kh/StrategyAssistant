@@ -61,3 +61,14 @@ When a Clash of Clans message describes a completed attack or reports its result
 ## Validation coverage
 
 Unit tests cover duplicate units, malformed quantities, unsupported labels, excessive plan complexity, Arabic knowledge aliases, bounded retrieval, source metadata, and post-attack review routing.
+
+## Offline evaluation corpus
+
+A small regression corpus lives at `app/src/test/resources/coc_attack_evaluation_cases.json`. It covers:
+- A confirmed farming plan with a known resource goal and player-confirmed army.
+- A provisional plan with no confirmed army, ensuring the app does not invent units.
+- Duplicate units, non-integer quantities, and unsupported confidence/evaluation labels.
+- Excessive deployment phases and alternatives.
+- Arabic plan content and unknown quantities.
+
+`CocAttackEvaluationDatasetTest` runs each fixture through the deterministic validator and formatter and checks expected warnings, required rendered evidence, and prohibited invented output. This is a regression suite for app-side handling, not a benchmark of Gemini or another provider's tactical accuracy. Real model quality still requires a separately curated set of real base screenshots, player profiles, model responses, and observed battle outcomes.
