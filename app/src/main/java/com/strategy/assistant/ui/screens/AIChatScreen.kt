@@ -2,8 +2,6 @@ package com.strategy.assistant.ui.screens
 
 import android.content.Intent
 import android.net.Uri
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -23,7 +21,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,10 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.strategy.assistant.data.ai.AiMemoryRepository
 import com.strategy.assistant.data.ai.AiProviderStore
-import com.strategy.assistant.data.ai.AiSource
 import com.strategy.assistant.data.ai.DirectAiClient
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -56,8 +51,6 @@ import kotlinx.coroutines.launch
 private data class ChatLine(
     val role: String,
     val text: String,
-    val sources: List<AiSource> = emptyList(),
-    val searchSuggestionsHtml: String? = null
 )
 
 @Composable
@@ -76,28 +69,7 @@ fun AIChatScreen(
     var input by remember { mutableStateOf("") }
     var sending by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
-    var showWebResearchApproval by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<ChatLine>() }
-
-    if (showWebResearchApproval) {
-        AlertDialog(
-            onDismissRequest = { showWebResearchApproval = false },
-            containerColor = Color(0xFF171220),
-            titleContentColor = Color(0xFFE7D7B7),
-            textContentColor = Color(0xFFC8BDCF),
-            title = { Text("Enable Google Search?") },
-            text = { Text("Live web research uses Google Search grounding through your own Gemini API account. Google currently lists this feature as unavailable on the Gemini 3 free tier. On an eligible paid-tier project, the first 5,000 search requests per month are free; after that, Google lists $14 per 1,000 requests. One message may trigger more than one search query. Any charges are billed by Google to your API account.\n\nWeb research stays OFF unless you confirm.", fontSize = 12.sp, lineHeight = 18.sp) },
-            confirmButton = {
-                TextButton(onClick = {
-                    val updated = config.copy(webResearchEnabled = true)
-                    store.save(updated)
-                    config = updated
-                    showWebResearchApproval = false
-                }) { Text("ENABLE", color = Color(0xFFD6B56D)) }
-            },
-            dismissButton = { TextButton(onClick = { showWebResearchApproval = false }) { Text("NOT NOW", color = Color(0xFFB5A9C3)) } }
-        )
-    }
 
     Box(Modifier.fillMaxSize().background(Color(0xFF080610))) {
         AnimatedIntelligenceBackdrop(Modifier.fillMaxSize())
@@ -115,22 +87,6 @@ fun AIChatScreen(
                         Box(Modifier.size(6.dp).background(Color(0xFFD6B56D), CircleShape))
                         Spacer(Modifier.width(6.dp))
                         Text(config.provider.title + " • " + config.model, color = Color(0xFFC8B78E), fontSize = 10.sp)
-                    }
-                }
-                if (config.provider == com.strategy.assistant.data.ai.AiProvider.GEMINI) {
-                    TextButton(
-                        onClick = {
-                            if (config.webResearchEnabled) {
-                                val updated = config.copy(webResearchEnabled = false)
-                                store.save(updated)
-                                config = updated
-                            } else {
-                                showWebResearchApproval = true
-                            }
-                        },
-                        contentPadding = PaddingValues(horizontal = 4.dp)
-                    ) {
-                        Text(if (config.webResearchEnabled) "WEB ON" else "WEB OFF", color = if (config.webResearchEnabled) Color(0xFFB8D99A) else Color(0xFF9A8DA8), fontSize = 9.sp, letterSpacing = 0.5.sp)
                     }
                 }
                 TextButton(onClick = onOpenMemory, contentPadding = PaddingValues(horizontal = 5.dp)) {
@@ -226,7 +182,7 @@ fun AIChatScreen(
                                     val memoryContext = memoryRepository.snapshot.first().toPromptContext()
                                     client.send(config, prompt, history, memoryContext)
                                 }.onSuccess { reply ->
-                                    messages.add(ChatLine("assistant", reply.text, reply.sources, reply.searchSuggestionsHtml))
+                                    messages.add(ChatLine("assistant", reply.text))
                                     config = store.load()
                                 }.onFailure { failure ->
                                     error = failure.message ?: "AI request failed."
@@ -292,56 +248,9 @@ private fun ChatMessage(line: ChatLine, onOpenSource: (String) -> Unit) {
                     lineHeight = 22.sp,
                     style = TextStyle(textDirection = TextDirection.Content, textAlign = TextAlign.Start)
                 )
-                if (line.sources.isNotEmpty()) {
-                    Spacer(Modifier.height(11.dp))
-                    HorizontalDivider(color = Color(0x334E4260))
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFFD6B56D), modifier = Modifier.size(13.dp))
-                        Spacer(Modifier.width(5.dp))
-                        Text("SOURCES", color = Color(0xFFD6B56D), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
-                    }
-                    Spacer(Modifier.height(5.dp))
-                    line.sources.forEachIndexed { index, source ->
-                        Text(
-                            text = "${index + 1}. ${source.title}",
-                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).clickable { onOpenSource(source.url) }.padding(vertical = 4.dp),
-                            color = Color(0xFFB9A5DE), fontSize = 11.sp,
-                            style = TextStyle(textDirection = TextDirection.Content)
-                        )
-                    }
-                }
-                line.searchSuggestionsHtml?.let { html ->
-                    Spacer(Modifier.height(8.dp))
-                    GoogleSearchSuggestions(html)
-                }
             }
         }
     }
-}
-
-@Composable
-private fun GoogleSearchSuggestions(html: String) {
-    var loadedHtml by remember { mutableStateOf<String?>(null) }
-    AndroidView(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp, max = 112.dp),
-        factory = { context ->
-            WebView(context).apply {
-                setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.allowFileAccess = false
-                settings.allowContentAccess = false
-                webViewClient = WebViewClient()
-            }
-        },
-        update = { view ->
-            if (loadedHtml != html) {
-                loadedHtml = html
-                view.loadDataWithBaseURL("https://www.google.com", html, "text/html", "UTF-8", null)
-            }
-        }
-    )
 }
 
 @Composable
