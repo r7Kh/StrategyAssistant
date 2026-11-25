@@ -63,7 +63,7 @@ internal object CocScreenshotReportFormatter {
             val char = unfenced[index]
             if (inString) {
                 if (escaped) escaped = false
-                else if (char == '\\\\') escaped = true
+                else if (char == '\\') escaped = true
                 else if (char == '\"') inString = false
             } else {
                 when (char) {
