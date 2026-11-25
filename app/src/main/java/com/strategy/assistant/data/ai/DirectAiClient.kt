@@ -6,6 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Base64
 
 data class AiReply(val text: String, val provider: String, val model: String)
 class AiProviderException(message: String, val statusCode: Int? = null) : Exception(message)
@@ -62,7 +63,7 @@ ${StrategyProductKnowledge.CONTENT}
 """
 
 class DirectAiClient {
-    suspend fun send(config: AiProviderConfig, prompt: String, history: List<Pair<String, String>> = emptyList(), memoryContext: String = ""): AiReply =
+    suspend fun send(config: AiProviderConfig, prompt: String, history: List<Pair<String, String>> = emptyList(), memoryContext: String = "", image: AiImageAttachment? = null): AiReply =
         withContext(Dispatchers.IO) {
             require(config.apiKey.isNotBlank()) { "Add your provider API key in AI Control Panel first." }
             require(prompt.isNotBlank()) { "Message cannot be empty." }
@@ -109,8 +110,13 @@ class DirectAiClient {
                             .put("role", if (role == "assistant") "model" else "user")
                             .put("parts", JSONArray().put(JSONObject().put("text", text))))
                     }
-                    contents.put(JSONObject().put("role", "user")
-                        .put("parts", JSONArray().put(JSONObject().put("text", prompt))))
+                    val userParts = JSONArray().put(JSONObject().put("text", prompt))
+                    image?.let { attachment ->
+                        userParts.put(JSONObject().put("inline_data", JSONObject()
+                            .put("mime_type", attachment.mimeType)
+                            .put("data", Base64.getEncoder().encodeToString(attachment.bytes))))
+                    }
+                    contents.put(JSONObject().put("role", "user").put("parts", userParts))
                     body = JSONObject()
                         .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put(
                             "text", systemPrompt
@@ -124,7 +130,13 @@ class DirectAiClient {
                     history.takeLast(10).forEach { (role, text) ->
                         messages.put(JSONObject().put("role", if (role == "assistant") "assistant" else "user").put("content", text))
                     }
-                    messages.put(JSONObject().put("role", "user").put("content", prompt))
+                    val userContent = if (image == null) prompt else JSONArray()
+                        .put(JSONObject().put("type", "text").put("text", prompt))
+                        .put(JSONObject().put("type", "image").put("source", JSONObject()
+                            .put("type", "base64")
+                            .put("media_type", image.mimeType)
+                            .put("data", Base64.getEncoder().encodeToString(image.bytes))))
+                    messages.put(JSONObject().put("role", "user").put("content", userContent))
                     body = JSONObject().put("model", model).put("max_tokens", 1200)
                         .put("system", systemPrompt)
                         .put("messages", messages)
@@ -136,7 +148,11 @@ class DirectAiClient {
                     history.takeLast(10).forEach { (role, text) ->
                         messages.put(JSONObject().put("role", if (role == "assistant") "assistant" else "user").put("content", text))
                     }
-                    messages.put(JSONObject().put("role", "user").put("content", prompt))
+                    val userContent = if (image == null) prompt else JSONArray()
+                        .put(JSONObject().put("type", "text").put("text", prompt))
+                        .put(JSONObject().put("type", "image_url").put("image_url", JSONObject()
+                            .put("url", "data:${image.mimeType};base64,${Base64.getEncoder().encodeToString(image.bytes)}")))
+                    messages.put(JSONObject().put("role", "user").put("content", userContent))
                     body = JSONObject().put("model", model).put("messages", messages).put("temperature", 0.55)
                 }
             }
