@@ -99,7 +99,10 @@ internal object ClashOfClansKnowledge {
                 "The release notes list Town Hall 19 building levels: Town Hall 19, Clan Castle 15 (with +5 troop capacity, now 60), Laboratory 17, Hero Hall 13, Gold Storage 20, Elixir Storage 20, and Dark Elixir Storage 14.",
                 "The release notes list resource building levels from Town Hall 18: Gold Mine 18, Elixir Collector 18, and Dark Elixir Drill 12.",
                 "The release notes list defense levels: Air Defense 17, Hidden Tesla 18, X-Bow 14, Multi-Archer Tower 5, Multi-Gear Tower 4, Ricochet Cannon 5, and Builder's Hut 9.",
-                "Firecracker Tower unlocks at Town Hall 19, has a 10-tile range, two levels, and a maximum count of two, according to the update notes.",
+                "The release notes list trap levels: Air Bomb 14, Skeleton Trap 6, and Spring Trap 14. Walls reach level 20, with up to 150 pieces upgradeable to level 20.",
+                "Spiky Tower unlocks at Town Hall 19, has two levels, and reflects 6% or 9% of an attacker's maximum hitpoints per triggering hit. It wakes when an enemy troop is within 11 tiles after a 1-second spin-up; spells and Hero Equipment abilities do not trigger it, and Freeze has no effect.",
+                "Firecracker Tower is created by merging a max-level Archer Tower (level 21) and max-level Scattershot (level 7). It targets ground and air troops, has a 10-tile range, two levels, and a maximum count of two.",
+                "Firecracker Tower rockets deal 483 or 501 damage every 1.8 seconds; the following spark spray can deal up to 365 or 385 damage. Its hitpoints are 6,500 or 6,700 by level.",
                 "The Guardian Shrine is free and instant to place at Town Hall 19. It is where Guardians are upgraded and the defending Guardian is selected; that selection is now shared across layouts."
             ),
             verifiedOn = "2026-11-25",
