@@ -30,6 +30,8 @@ class CocAttackEvaluationDatasetTest {
 
             val warnings = CocAttackPlanValidator.validate(plan)
             val rendered = CocAttackPlanFormatter.formatOrFallback(plan)
+            // Assertions target visible text, not Markdown emphasis syntax.
+            val comparableRendered = rendered.replace("**", "")
 
             for (warningIndex in 0 until expectedWarnings.length()) {
                 val expected = expectedWarnings.getString(warningIndex)
@@ -40,12 +42,13 @@ class CocAttackEvaluationDatasetTest {
                 assertTrue("$id should have no validation warnings. Warnings: $warnings", warnings.isEmpty())
             }
             for (textIndex in 0 until expectedContains.length()) {
-                val expected = expectedContains.getString(textIndex)
-                assertTrue("$id should render '$expected'. Actual output:\n$rendered", rendered.contains(expected, ignoreCase = true))
+                val expected = expectedContains.getString(textIndex).replace("**", "")
+                assertTrue("$id should render '$expected'. Actual output:\n$rendered",
+                    comparableRendered.contains(expected, ignoreCase = true))
             }
             for (textIndex in 0 until expectedNotContains.length()) {
-                val unexpected = expectedNotContains.getString(textIndex)
-                assertFalse("$id must not render '$unexpected'.", rendered.contains(unexpected, ignoreCase = true))
+                val unexpected = expectedNotContains.getString(textIndex).replace("**", "")
+                assertFalse("$id must not render '$unexpected'.", comparableRendered.contains(unexpected, ignoreCase = true))
             }
         }
         assertEquals("The corpus format should remain stable.", 5, cases.length())
