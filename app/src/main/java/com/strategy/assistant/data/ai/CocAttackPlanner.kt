@@ -32,6 +32,10 @@ internal object CocAttackPlanner {
         appendLine("If the screenshot is cropped, blurry, zoomed out, obstructed, or missing important edges, state what additional screenshot or detail is needed.")
         appendLine("For a farming plan, prioritize the user's stated resource objective. Separate collector access from storage access, and give a cautious deployment sequence using only troops the player confirms they have.")
         appendLine("Never present an uncertain visual guess as a fact. If the model cannot distinguish a building, say 'unclear' rather than naming it.")
+        appendLine("Return valid JSON only, with no Markdown fences or text outside JSON.")
+        appendLine("Use this top-level shape: {\"screenshot_context\":string,\"observations\":[{\"category\":string,\"name\":string,\"relative_location\":string,\"confidence\":\"high|medium|low\",\"visual_evidence\":string}],\"resource_targets\":[string],\"recommended_entry\":{\"side\":string,\"reason\":string,\"confidence\":\"high|medium|low\"},\"attack_sequence\":[string],\"risks\":[string],\"limitations\":[string],\"next_question\":string}.")
+        appendLine("Every observation must be grounded in visible evidence. Use an empty array when there are no reliable observations. Use low confidence or omit an observation rather than inventing a building.")
+        appendLine("Confidence is a qualitative visual estimate, not a measured probability. Do not include numeric percentages.")
         appendLine("Keep the analysis concise and finish with the single most useful missing player detail if required.")
     }
 
