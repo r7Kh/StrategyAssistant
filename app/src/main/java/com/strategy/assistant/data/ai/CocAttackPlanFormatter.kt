@@ -70,6 +70,27 @@ internal object CocAttackPlanFormatter {
                 appendLine("### Alternative")
                 appendLine(it)
             }
+            plan.optJSONObject("evaluation")?.let { evaluation ->
+                appendLine()
+                appendLine("### Strategy evaluation")
+                appendLine("- Resource-goal fit: ${evaluation.safeString("resource_fit").ifBlank { "unknown" }}")
+                appendLine("- Army fit: ${evaluation.safeString("army_fit").ifBlank { "unknown" }}")
+                appendLine("- Entry safety: ${evaluation.safeString("entry_safety").ifBlank { "unknown" }}")
+                appendLine("- Training efficiency: ${evaluation.safeString("training_efficiency").ifBlank { "unknown" }}")
+                evaluation.safeString("main_tradeoff").takeIf(String::isNotBlank)?.let { appendLine("- Main trade-off: $it") }
+                evaluation.safeString("recommendation_reason").takeIf(String::isNotBlank)?.let { appendLine("- Why this plan: $it") }
+            }
+            val alternatives = plan.optJSONArray("alternatives") ?: JSONArray()
+            if (alternatives.length() > 0) {
+                appendLine()
+                appendLine("### Alternative approaches")
+                for (index in 0 until minOf(alternatives.length(), 2)) {
+                    val alternative = alternatives.optJSONObject(index) ?: continue
+                    appendLine("- **${alternative.safeString("name").ifBlank { "Alternative ${index + 1}" }}**")
+                    alternative.safeString("best_when").takeIf(String::isNotBlank)?.let { appendLine("  - Best when: $it") }
+                    alternative.safeString("tradeoff").takeIf(String::isNotBlank)?.let { appendLine("  - Trade-off: $it") }
+                }
+            }
             appendArray(plan.optJSONArray("assumptions"), "Assumptions")
             appendArray(plan.optJSONArray("missing_info"), "Details needed")
             appendLine()
