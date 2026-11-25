@@ -225,7 +225,7 @@ internal object ClashOfClansKnowledge {
         val rankedEntries = entries.mapNotNull { entry ->
             val matches = entry.keywords.count { keyword ->
                 val term = keyword.lowercase()
-                if (term.length <= 3 && term.all(Char::isLetterOrDigit)) {
+                if (term.length <= 3 && term.all { it.isLetterOrDigit() }) {
                     Regex("\\b" + Regex.escape(term) + "\\b").containsMatchIn(normalizedQuery)
                 } else normalizedQuery.contains(term)
             }
