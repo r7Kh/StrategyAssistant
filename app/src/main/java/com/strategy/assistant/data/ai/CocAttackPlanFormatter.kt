@@ -12,7 +12,7 @@ internal object CocAttackPlanFormatter {
         if (!plan.has("strategy_summary") && !plan.has("phases") && !plan.has("army")) return raw
 
         return buildString {
-            appendLine("## ${plan.safeString("title").ifBlank { "Clash of Clans attack plan" }}")
+            appendLine("## ⚔ ATTACK PLAN")\n            appendLine("**${plan.safeString("title").ifBlank { "Clash of Clans attack plan" }}**")
             plan.safeString("strategy_summary").takeIf(String::isNotBlank)?.let {
                 appendLine()
                 appendLine(it)
