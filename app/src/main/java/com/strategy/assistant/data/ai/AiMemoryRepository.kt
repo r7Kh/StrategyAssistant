@@ -93,17 +93,7 @@ class AiMemoryRepository(context: Context) {
     suspend fun rememberExplicitFacts(userMessage: String) {
         val message = userMessage.trim().take(1000)
         if (message.isBlank()) return
-        val patterns = listOf(
-            Regex("""(?i)(?:my name is|call me)\s+([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
-            Regex("""(?i)(?:i play|i main)\s+([\p{L}][\p{L}0-9 _'-]{0,45})""") to "Gaming",
-            Regex("""(?i)(?:i prefer|i like|i love)\s+([^.!?\n]{2,100})""") to "Preferences",
-            Regex("""(?:اسمي|ناديني)\s*([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
-            Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\s*([^.!؟?\n]{2,60})""") to "Gaming",
-            Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\s*([^.!؟?\n]{2,100})""") to "Preferences"
-        )
-        val matches = patterns.mapNotNull { (pattern, category) ->
-            pattern.find(message)?.groupValues?.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }?.let { category to it }
-        }
+        val matches = extractExplicitMemoryFacts(message)
         if (matches.isEmpty()) return
         store.edit { prefs ->
             if (prefs[Keys.enabled] == false) return@edit
@@ -150,5 +140,21 @@ class AiMemoryRepository(context: Context) {
 
     private companion object {
         const val MAX_ITEMS = 100
+    }
+}
+
+
+internal fun extractExplicitMemoryFacts(message: String): List<Pair<String, String>> {
+    if (message.isBlank()) return emptyList()
+    val patterns = listOf(
+        Regex("""(?i)(?:my name is|call me)\s+([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
+        Regex("""(?i)(?:i play|i main)\s+([\p{L}][\p{L}0-9 _'-]{0,45})""") to "Gaming",
+        Regex("""(?i)(?:i prefer|i like|i love)\s+([^.!?\n]{2,100})""") to "Preferences",
+        Regex("""(?:اسمي|ناديني)\s*([\p{L}][\p{L}0-9_'-]{0,35})""") to "Personal",
+        Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\s*([^.!؟?\n]{2,60})""") to "Gaming",
+        Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\s*([^.!؟?\n]{2,100})""") to "Preferences"
+    )
+    val matches = patterns.mapNotNull { (pattern, category) ->
+        pattern.find(message)?.groupValues?.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }?.let { category to it }
     }
 }
