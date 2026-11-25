@@ -202,7 +202,12 @@ class DirectAiClient {
                     else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
                 }.orEmpty().trim()
                 if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
-                val formattedAnswer = when {\n                    generateAttackPlan -> CocAttackPlanFormatter.formatOrFallback(answer)\n                    analyzeClashOfClansScreenshot -> CocScreenshotReportFormatter.formatOrFallback(answer)\n                    else -> answer\n                }\n                AiReply(formattedAnswer, config.provider.title, model)
+                val formattedAnswer = when {
+                    generateAttackPlan -> CocAttackPlanFormatter.formatOrFallback(answer)
+                    analyzeClashOfClansScreenshot -> CocScreenshotReportFormatter.formatOrFallback(answer)
+                    else -> answer
+                }
+                AiReply(formattedAnswer, config.provider.title, model)
             } catch (error: AiProviderException) {
                 throw error
             } catch (error: Exception) {
