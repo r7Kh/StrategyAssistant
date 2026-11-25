@@ -84,9 +84,18 @@ class DirectAiClient {
             } else {
                 ""
             }
-            val systemPrompt = STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim() + gameKnowledge +
-                if (attackPlanning.isBlank()) "" else "\n\n" + attackPlanning +
-                if (memoryContext.isBlank()) "" else "\n\n" + memoryContext.trim()
+            val systemPrompt = buildString {
+                append(STRATEGY_ASSISTANT_SYSTEM_PROMPT.trim())
+                append(gameKnowledge)
+                if (attackPlanning.isNotBlank()) {
+                    append("\n\n")
+                    append(attackPlanning)
+                }
+                if (memoryContext.isNotBlank()) {
+                    append("\n\n")
+                    append(memoryContext.trim())
+                }
+            }
             require(base.startsWith("https://")) { "Provider URL must use HTTPS." }
 
             val endpoint: String
