@@ -35,6 +35,9 @@ class CocAttackPlannerTest {
         assertTrue(instructions.contains("Never invent quantities"))
         assertTrue(instructions.contains("qualitative confidence"))
         assertTrue(instructions.contains("no more than two essential follow-up questions"))
+        assertTrue(instructions.contains("never numeric scores"))
+        assertTrue(instructions.contains("at most two meaningfully different alternatives"))
+        assertTrue(instructions.contains("measured win rate"))
     }
 
     @Test
