@@ -28,6 +28,21 @@ class CocAttackPlannerTest {
     }
 
     @Test
+    fun structuredPlanInstructionsRequireEvidenceAndSafeUnknowns() {
+        val instructions = CocAttackPlanner.attackPlanInstructions("Plan a farming attack")
+        assertTrue(instructions.contains("valid JSON object only"))
+        assertTrue(instructions.contains("strategy_summary"))
+        assertTrue(instructions.contains("Never invent quantities"))
+        assertTrue(instructions.contains("qualitative confidence"))
+        assertTrue(instructions.contains("at most two essential follow-up questions"))
+    }
+
+    @Test
+    fun unrelatedQuestionsReceiveNoStructuredPlanPrompt() {
+        assertTrue(CocAttackPlanner.attackPlanInstructions("What is a Guardian?").isBlank())
+    }
+
+    @Test
     fun unrelatedQuestionsReceiveNoAttackPlanningPrompt() {
         assertTrue(CocAttackPlanner.planningInstructions("What is a Guardian?").isBlank())
     }
