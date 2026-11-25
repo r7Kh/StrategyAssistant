@@ -81,7 +81,8 @@ class DirectAiClient {
             } else {
                 ""
             }
-            val generateAttackPlan = isClashOfClans && CocAttackPlanner.isAttackPlanningQuery(prompt)\n            val attackPlanning = if (isClashOfClans) {
+            val generateAttackPlan = isClashOfClans && CocAttackPlanner.isAttackPlanningQuery(prompt)
+            val attackPlanning = if (isClashOfClans) {
                 CocAttackPlanner.planningInstructions(gameQueryContext)
             } else {
                 ""
