@@ -27,7 +27,7 @@ class CocAttackPlanFormatterTest {
         val result = CocAttackPlanFormatter.formatOrFallback(raw)
         assertTrue(result.contains("Collector-focused raid"))
         assertTrue(result.contains("Elixir"))
-        assertTrue(result.contains("Barbarian × 12"))
+        assertTrue(result.contains("Barbarian** × 12"))
         assertTrue(result.contains("Deployment phases"))
         assertTrue(result.contains("Splash defense coverage"))
         assertTrue(result.contains("Exact spell inventory"))
