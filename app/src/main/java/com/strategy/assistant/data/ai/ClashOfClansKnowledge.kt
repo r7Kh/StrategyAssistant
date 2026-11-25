@@ -186,6 +186,26 @@ internal object ClashOfClansKnowledge {
             sourceUrl = "https://supercell.com/en/games/clashofclans/blog/release-notes/the-clash-of-titans-update-is-rolling-out/"
         ),
         CocKnowledgeEntry(
+            id = "legendary-equipment-and-ore",
+            category = "Hero Equipment",
+            title = "Legendary Equipment and Ore economy announcement",
+            keywords = listOf("legendary equipment", "blizzard axe", "barbarian king axe", "legendary rarity", "shiny ore", "glowy ore", "starry ore", "ore economy", "crafting event", "craft pass", "equipment level 33", "معدات أسطورية", "فأس", "خام"),
+            facts = listOf(
+                "Supercell announced Legendary Equipment on 17 November 2026. The first announced item is Blizzard Axe for the Barbarian King; its gameplay details and full Crafting Event rewards were not yet revealed in that announcement.",
+                "Legendary Equipment is intended to introduce more flexible and complex abilities and distinctive visuals. Supercell says max-level Legendary Equipment is designed to be slightly stronger, but not dramatically stronger, than Common and Epic Equipment.",
+                "Blizzard Axe was announced as earnable for free through a Crafting Event available from Town Hall 8. Supercell also said missed event equipment would later be obtainable through other sources, with details to follow.",
+                "An optional Craft Pass was announced at US$9.99 with regional pricing; it is not required to unlock the Blizzard Axe. The announced pass includes the Axe upgraded to level 15 plus other rewards.",
+                "Legendary Equipment uses Shiny, Glowy, and Starry Ore. The maximum level is 33. Levels 28–30 unlock at Town Hall 16, and levels 31–33 unlock at Town Hall 18; the level a player can reach also depends on Blacksmith progression.",
+                "The announced full upgrade cost for Blizzard Axe level 1 to 33 is 79,760 Shiny Ore, 5,100 Glowy Ore, and 705 Starry Ore.",
+                "The announcement says Blizzard Axe and future Epic Equipment share identical upgrade costs through level 27. Reaching level 27 requires less Glowy and Starry Ore than maxing a current Epic, while Shiny Ore cost stays the same; Legendary then has six additional levels.",
+                "For future Epic Equipment, Supercell announced max-level costs of 430 Starry Ore (down from 480) and 3,550 Glowy Ore (down from 3,720), with Shiny Ore cost unchanged. Older Epic Equipment cost reductions were described as gradual, with no schedule specified.",
+                "For Town Hall 16+ players active on at least 14 days per month, Supercell reported average monthly Starry Ore income rose from 98 in March 2026 to 203 in September 2026; the figure includes free and paid sources.",
+                "The article says Clan War Ore rewards are unchanged and that the November Star Bonus rework distributes Ore based on Town Hall level. Treat announced future changes and economy figures as dated statements, not guarantees of current player-specific income."
+            ),
+            verifiedOn = "2026-11-25",
+            sourceUrl = "https://supercell.com/en/games/clashofclans/blog/news/an-all-new-equipment-rarity-is-coming-to-clash-of-clans-2/"
+        ),
+        CocKnowledgeEntry(
             id = "august-2026-update",
             category = "Recent history",
             title = "August 2026 update",
