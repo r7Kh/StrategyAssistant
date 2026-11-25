@@ -92,6 +92,10 @@ class DirectAiClient {
                     append("\n\n")
                     append(attackPlanning)
                 }
+                if (image != null) {
+                    append("\n\n")
+                    append(CocAttackPlanner.screenshotAnalysisInstructions())
+                }
                 if (memoryContext.isNotBlank()) {
                     append("\n\n")
                     append(memoryContext.trim())
