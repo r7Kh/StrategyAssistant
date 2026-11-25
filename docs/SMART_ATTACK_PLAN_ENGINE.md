@@ -17,8 +17,18 @@ The model is instructed to return JSON containing:
 - Target-selection criteria and visible base observations with qualitative confidence.
 - Army units and quantities, entry side, deployment phases, and spell timing.
 - Risks, skip conditions, fallback, assumptions, and missing information.
+- A strategy evaluation covering resource-goal fit, confirmed army fit, entry safety, and training efficiency.
+- Up to two meaningfully different alternatives, with the situation each suits and its trade-off.
 
-The formatter extracts valid JSON and renders a readable report. Invalid or unrelated JSON falls back to the provider's original response.
+The formatter extracts valid JSON and renders a readable report. Invalid or unrelated JSON falls back to the provider's original response. Alternative output is capped at two entries.
+
+## Evaluation rules
+
+- Evaluation labels are qualitative: strong, moderate, weak, or unknown. They are not numerical scores or calibrated win probabilities.
+- Only evaluate army fit when the player's army is known; only evaluate entry safety when layout evidence supports it.
+- Explain the main trade-off and why the recommended plan fits the stated resource goal.
+- Do not rank alternatives using invented metrics or claim a measured win rate.
+- If evidence is insufficient, mark the relevant evaluation unknown and list the missing detail.
 
 ## Safety and accuracy constraints
 
@@ -30,4 +40,4 @@ The formatter extracts valid JSON and renders a readable report. Invalid or unre
 
 ## Validation
 
-Unit tests cover structured formatting, fenced JSON/provider preambles, missing quantities, empty armies, malformed output, and unrelated JSON fallback.
+Unit tests cover structured formatting, evaluation labels, alternative rendering, fenced JSON/provider preambles, missing quantities, empty armies, malformed output, and unrelated JSON fallback.
