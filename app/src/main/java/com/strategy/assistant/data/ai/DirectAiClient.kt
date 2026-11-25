@@ -93,7 +93,7 @@ class DirectAiClient {
                     append("\n\n")
                     append(attackPlanning)
                 }
-                if (image != null) {
+                if (analyzeClashOfClansScreenshot) {
                     append("\n\n")
                     append(CocAttackPlanner.screenshotAnalysisInstructions())
                 }
