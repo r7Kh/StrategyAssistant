@@ -94,6 +94,13 @@ internal object CocAttackPlanFormatter {
             appendArray(plan.optJSONArray("assumptions"), "Assumptions")
             appendArray(plan.optJSONArray("missing_info"), "Details needed")
             appendLine()
+            val validationWarnings = CocAttackPlanValidator.validate(raw)
+            if (validationWarnings.isNotEmpty()) {
+                appendLine()
+                appendLine("### Plan validation warnings")
+                validationWarnings.forEach { appendLine("- $it") }
+            }
+            appendLine()
             appendLine("_Provisional strategy guidance only. Verify the army, capacity, target layout, and current in-game conditions before attacking._")
         }.trim()
     }
