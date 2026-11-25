@@ -200,7 +200,7 @@ class DirectAiClient {
                     else -> json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
                 }.orEmpty().trim()
                 if (answer.isBlank()) throw AiProviderException("The provider returned an empty response.", status)
-                AiReply(answer, config.provider.title, model)
+                AiReply(if (image != null) CocScreenshotReportFormatter.formatOrFallback(answer) else answer, config.provider.title, model)
             } catch (error: AiProviderException) {
                 throw error
             } catch (error: Exception) {
