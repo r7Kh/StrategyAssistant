@@ -94,7 +94,11 @@ class DirectAiClient {
                     append("\n\n")
                     append(attackPlanning)
                 }
-                if (generateAttackPlan) {\n                    append("\\n\\n")\n                    append(CocAttackPlanner.attackPlanInstructions(gameQueryContext))\n                }\n                if (analyzeClashOfClansScreenshot && !generateAttackPlan) {
+                if (generateAttackPlan) {
+                    append("\n\n")
+                    append(CocAttackPlanner.attackPlanInstructions(gameQueryContext))
+                }
+                if (analyzeClashOfClansScreenshot && !generateAttackPlan) {
                     append("\n\n")
                     append(CocAttackPlanner.screenshotAnalysisInstructions())
                 }
