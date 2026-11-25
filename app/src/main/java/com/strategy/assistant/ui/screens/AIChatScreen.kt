@@ -309,7 +309,7 @@ private fun CocAttackProfileDialog(
     var heroes by remember(initialProfile) { mutableStateOf(initialProfile.heroesAndEquipment) }
     var spells by remember(initialProfile) { mutableStateOf(initialProfile.spellsAndSiege) }
     var notes by remember(initialProfile) { mutableStateOf(initialProfile.notes) }
-    val fieldColors = OutlinedTextFieldDefaults.colors(
+    val townHallIsValid = townHall.isBlank() || townHall.toIntOrNull() in 2..19\n    val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = Color(0xFFF4EFF8),
         unfocusedTextColor = Color(0xFFF4EFF8),
         focusedBorderColor = Color(0xFFD6B56D),
