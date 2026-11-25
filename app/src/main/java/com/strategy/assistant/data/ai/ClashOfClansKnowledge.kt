@@ -25,7 +25,7 @@ internal object ClashOfClansKnowledge {
             id = "town-hall-19-launch",
             category = "Progression",
             title = "Town Hall 19 update",
-            keywords = listOf("town hall", "townhall", "th19", "spiky tower", "firecracker tower", "guardian shrine", "barbarian", "archer", "wizard", "تاون هول", "مبنى البلدية"),
+            keywords = listOf("town hall", "townhall", "th19", "تاون هول 19", "تاون 19", "spiky tower", "firecracker tower", "guardian shrine", "barbarian", "archer", "wizard", "تاون هول", "مبنى البلدية"),
             facts = listOf(
                 "Town Hall 19 was introduced in the Clash of Titans update rolling out on 16 November 2026.",
                 "Town Hall 19 allows the Town Hall to be occupied and customized by defensive troops.",
@@ -41,7 +41,7 @@ internal object ClashOfClansKnowledge {
             id = "squads-system",
             category = "Army",
             title = "Squads system and launch roster",
-            keywords = listOf("squad", "squads", "squad barracks", "barch", "giant wizard", "wall breaker squad", "minion squad", "balloon squad", "golem witch", "hog rider squad", "miner squad", "healer squad", "pekka titan", "dragon squad", "baby dragon squad", "فرقة", "فرق"),
+            keywords = listOf("squad", "squads", "squad barracks", "فرقة", "فرقات", "تشكيلة", "barch", "giant wizard", "wall breaker squad", "minion squad", "balloon squad", "golem witch", "hog rider squad", "miner squad", "healer squad", "pekka titan", "dragon squad", "baby dragon squad", "فرقة", "فرق"),
             facts = listOf(
                 "Squads are fixed troop groups deployed together with one tap; Supercell says they provide more troops per housing space than deploying members individually.",
                 "Squads are available from Town Hall 8. The Squad Barracks has 12 levels; each level unlocks one squad, with one maximum level added per Town Hall from TH8 through TH19.",
@@ -76,7 +76,7 @@ internal object ClashOfClansKnowledge {
             id = "town-hall-19-spells-and-heroic-spell",
             category = "Spells",
             title = "Heroic Spell and spell balance notes",
-            keywords = listOf("heroic spell", "rage gem", "life gem", "spell factory", "spell", "spells", "heroic", "جنية", "تعويذة", "تعويذات"),
+            keywords = listOf("heroic spell", "rage gem", "life gem", "تعويذة بطولية", "تعويذة", "تعاويذ", "spell factory", "spell", "spells", "heroic", "جنية", "تعويذة", "تعويذات"),
             facts = listOf(
                 "The Heroic Spell creates an area where troops take reduced damage, move faster, and ground troops can walk through Walls.",
                 "Its four levels reduce troop damage by 34%, 36%, 38%, and 40%; add 5, 6, 7, and 8 movement speed; and last 9.75, 10.75, 11.75, and 12.75 seconds respectively.",
@@ -222,10 +222,20 @@ internal object ClashOfClansKnowledge {
 
     fun contextFor(query: String): String {
         val normalizedQuery = query.lowercase()
-        val matchingEntries = entries.filter { entry ->
-            entry.keywords.any { keyword -> normalizedQuery.contains(keyword.lowercase()) }
+        val rankedEntries = entries.mapNotNull { entry ->
+            val matches = entry.keywords.count { keyword ->
+                val term = keyword.lowercase()
+                if (term.length <= 3 && term.all(Char::isLetterOrDigit)) {
+                    Regex("\\b" + Regex.escape(term) + "\\b").containsMatchIn(normalizedQuery)
+                } else normalizedQuery.contains(term)
+            }
+            if (matches == 0) null else entry to matches
+        }.sortedWith(compareByDescending<Pair<CocKnowledgeEntry, Int>> { it.second }
+            .thenBy { it.first.id })
+        // Keep provider context focused. A broad query gets a small core snapshot, never the entire catalog.
+        val selectedEntries = rankedEntries.take(5).map { it.first }.ifEmpty {
+            entries.filter { it.id in setOf("town-hall-19-launch", "squads-system", "ranked-and-regular-battles") }
         }
-        val selectedEntries = matchingEntries.ifEmpty { entries }
         return buildContext(selectedEntries)
     }
 
