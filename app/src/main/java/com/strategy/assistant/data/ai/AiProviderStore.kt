@@ -33,6 +33,11 @@ class AiProviderStore(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences("ai_provider_secure", Context.MODE_PRIVATE)
     private val alias = "strategy_assistant_ai_key_v1"
 
+    init {
+        // Remove the retired paid-search preference left by earlier development builds.
+        prefs.edit().remove("web_research_enabled").apply()
+    }
+
     fun load(): AiProviderConfig {
         val provider = AiProvider.fromId(prefs.getString("provider", "gemini").orEmpty())
         val encrypted = prefs.getString(secretName(provider), null)
