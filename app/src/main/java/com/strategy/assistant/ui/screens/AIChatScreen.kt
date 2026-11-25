@@ -768,3 +768,51 @@ private fun AnnotatedString.Builder.appendInlineMarkdown(line: String) {
     }
     if (cursor < line.length) append(line.substring(cursor))
 }
+
+
+@Composable
+private fun AttackPlanCard(source: String) {
+    val lines = source.replace("\r\n", "\n").lines()
+    Surface(
+        color = Color(0xE9161221),
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, Color(0x887D633F)),
+        shadowElevation = 5.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            Modifier.background(Brush.verticalGradient(listOf(Color(0xFF21182D), Color(0xFF100D18))))
+                .padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(7.dp).background(Color(0xFFD6B56D), CircleShape))
+                Spacer(Modifier.width(7.dp))
+                Text("TACTICAL INTELLIGENCE", color = Color(0xFFD6B56D), fontSize = 9.sp, letterSpacing = 1.2.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.weight(1f))
+                Text("COC", color = Color(0xFFB8A6D1), fontSize = 9.sp, letterSpacing = 1.sp)
+            }
+            lines.drop(1).forEach { raw ->
+                val line = raw.trim()
+                when {
+                    line.isBlank() -> Unit
+                    line.startsWith("### ") -> {
+                        Spacer(Modifier.height(3.dp))
+                        Text(line.removePrefix("### ").uppercase(), color = Color(0xFFD6B56D), fontSize = 10.sp, letterSpacing = 0.8.sp, fontWeight = FontWeight.Bold)
+                    }
+                    line.startsWith("**") && line.endsWith("**") ->
+                        Text(line.removeSurrounding("**"), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    line.startsWith("- ") || line.startsWith("* ") -> {
+                        Row(verticalAlignment = Alignment.Top) {
+                            Text("•", color = Color(0xFFD6B56D), fontSize = 14.sp, modifier = Modifier.padding(end = 7.dp))
+                            Text(line.drop(2).replace("**", "").replace("_", ""), color = Color(0xFFE9E2F1), fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.weight(1f))
+                        }
+                    }
+                    line.startsWith("_") && line.endsWith("_") ->
+                        Text(line.removeSurrounding("_"), color = Color(0xFF9E91AD), fontSize = 10.sp, lineHeight = 15.sp)
+                    else -> Text(line.replace("**", "").replace("_", ""), color = Color(0xFFE9E2F1), fontSize = 12.sp, lineHeight = 18.sp)
+                }
+            }
+        }
+    }
+}
