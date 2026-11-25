@@ -49,6 +49,9 @@ import androidx.compose.ui.unit.sp
 import com.strategy.assistant.data.ai.AiMemoryRepository
 import com.strategy.assistant.data.ai.AiProviderStore
 import com.strategy.assistant.data.ai.DirectAiClient
+import com.strategy.assistant.data.ai.CocPlayerProfile
+import com.strategy.assistant.data.ai.CocPlayerProfileRepository
+import com.strategy.assistant.data.ai.CocFarmingGoal
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -67,6 +70,9 @@ fun AIChatScreen(
     val context = LocalContext.current
     val store = remember(context) { AiProviderStore(context) }
     val memoryRepository = remember(context) { AiMemoryRepository(context) }
+    val cocProfileRepository = remember(context) { CocPlayerProfileRepository(context) }
+    val cocProfile by cocProfileRepository.profile.collectAsState(initial = CocPlayerProfile())
+    var showCocProfile by remember { mutableStateOf(false) }
     val client = remember { DirectAiClient() }
     val scope = rememberCoroutineScope()
     var config by remember { mutableStateOf(store.load()) }
@@ -127,6 +133,9 @@ fun AIChatScreen(
                         Spacer(Modifier.width(6.dp))
                         Text(config.provider.title + " • " + config.model, color = Color(0xFFC8B78E), fontSize = 10.sp)
                     }
+                }
+                TextButton(onClick = { showCocProfile = true }, contentPadding = PaddingValues(horizontal = 5.dp)) {
+                    Text("ATTACK PROFILE", color = Color(0xFFD6B56D), fontSize = 9.sp, letterSpacing = 0.5.sp)
                 }
                 TextButton(onClick = onOpenMemory, contentPadding = PaddingValues(horizontal = 5.dp)) {
                     Text("MEMORY", color = Color(0xFFD6B56D), fontSize = 9.sp, letterSpacing = 0.6.sp)
@@ -237,7 +246,13 @@ fun AIChatScreen(
                                 runCatching {
                                     memoryRepository.rememberExplicitFacts(prompt)
                                     val history = messages.dropLast(1).map { it.role to it.text }
-                                    val memoryContext = memoryRepository.snapshot.first().toPromptContext()
+                                    val memoryContext = buildString {
+                                        append(memoryRepository.snapshot.first().toPromptContext())
+                                        if (isClashOfClansContext(prompt, history, "")) {
+                                            val profileContext = cocProfileRepository.profile.first().toPromptContext()
+                                            if (profileContext.isNotBlank()) append("\n\n").append(profileContext)
+                                        }
+                                    }
                                     client.send(config, prompt, history, memoryContext, selectedImage)
                                 }.onSuccess { reply ->
                                     messages.add(ChatLine("assistant", reply.text))
@@ -256,6 +271,103 @@ fun AIChatScreen(
             }
         }
     }
+
+    if (showCocProfile) {
+        CocAttackProfileDialog(
+            initialProfile = cocProfile,
+            onDismiss = { showCocProfile = false },
+            onSave = { updated ->
+                scope.launch {
+                    runCatching { cocProfileRepository.save(updated) }
+                        .onSuccess { showCocProfile = false; error = null }
+                        .onFailure { error = it.message ?: "Could not save attack profile." }
+                }
+            },
+            onClear = {
+                scope.launch {
+                    cocProfileRepository.clear()
+                    showCocProfile = false
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun CocAttackProfileDialog(
+    initialProfile: CocPlayerProfile,
+    onDismiss: () -> Unit,
+    onSave: (CocPlayerProfile) -> Unit,
+    onClear: () -> Unit
+) {
+    var townHall by remember(initialProfile) { mutableStateOf(initialProfile.townHallLevel?.toString().orEmpty()) }
+    var goal by remember(initialProfile) { mutableStateOf(initialProfile.farmingGoal) }
+    var army by remember(initialProfile) { mutableStateOf(initialProfile.army) }
+    var heroes by remember(initialProfile) { mutableStateOf(initialProfile.heroesAndEquipment) }
+    var spells by remember(initialProfile) { mutableStateOf(initialProfile.spellsAndSiege) }
+    var notes by remember(initialProfile) { mutableStateOf(initialProfile.notes) }
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = Color(0xFFF4EFF8),
+        unfocusedTextColor = Color(0xFFF4EFF8),
+        focusedBorderColor = Color(0xFFD6B56D),
+        unfocusedBorderColor = Color(0xFF59466D),
+        focusedLabelColor = Color(0xFFD6B56D),
+        unfocusedLabelColor = Color(0xFFAAA0B9)
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Color(0xFF171220),
+        title = {
+            Column {
+                Text("CLASH OF CLANS", color = Color(0xFFD6B56D), fontSize = 10.sp, letterSpacing = 1.2.sp)
+                Text("Attack Intelligence Profile", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(Modifier.fillMaxWidth().heightIn(max = 540.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("PLAYER PROGRESSION", color = Color(0xFFD6B56D), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                OutlinedTextField(
+                    value = townHall,
+                    onValueChange = { value -> if (value.length <= 2 && value.all(Char::isDigit)) townHall = value },
+                    label = { Text("Town Hall level (2–19)") },
+                    placeholder = { Text("Leave blank if unknown") },
+                    singleLine = true,
+                    colors = fieldColors,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text("FARMING OBJECTIVE", color = Color(0xFFD6B56D), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    CocFarmingGoal.values().forEach { option ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = goal == option,
+                                onClick = { goal = option },
+                                colors = RadioButtonDefaults.colors(selectedColor = Color(0xFFD6B56D), unselectedColor = Color(0xFFAAA0B9))
+                            )
+                            Text(option.label, color = Color(0xFFEDE7F3), fontSize = 12.sp)
+                        }
+                    }
+                }
+                OutlinedTextField(army, { army = it.take(700) }, label = { Text("Available army and troop levels") }, placeholder = { Text("Example: troops and quantities you can train") }, minLines = 2, maxLines = 4, colors = fieldColors, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(heroes, { heroes = it.take(500) }, label = { Text("Heroes and equipment") }, placeholder = { Text("Available heroes, levels and equipment") }, minLines = 2, maxLines = 3, colors = fieldColors, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(spells, { spells = it.take(500) }, label = { Text("Spells and Siege Machine") }, placeholder = { Text("Spells, levels and Siege Machine") }, minLines = 2, maxLines = 3, colors = fieldColors, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(notes, { notes = it.take(400) }, label = { Text("Additional notes (optional)") }, minLines = 1, maxLines = 2, colors = fieldColors, modifier = Modifier.fillMaxWidth())
+                Text("Saved locally on this device. Only supplied profile details are sent with Clash of Clans requests.", color = Color(0xFFAAA0B9), fontSize = 10.sp, lineHeight = 15.sp)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val level = townHall.toIntOrNull()
+                onSave(CocPlayerProfile(level, goal, army, heroes, spells, notes))
+            }) { Text("SAVE PROFILE", color = Color(0xFFD6B56D), fontWeight = FontWeight.Bold) }
+        },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onClear) { Text("CLEAR", color = Color(0xFFE39B9B)) }
+                TextButton(onClick = onDismiss) { Text("CANCEL", color = Color(0xFFAAA0B9)) }
+            }
+        }
+    )
 }
 
 @Composable
