@@ -69,7 +69,7 @@ internal object CocAttackPlanValidator {
             val c = raw[i]
             if (inString) {
                 if (escaped) escaped = false
-                else if (c == '\\\\') escaped = true
+                else if (c == '\\') escaped = true
                 else if (c == '"') inString = false
             } else when (c) {
                 '"' -> inString = true
