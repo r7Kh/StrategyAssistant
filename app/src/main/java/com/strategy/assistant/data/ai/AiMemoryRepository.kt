@@ -154,7 +154,7 @@ internal fun extractExplicitMemoryFacts(message: String): List<Pair<String, Stri
         Regex("""(?:أنا ألعب|انا العب|بلعب|ألعب)\s*([^.!؟?\n]{2,60})""") to "Gaming",
         Regex("""(?:بفضّل|بفضل|أفضل|افضل|بحب)\s*([^.!؟?\n]{2,100})""") to "Preferences"
     )
-    val matches = patterns.mapNotNull { (pattern, category) ->
+    return patterns.mapNotNull { (pattern, category) ->
         pattern.find(message)?.groupValues?.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }?.let { category to it }
     }
 }
