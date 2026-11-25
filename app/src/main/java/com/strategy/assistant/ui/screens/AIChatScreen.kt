@@ -1,7 +1,5 @@
 package com.strategy.assistant.ui.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -129,9 +127,7 @@ fun AIChatScreen(
                 ) {
                     if (messages.isEmpty()) item { WelcomeIntelligencePanel() }
                     itemsIndexed(messages) { _, line ->
-                        ChatMessage(line = line, onOpenSource = { url ->
-                            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-                        })
+                        ChatMessage(line = line)
                     }
                     if (sending) item { ThinkingIndicator() }
                     error?.let { message ->
@@ -218,7 +214,7 @@ private fun WelcomeIntelligencePanel() {
 }
 
 @Composable
-private fun ChatMessage(line: ChatLine, onOpenSource: (String) -> Unit) {
+private fun ChatMessage(line: ChatLine) {
     val isUser = line.role == "user"
     Column(Modifier.fillMaxWidth(), horizontalAlignment = if (isUser) Alignment.End else Alignment.Start) {
         if (!isUser) {
