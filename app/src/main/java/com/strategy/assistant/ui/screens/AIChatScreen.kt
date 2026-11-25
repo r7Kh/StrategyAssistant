@@ -316,50 +316,122 @@ private fun ChatMessage(line: ChatLine) {
 }
 
 
-private data class ScreenshotReportSection(val title: String, val lines: List<String>)
+private data class ScreenshotReportLine(
+    val text: String,
+    val confidence: String? = null,
+)
 
-private fun parseScreenshotReport(source: String): Pair<String, List<ScreenshotReportSection>> {
-    val lines = source.lines()
+private data class ScreenshotReportSection(
+    val title: String,
+    val lines: List<ScreenshotReportLine>,
+)
+
+private data class ScreenshotReportContent(
+    val subtitle: String,
+    val sections: List<ScreenshotReportSection>,
+)
+
+private fun parseScreenshotReport(source: String): ScreenshotReportContent {
+    val normalized = source.replace("\r\n", "\n").replace("\r", "\n")
+    val lines = normalized.lines()
     val subtitle = lines.firstOrNull { it.startsWith("**Screenshot type:**") }
         ?.removePrefix("**Screenshot type:**")?.trim().orEmpty()
     val sections = mutableListOf<ScreenshotReportSection>()
     var currentTitle = ""
-    var currentLines = mutableListOf<String>()
-    lines.drop(1).forEach { raw ->
-        val line = raw.trim()
-        if (line.startsWith("### ")) {
-            if (currentTitle.isNotBlank()) sections += ScreenshotReportSection(currentTitle, currentLines.toList())
-            currentTitle = line.removePrefix("### ")
-            currentLines = mutableListOf()
-        } else if (line.isNotBlank() && !line.startsWith("**Screenshot type:**") && !line.startsWith("_Visual confidence")) {
-            currentLines += line.removePrefix("- ").removePrefix("  - ")
+    var currentLines = mutableListOf<ScreenshotReportLine>()
+
+    fun flushSection() {
+        if (currentTitle.isNotBlank()) {
+            sections += ScreenshotReportSection(currentTitle, currentLines.toList())
         }
     }
-    if (currentTitle.isNotBlank()) sections += ScreenshotReportSection(currentTitle, currentLines.toList())
-    return subtitle to sections
+
+    lines.drop(1).forEach { raw ->
+        val line = raw.trim()
+        when {
+            line.startsWith("### ") -> {
+                flushSection()
+                currentTitle = line.removePrefix("### ").trim()
+                currentLines = mutableListOf()
+            }
+            line.isBlank() || line.startsWith("**Screenshot type:**") ||
+                line.startsWith("_Visual confidence") -> Unit
+            else -> {
+                val clean = line.removePrefix("- ").removePrefix("* ")
+                    .removePrefix("  - ").trim()
+                if (clean.isNotBlank()) {
+                    val confidence = Regex("""\*\*(High|Medium|Low|Unclear) confidence\*\*""", RegexOption.IGNORE_CASE)
+                        .find(clean)?.groupValues?.getOrNull(1)?.lowercase()
+                    currentLines += ScreenshotReportLine(
+                        text = clean.replace("**", "").replace("_", ""),
+                        confidence = confidence,
+                    )
+                }
+            }
+        }
+    }
+    flushSection()
+    return ScreenshotReportContent(subtitle, sections)
+}
+
+private fun confidenceColor(confidence: String): Color = when (confidence) {
+    "high" -> Color(0xFF78C99A)
+    "medium" -> Color(0xFFE2C276)
+    "low" -> Color(0xFFE3A16F)
+    else -> Color(0xFFAA9DBB)
+}
+
+@Composable
+private fun ConfidencePill(confidence: String) {
+    val label = when (confidence) {
+        "high" -> "HIGH"
+        "medium" -> "MEDIUM"
+        "low" -> "LOW"
+        else -> "UNCLEAR"
+    }
+    Surface(
+        color = confidenceColor(confidence).copy(alpha = 0.12f),
+        shape = RoundedCornerShape(50),
+        border = BorderStroke(1.dp, confidenceColor(confidence).copy(alpha = 0.45f)),
+    ) {
+        Text(
+            label,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+            color = confidenceColor(confidence),
+            fontSize = 8.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.55.sp,
+        )
+    }
 }
 
 @Composable
 private fun ScreenshotReportCard(source: String) {
-    val (subtitle, sections) = remember(source) { parseScreenshotReport(source) }
+    val report = remember(source) { parseScreenshotReport(source) }
+    val entrySection = report.sections.firstOrNull {
+        it.title.equals("Recommended entry", ignoreCase = true)
+    }
+    val attackSection = report.sections.firstOrNull {
+        it.title.equals("Suggested attack sequence", ignoreCase = true)
+    }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
         color = Color(0xE914101F),
         border = BorderStroke(1.dp, Color(0x887B613D)),
-        shadowElevation = 5.dp
+        shadowElevation = 5.dp,
     ) {
         Column(
             Modifier.background(
                 Brush.verticalGradient(listOf(Color(0xFF21172F), Color(0xFF110E19), Color(0xFF0D0B14)))
             ).padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier.size(34.dp).clip(RoundedCornerShape(11.dp))
                         .background(Brush.linearGradient(listOf(Color(0xFF6B4A88), Color(0xFF30213F)))),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFFE5C77E), modifier = Modifier.size(18.dp))
                 }
@@ -370,26 +442,81 @@ private fun ScreenshotReportCard(source: String) {
                 }
                 Text("AI REPORT", color = Color(0xFF9D8BAE), fontSize = 8.sp, letterSpacing = 0.8.sp)
             }
-            if (subtitle.isNotBlank()) {
-                Text(subtitle, color = Color(0xFFF3E7CF), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+
+            if (report.subtitle.isNotBlank()) {
+                Text(report.subtitle, color = Color(0xFFF3E7CF), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Brush.horizontalGradient(listOf(Color.Transparent, Color(0xFF9A7747), Color.Transparent))))
-            sections.forEach { section ->
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+
+            report.sections.filterNot { it === entrySection || it === attackSection }.forEach { section ->
+                Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
                     Text(section.title.uppercase(), color = Color(0xFFD9B96F), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.95.sp)
                     section.lines.forEach { item ->
-                        val clean = item.replace("**", "").replace("_", "")
-                        Row(verticalAlignment = Alignment.Top) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Top,
+                        ) {
                             Box(Modifier.padding(top = 6.dp).size(5.dp).background(Color(0xFFD6B56D), CircleShape))
                             Spacer(Modifier.width(8.dp))
-                            Text(clean, color = Color(0xFFE8E1EF), fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.weight(1f), style = TextStyle(textDirection = TextDirection.Content))
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(item.text, color = Color(0xFFE8E1EF), fontSize = 12.sp, lineHeight = 18.sp, style = TextStyle(textDirection = TextDirection.Content))
+                                item.confidence?.let { ConfidencePill(it) }
+                            }
                         }
                     }
                 }
             }
+
+            entrySection?.let { section ->
+                Surface(
+                    color = Color(0xFF2A2031),
+                    shape = RoundedCornerShape(13.dp),
+                    border = BorderStroke(1.dp, Color(0x99D6B56D)),
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                        Text("RECOMMENDED ENTRY", color = Color(0xFFE7CC8C), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                        section.lines.forEach { item ->
+                            Row(verticalAlignment = Alignment.Top) {
+                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFFE2C276), modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(7.dp))
+                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                                    Text(item.text, color = Color(0xFFFFE9B8), fontSize = 12.sp, lineHeight = 18.sp, fontWeight = FontWeight.SemiBold)
+                                    item.confidence?.let { ConfidencePill(it) }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            attackSection?.let { section ->
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("ATTACK SEQUENCE", color = Color(0xFFD9B96F), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.95.sp)
+                    section.lines.forEachIndexed { index, item ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Box(
+                                Modifier.size(23.dp).clip(CircleShape)
+                                    .background(Brush.linearGradient(listOf(Color(0xFF80613C), Color(0xFF392842)))),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text((index + 1).toString(), color = Color(0xFFFFE7AD), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            }
+                            Spacer(Modifier.width(9.dp))
+                            Text(item.text, color = Color(0xFFE8E1EF), fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.weight(1f), style = TextStyle(textDirection = TextDirection.Content))
+                        }
+                    }
+                }
+            }
+
+            if (report.sections.isEmpty()) {
+                Text("The report could not be structured. Review the original analysis before acting.", color = Color(0xFFB8AFC4), fontSize = 12.sp, lineHeight = 18.sp)
+            }
             Text(
                 "Visual estimates are advisory. Verify uncertain targets before attacking.",
-                color = Color(0xFF9D91AA), fontSize = 9.sp, lineHeight = 14.sp
+                color = Color(0xFF9D91AA), fontSize = 9.sp, lineHeight = 14.sp,
             )
         }
     }
