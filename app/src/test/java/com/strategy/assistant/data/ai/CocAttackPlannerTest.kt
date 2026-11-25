@@ -51,6 +51,21 @@ class CocAttackPlannerTest {
     }
 
     @Test
+    fun detectsPostAttackReviewWithoutTriggeringOnGeneralAdvice() {
+        assertTrue(CocAttackPlanner.isPostAttackReviewQuery("هاي نتيجة الهجوم جبت 500 ألف ذهب"))
+        assertTrue(CocAttackPlanner.isPostAttackReviewQuery("After my attack I gained loot"))
+        assertFalse(CocAttackPlanner.isPostAttackReviewQuery("Plan my next farming attack"))
+    }
+
+    @Test
+    fun postAttackReviewRequiresEvidenceAndDoesNotClaimPersistentLearning() {
+        val instructions = CocAttackPlanner.postAttackReviewInstructions("نتيجة الهجوم")
+        assertTrue(instructions.contains("only when the user supplies its result or replay evidence"))
+        assertTrue(instructions.contains("Never invent loot"))
+        assertTrue(instructions.contains("only save it if the user explicitly asks"))
+    }
+
+    @Test
     fun screenshotInstructionsSeparateVisibleAndUncertainObservations() {
         val instructions = CocAttackPlanner.screenshotAnalysisInstructions()
         assertTrue(instructions.contains("clearly visible"))
