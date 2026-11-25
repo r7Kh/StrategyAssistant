@@ -24,6 +24,7 @@ Provide the Intelligence Channel with a structured, source-backed offline refere
 - April 2026 Sky Wagon and Electro Fangs details, selected level additions, and Legend League structure from that update.
 - Regular vs Ranked Battles, Magic Shields, Revenge, and selected 2025 matchmaking changes.
 - Selected August 2026 update history and November 2026 balance notes.
+- Legendary Equipment announcement: Blizzard Axe, rarity design intent, Town Hall unlock gates, upgrade caps and Ore costs, future Epic cost changes, and dated Ore-economy statements.
 
 This remains a curated snapshot, not a complete catalog of every troop, building, level, cost, equipment item, or attack strategy. Each record carries a source URL and review date. Historical mechanics are identified as patch-specific and must not be represented as guaranteed current behavior.
 
@@ -48,7 +49,7 @@ Official portal: https://developer.clashofclans.com/
 
 ## Next expansion order
 
-- Continue filling exact troop, spell, Hero, Pet, equipment, building, trap, and defense records from official source material.
+- Continue filling exact troop, spell, Hero, Pet, equipment, building, trap, and defense records from official source material, prioritizing complete individual item mechanics over broad patch summaries.
 - Add dedicated retrieval aliases for Arabic names and common transliterations.
 - Add tests for stale-version handling, missing facts, prompt-size limits, and query matching.
 - Consider official player/clan API integration only after a secure backend/IP strategy is approved. Do not add paid infrastructure without explicit approval.
