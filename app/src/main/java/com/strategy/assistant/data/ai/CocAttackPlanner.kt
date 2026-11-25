@@ -43,16 +43,40 @@ internal object CocAttackPlanner {
         }
     }
 
+    fun isPostAttackReviewQuery(query: String): Boolean {
+        val text = query.lowercase()
+        val signals = listOf("attack result", "attack results", "after my attack", "i got", "i gained", "loot gained", "battle result", "replay", "post attack", "نتيجة الهجوم", "نتيجة هجومي", "بعد الهجوم", "خلصت الهجمة", "جبت", "نهبت", "كم سرقت")
+        return signals.any(text::contains)
+    }
+
+    fun postAttackReviewInstructions(query: String): String {
+        if (!isPostAttackReviewQuery(query)) return ""
+        return buildString {
+            appendLine("CLASH OF CLANS POST-ATTACK REVIEW")
+            appendLine("Treat this as a review of a completed attack only when the user supplies its result or replay evidence.")
+            appendLine("Separate player-reported facts, visible replay observations, and uncertain interpretation.")
+            appendLine("Compare the actual outcome with the previous plan only if that plan is present in the conversation.")
+            appendLine("Review resource gained, destruction, stars, army remaining, entry choice, funnel, deployment timing, spell use, and defensive response only when supplied or visible.")
+            appendLine("Identify one or two concrete lessons and one practical adjustment for the next similar attack.")
+            appendLine("Never invent loot, percentages, troop losses, hidden traps, or reasons that cannot be supported by the supplied result.")
+            appendLine("Do not claim the AI has learned or permanently saved anything. Offer a reusable lesson, and only save it if the user explicitly asks.")
+            appendLine("If the result is missing, ask for the battle result or replay screenshot and do not fabricate an evaluation.")
+            appendLine()
+            appendLine("USER'S POST-ATTACK MESSAGE")
+            appendLine(query.trim())
+        }
+    }
+
     fun screenshotAnalysisInstructions(): String = buildString {
         appendLine("CLASH OF CLANS VILLAGE SCREENSHOT ANALYSIS")
         appendLine("An image is attached to this request. Inspect only what is actually visible in the supplied screenshot.")
         appendLine("First identify the screenshot context: village/base view, attack replay, scouting view, or unclear. If it is not an enemy base view, say so and do not invent a base layout.")
         appendLine("Describe observations in three confidence groups: clearly visible, probable but uncertain, and not identifiable from this image.")
-        appendLine("Inspect visible resource collectors and storages, their apparent placement/accessibility, outer buildings, walls/compartments, defensive coverage, and plausible approach lanes.")
+        appendLine("Inspect visible resource collectors and storages, their apparent placement/accessibility, outer buildings, walls/compartments, defensive coverage, and plausible approach lanes. Group observations by resources, defenses, walls/compartments, and entry lanes.")
         appendLine("Do not infer exact loot amounts, building levels, hidden traps, troop levels, or upgrade status from appearance unless clearly readable.")
         appendLine("Do not claim pixel-perfect object detection, exact coordinates, or guaranteed pathing. Use relative screen directions such as top, bottom, left, and right.")
         appendLine("Recommend an entry side only when the visible layout supports it. Explain the visual reason and identify key risks such as splash damage, air defenses, single-target defenses, compartments, or funnel gaps only when visible.")
-        appendLine("If the screenshot is cropped, blurry, zoomed out, obstructed, or missing important edges, state what additional screenshot or detail is needed.")
+        appendLine("If the screenshot is cropped, blurry, zoomed out, obstructed, or missing important edges, state what additional screenshot or detail is needed. Never infer objects hidden behind UI overlays or outside the image boundary.")
         appendLine("For a farming plan, prioritize the user's stated resource objective. Separate collector access from storage access, and give a cautious deployment sequence using only troops the player confirms they have.")
         appendLine("Never present an uncertain visual guess as a fact. If the model cannot distinguish a building, say 'unclear' rather than naming it.")
         appendLine("Return valid JSON only, with no Markdown fences or text outside JSON.")
