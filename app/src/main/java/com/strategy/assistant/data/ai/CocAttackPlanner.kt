@@ -19,6 +19,22 @@ internal object CocAttackPlanner {
         return attackSignals.any { normalized.contains(it) }
     }
 
+
+    fun screenshotAnalysisInstructions(): String = buildString {
+        appendLine("CLASH OF CLANS VILLAGE SCREENSHOT ANALYSIS")
+        appendLine("An image is attached to this request. Inspect only what is actually visible in the supplied screenshot.")
+        appendLine("First identify the screenshot context: village/base view, attack replay, scouting view, or unclear. If it is not an enemy base view, say so and do not invent a base layout.")
+        appendLine("Describe observations in three confidence groups: clearly visible, probable but uncertain, and not identifiable from this image.")
+        appendLine("Inspect visible resource collectors and storages, their apparent placement/accessibility, outer buildings, walls/compartments, defensive coverage, and plausible approach lanes.")
+        appendLine("Do not infer exact loot amounts, building levels, hidden traps, troop levels, or upgrade status from appearance unless clearly readable.")
+        appendLine("Do not claim pixel-perfect object detection, exact coordinates, or guaranteed pathing. Use relative screen directions such as top, bottom, left, and right.")
+        appendLine("Recommend an entry side only when the visible layout supports it. Explain the visual reason and identify key risks such as splash damage, air defenses, single-target defenses, compartments, or funnel gaps only when visible.")
+        appendLine("If the screenshot is cropped, blurry, zoomed out, obstructed, or missing important edges, state what additional screenshot or detail is needed.")
+        appendLine("For a farming plan, prioritize the user's stated resource objective. Separate collector access from storage access, and give a cautious deployment sequence using only troops the player confirms they have.")
+        appendLine("Never present an uncertain visual guess as a fact. If the model cannot distinguish a building, say 'unclear' rather than naming it.")
+        appendLine("Keep the analysis concise and finish with the single most useful missing player detail if required.")
+    }
+
     fun planningInstructions(query: String): String {
         if (!isAttackPlanningQuery(query)) return ""
         return buildString {
