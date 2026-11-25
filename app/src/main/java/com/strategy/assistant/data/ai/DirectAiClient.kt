@@ -102,7 +102,7 @@ class DirectAiClient {
                     CocAttackPlanner.postAttackReviewInstructions(gameQueryContext)
                 } else ""
                 if (postAttackReview.isNotBlank()) {
-                    append("\\n\\n")
+                    append("\n\n")
                     append(postAttackReview)
                 }
                 if (analyzeClashOfClansScreenshot && !generateAttackPlan) {
