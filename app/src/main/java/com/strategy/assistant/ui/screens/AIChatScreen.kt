@@ -231,7 +231,7 @@ fun AIChatScreen(
                             imageAttachment = null
                             imageLabel = null
                             error = null
-                            messages.add(ChatLine("user", if (selectedImage != null) "$prompt\n[Village screenshot attached]" else prompt))
+                            messages.add(ChatLine("user", if (selectedImage != null) "$prompt\n[Image attached]" else prompt))
                             sending = true
                             scope.launch {
                                 runCatching {
