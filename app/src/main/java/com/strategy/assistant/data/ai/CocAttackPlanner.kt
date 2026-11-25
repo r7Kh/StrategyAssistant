@@ -45,7 +45,7 @@ internal object CocAttackPlanner {
 
     fun isPostAttackReviewQuery(query: String): Boolean {
         val text = query.lowercase()
-        val signals = listOf("attack result", "attack results", "after my attack", "i got", "i gained", "loot gained", "battle result", "replay", "post attack", "نتيجة الهجوم", "نتيجة هجومي", "بعد الهجوم", "خلصت الهجمة", "جبت", "نهبت", "كم سرقت")
+        val signals = listOf("attack result", "attack results", "after my attack", "i gained", "loot gained", "battle result", "replay", "post attack", "نتيجة الهجوم", "نتيجة هجومي", "بعد الهجوم", "خلصت الهجمة", "نتيجة المعركة", "نهبت", "كم سرقت")
         return signals.any(text::contains)
     }
 
