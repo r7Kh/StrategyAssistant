@@ -68,8 +68,13 @@ class DirectAiClient {
             require(prompt.isNotBlank()) { "Message cannot be empty." }
             val model = config.model.ifBlank { config.provider.defaultModel }
             val base = config.baseUrl.trim().trimEnd('/')
+            val gameQueryContext = buildString {
+                append(prompt)
+                history.forEach { append(' ').append(it.second) }
+                append(' ').append(memoryContext)
+            }
             val gameKnowledge = if (isClashOfClansContext(prompt, history, memoryContext)) {
-                "\n\n" + ClashOfClansKnowledge.PROMPT_CONTEXT
+                "\n\n" + ClashOfClansKnowledge.contextFor(gameQueryContext)
             } else {
                 ""
             }
