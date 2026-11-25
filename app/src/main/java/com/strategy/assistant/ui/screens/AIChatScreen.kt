@@ -98,7 +98,7 @@ fun AIChatScreen(
                     AiImageAttachment(bytes, mime)
                 }.onSuccess { attachment ->
                     imageAttachment = attachment
-                    imageLabel = "Village screenshot attached"
+                    imageLabel = "Image attached"
                     error = null
                 }.onFailure { failure ->
                     imageAttachment = null
